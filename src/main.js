@@ -18,7 +18,7 @@ import "mapbox-gl/dist/mapbox-gl.css";
 
 const app = createApp(App, {
   setup() {
-    const { t } = useI18n;
+    const { t } = useI18n();
     return { t };
   },
 });

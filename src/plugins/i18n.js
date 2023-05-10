@@ -6,6 +6,7 @@ const messages = Object.assign(languages);
 export default createI18n({
   // something vue-i18n options here ...
   legacy: false,
+  // globalInjection: true,
   fallbackLocale: "en",
   locale: defaultLocale,
   messages: messages,
