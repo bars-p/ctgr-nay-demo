@@ -1,4 +1,4 @@
-# CTGR NYa Demo Project
+# CTGR NAy Demo Project
 
 ## Building Parts
 
