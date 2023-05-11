@@ -11,8 +11,23 @@ export default {
     menuItemSocio: "Socio-Demographics",
     menuItemDemand: "Travel Demand",
 
-    menuGroupNetwork: "ROUTE NETWORK",
+    menuGroupNetwork: "PUBLIC TRANSPORT",
     menuItemRoutes: "Routes",
     menuItemStops: "Stops",
+  },
+
+  // Tools Items
+  tools: {
+    socialTitle: "Social Data",
+    socialColor: "Color",
+    socialBars: "Bars",
+    socialMix: "Enable Mix Mode",
+    socialLayers: "Show layers:",
+    socialBoundary: "Area boundaries",
+    socialZones: "Analytical zones",
+
+    demandTitle: "Demand Data",
+    routesTitle: "Routes Data",
+    stopsTitle: "Stops Data",
   },
 };

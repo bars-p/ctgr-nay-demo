@@ -1,10 +1,15 @@
 <template>
-  <div class="text-h5">Main View</div>
-  <div class="text-body1">Mode: {{ props.mode }}</div>
+  <map-component :mode="props.mode" />
+  <map-tools :mode="props.mode" v-show="props.mode !== 'base'" />
 </template>
 
 <script setup>
+import MapComponent from "@/components/MapComponent.vue";
+import MapTools from "@/components/MapTools.vue";
+
 import { defineProps } from "vue";
 
 const props = defineProps(["mode"]);
 </script>
+
+<style scoped></style>

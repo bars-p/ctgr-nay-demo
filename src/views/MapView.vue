@@ -19,11 +19,11 @@ export default {
         mapboxgl.accessToken = this.access_token;
         this.map = new mapboxgl.Map({
           container: "map",
+          style: "mapbox://styles/mapbox/streets-v12",
           // style: "mapbox://styles/mapbox/satellite-streets-v12",
-          // style: "mapbox://styles/mapbox/streets-v12",
           // style: "mapbox://styles/mapbox/light-v11",
           // style: "mapbox://styles/mapbox/dark-v11",
-          style: "mapbox://styles/mapbox/outdoors-v12",
+          // style: "mapbox://styles/mapbox/outdoors-v12",
 
           center: this.center,
           zoom: this.zoom,
