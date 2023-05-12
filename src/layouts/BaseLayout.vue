@@ -36,8 +36,12 @@ const { t } = useI18n();
 
 const drawer = ref(true);
 const menuRefresh = ref(0);
-
-const projectName = computed(() => t("navigation.fallbackProjectName")); // TODO: Try to get the Name from Store or use fallback
+// FIXME: Change to the store derived field
+const projectNameMock = "Almaty Demo";
+// TODO: Try to get the Name from Store or use fallback
+const projectName = computed(
+  () => projectNameMock || t("navigation.fallbackProjectName")
+);
 
 const restoreMain = () => {
   menuRefresh.value++;
