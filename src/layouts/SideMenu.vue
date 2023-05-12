@@ -12,7 +12,7 @@ const items = [
     title: t("navigation.menuGroupCity"),
   },
   {
-    title: t("navigation.menuItemSocio"),
+    title: t("navigation.menuItemSocial"),
     value: 1,
     props: {
       nav: "nav",

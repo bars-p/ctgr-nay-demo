@@ -3,12 +3,24 @@ export default {
     text: "English language",
   },
 
+  // General
+  general: {
+    m: "m",
+    km: "km",
+    perKm: "per km",
+    size: "Size",
+
+    population: "Population",
+    employment: "Employment",
+    poi: "POI",
+  },
+
   // Navigation Items
   navigation: {
     fallbackProjectName: "Project Name",
 
     menuGroupCity: "CITY",
-    menuItemSocio: "Socio-Demographics",
+    menuItemSocial: "Social Data",
     menuItemDemand: "Travel Demand",
 
     menuGroupNetwork: "PUBLIC TRANSPORT",
@@ -18,13 +30,15 @@ export default {
 
   // Tools Items
   tools: {
-    socialTitle: "Social Data",
     socialColor: "Color",
     socialBars: "Bars",
     socialMix: "Enable Mix Mode",
     socialLayers: "Show layers:",
     socialBoundary: "Area boundaries",
     socialZones: "Analytical zones",
+    socialSelected: "Selected area:",
+    socialName: "Selection Name",
+    socialSaved: "Saved areas:",
 
     demandTitle: "Demand Data",
     routesTitle: "Routes Data",

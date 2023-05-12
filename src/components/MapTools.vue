@@ -1,7 +1,7 @@
 <template>
   <social-tools
     v-if="props.mode === 'social'"
-    :title="$t('tools.socialTitle')"
+    :title="$t('navigation.menuItemSocial')"
   />
   <tools-component v-else :title="props.mode">
     <template v-slot:actions>

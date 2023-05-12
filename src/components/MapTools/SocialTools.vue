@@ -1,9 +1,10 @@
 <template>
   <tools-component :title="props.title">
-    <template v-slot:actions>
+    <template #actions>
       <v-btn density="comfortable" icon="mdi-magnify" size="small"> </v-btn>
     </template>
-    <template v-slot:tools>
+
+    <template #tools>
       <v-select
         clearable
         hide-details
@@ -38,7 +39,10 @@
         hide-details
         class="ml-1"
       ></v-switch>
-      <v-label class="mt-1" :text="$t('tools.socialLayers')"></v-label>
+      <v-label
+        class="mt-1 text-subtitle-2"
+        :text="$t('tools.socialLayers')"
+      ></v-label>
       <v-checkbox
         hide-details
         density="compact"
@@ -50,38 +54,85 @@
         :label="$t('tools.socialZones')"
       ></v-checkbox>
     </template>
+
     <v-container class="data-block">
-      <span class="text-body-2">
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Quod
-        reprehenderit ipsa dolor, exercitationem tempora nisi eligendi quia
-        laudantium, adipisci animi rerum cupiditate doloremque odit dolore,
-        veniam veritatis voluptates aliquam! Obcaecati. Lorem ipsum dolor sit
-        amet consectetur adipisicing elit. Quod reprehenderit ipsa dolor,
-        exercitationem tempora nisi eligendi quia laudantium, adipisci animi
-        rerum cupiditate doloremque odit dolore, veniam veritatis voluptates
-        aliquam! Obcaecati. Lorem ipsum dolor sit amet consectetur adipisicing
-        elit. Quod reprehenderit ipsa dolor, exercitationem tempora nisi
-        eligendi quia laudantium, adipisci animi rerum cupiditate doloremque
-        odit dolore, veniam veritatis voluptates aliquam! Obcaecati. Lorem ipsum
-        dolor sit amet consectetur adipisicing elit. Quod reprehenderit ipsa
-        dolor, exercitationem tempora nisi eligendi quia laudantium, adipisci
-        animi rerum cupiditate doloremque odit dolore, veniam veritatis
-        voluptates aliquam! Obcaecati. Lorem ipsum dolor sit amet consectetur
-        adipisicing elit. Quod reprehenderit ipsa dolor, exercitationem tempora
-        nisi eligendi quia laudantium, adipisci animi rerum cupiditate
-        doloremque odit dolore, veniam veritatis voluptates aliquam! Obcaecati.
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Quod
-        reprehenderit ipsa dolor, exercitationem tempora nisi eligendi quia
-        laudantium, adipisci animi rerum cupiditate doloremque odit dolore,
-        veniam veritatis voluptates aliquam! Obcaecati. Lorem ipsum dolor sit
-        amet consectetur adipisicing elit. Quod reprehenderit ipsa dolor,
-        exercitationem tempora nisi eligendi quia laudantium, adipisci animi
-        rerum cupiditate doloremque odit dolore, veniam veritatis voluptates
-        aliquam! Obcaecati. Lorem ipsum dolor sit amet consectetur adipisicing
-        elit. Quod reprehenderit ipsa dolor, exercitationem tempora nisi
-        eligendi quia laudantium, adipisci animi rerum cupiditate doloremque
-        odit dolore, veniam veritatis voluptates aliquam! Obcaecati.
-      </span>
+      <div class="area-data mb-5">
+        <v-label class="text-subtitle-2 mb-2">
+          {{ $t("tools.socialSelected") }}
+        </v-label>
+        <div>
+          <v-label class="mr-3">
+            {{ $t("general.size") }}
+          </v-label>
+          <strong>36000</strong> {{ $t("general.m") }}<sup>2</sup>
+        </div>
+        <div>
+          <v-label class="mr-3">
+            {{ $t("general.population") }}
+          </v-label>
+          <strong>3407</strong> (<strong>23</strong> {{ $t("general.perKm")
+          }}<sup>2</sup>)
+        </div>
+        <div>
+          <v-label class="mr-3">
+            {{ $t("general.employment") }}
+          </v-label>
+          <strong>803</strong> (<strong>8</strong> {{ $t("general.perKm")
+          }}<sup>2</sup>)
+        </div>
+        <div class="mt-3">
+          <v-text-field
+            v-model="activeAreaName"
+            clearable
+            :label="$t('tools.socialName')"
+            variant="outlined"
+            density="compact"
+            append-icon="mdi-content-save"
+            @click:append="saveArea"
+            hide-details
+          ></v-text-field>
+        </div>
+      </div>
+
+      <v-divider></v-divider>
+      <v-label class="text-subtitle-2 mt-3">{{
+        $t("tools.socialSaved")
+      }}</v-label>
+      <v-list density="compact">
+        <v-list-item
+          v-for="(area, idx) in areas"
+          :key="area.id"
+          @click="selectSavedArea(area)"
+        >
+          <v-list-item-title class="text-body-2">
+            {{ idx + 1 }}. {{ area.name }} ({{ area.cells.length }})
+          </v-list-item-title>
+          <template #append>
+            <v-btn
+              density="comfortable"
+              size="small"
+              flat
+              icon="mdi-checkbox-blank"
+            >
+              <v-icon :color="area.color"></v-icon>
+              <v-menu activator="parent" :close-on-content-click="false">
+                <v-color-picker
+                  v-model="area.color"
+                  show-swatches
+                ></v-color-picker>
+              </v-menu>
+            </v-btn>
+            <v-btn
+              density="comfortable"
+              size="small"
+              flat
+              icon="mdi-trash-can-outline"
+              @click.stop="deleteSavedArea(area)"
+            >
+            </v-btn>
+          </template>
+        </v-list-item>
+      </v-list>
     </v-container>
   </tools-component>
 </template>
@@ -89,13 +140,57 @@
 <script setup>
 import ToolsComponent from "../ToolsComponent.vue";
 
-import { defineProps } from "vue";
+import { defineProps, ref } from "vue";
 const props = defineProps(["title"]);
+
+const activeAreaName = ref(null);
+
+const mockSavedAreas = [
+  {
+    id: 1,
+    name: "Deep forest",
+    cells: [1, 2, 3],
+    color: "#228B22",
+  },
+  {
+    id: 2,
+    name: "Urban zone",
+    cells: [32, 54, 332],
+    color: "#DC143C",
+  },
+  {
+    id: 3,
+    name: "City Center",
+    cells: [123, 242, 312, 2112],
+    color: "#4169E1",
+  },
+];
+const areas = ref(mockSavedAreas);
+
+const saveArea = () => {
+  if (!activeAreaName.value) {
+    return;
+  }
+  // TODO: Check name to be unique
+
+  console.log("Save Area", activeAreaName.value);
+};
+
+const selectSavedArea = (area) => {
+  console.log("Area selected:", area);
+};
+const deleteSavedArea = (area) => {
+  console.log("DELETE:", area);
+};
 </script>
 
 <style scoped>
 .data-block {
   overflow: auto;
   max-height: calc(100vh - 500px);
+}
+.area-data {
+  display: flex;
+  flex-direction: column;
 }
 </style>
