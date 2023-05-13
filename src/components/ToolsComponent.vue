@@ -13,12 +13,14 @@
       <v-spacer></v-spacer>
       <slot name="actions"></slot>
     </v-toolbar>
-    <v-divider></v-divider>
-    <v-container>
-      <slot name="tools"></slot>
-    </v-container>
-    <v-divider></v-divider>
-    <slot></slot>
+    <div v-if="!hidden">
+      <v-divider></v-divider>
+      <v-container>
+        <slot name="tools"></slot>
+      </v-container>
+      <v-divider></v-divider>
+      <slot></slot>
+    </div>
   </v-sheet>
 </template>
 

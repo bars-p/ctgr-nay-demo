@@ -1,7 +1,23 @@
 <template>
   <tools-component :title="props.title">
     <template #actions>
-      <v-btn density="comfortable" icon="mdi-magnify" size="small"> </v-btn>
+      <v-text-field
+        v-if="isSearching"
+        v-model="searchString"
+        density="compact"
+        variant="underlined"
+        style="width: 40px"
+        hide-details
+        clearable
+        @blur="showResults"
+      ></v-text-field>
+      <v-btn
+        density="comfortable"
+        icon="mdi-magnify"
+        size="small"
+        @click="toggleSearch"
+      >
+      </v-btn>
     </template>
 
     <template #tools>
@@ -94,45 +110,47 @@
         </div>
       </div>
 
-      <v-divider></v-divider>
-      <v-label class="text-subtitle-2 mt-3">{{
-        $t("tools.socialSaved")
-      }}</v-label>
-      <v-list density="compact">
-        <v-list-item
-          v-for="(area, idx) in areas"
-          :key="area.id"
-          @click="selectSavedArea(area)"
-        >
-          <v-list-item-title class="text-body-2">
-            {{ idx + 1 }}. {{ area.name }} ({{ area.cells.length }})
-          </v-list-item-title>
-          <template #append>
-            <v-btn
-              density="comfortable"
-              size="small"
-              flat
-              icon="mdi-checkbox-blank"
-            >
-              <v-icon :color="area.color"></v-icon>
-              <v-menu activator="parent" :close-on-content-click="false">
-                <v-color-picker
-                  v-model="area.color"
-                  show-swatches
-                ></v-color-picker>
-              </v-menu>
-            </v-btn>
-            <v-btn
-              density="comfortable"
-              size="small"
-              flat
-              icon="mdi-trash-can-outline"
-              @click.stop="deleteSavedArea(area)"
-            >
-            </v-btn>
-          </template>
-        </v-list-item>
-      </v-list>
+      <div v-if="areas.length">
+        <v-divider></v-divider>
+        <v-label class="text-subtitle-2 mt-3">{{
+          $t("tools.socialSaved")
+        }}</v-label>
+        <v-list density="compact">
+          <v-list-item
+            v-for="(area, idx) in areas"
+            :key="area.id"
+            @click="selectSavedArea(area)"
+          >
+            <v-list-item-title class="text-body-2">
+              {{ idx + 1 }}. {{ area.name }} ({{ area.cells.length }})
+            </v-list-item-title>
+            <template #append>
+              <v-btn
+                density="comfortable"
+                size="small"
+                flat
+                icon="mdi-checkbox-blank"
+              >
+                <v-icon :color="area.color"></v-icon>
+                <v-menu activator="parent" :close-on-content-click="false">
+                  <v-color-picker
+                    v-model="area.color"
+                    show-swatches
+                  ></v-color-picker>
+                </v-menu>
+              </v-btn>
+              <v-btn
+                density="comfortable"
+                size="small"
+                flat
+                icon="mdi-trash-can-outline"
+                @click.stop="deleteSavedArea(area)"
+              >
+              </v-btn>
+            </template>
+          </v-list-item>
+        </v-list>
+      </div>
     </v-container>
   </tools-component>
 </template>
@@ -140,9 +158,21 @@
 <script setup>
 import ToolsComponent from "../ToolsComponent.vue";
 
-import { defineProps, ref } from "vue";
+import { defineProps, ref, computed } from "vue";
 const props = defineProps(["title"]);
 
+//Search logic
+const isSearching = ref(false);
+const searchString = ref("");
+const toggleSearch = () => (isSearching.value = !isSearching.value);
+const areaFiltered = computed(() => {
+  return areas.value.filter((area) => area.name == searchString.value);
+});
+const showResults = () => {
+  console.log("Filtered list:", areaFiltered.value);
+};
+
+// Areas logic
 const activeAreaName = ref(null);
 
 const mockSavedAreas = [
