@@ -20,7 +20,7 @@
     <v-footer app elevation="1"
       ><div class="text-body-2">&copy; 2023</div></v-footer
     >
-    <v-navigation-drawer v-model="drawer" border width="213">
+    <v-navigation-drawer app v-model="drawer" border width="213">
       <side-menu :key="menuRefresh" class="mx-2" />
     </v-navigation-drawer>
   </div>
