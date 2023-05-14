@@ -32,12 +32,12 @@ export default {
   tools: {
     socialColor: "Color",
     socialBars: "Bars",
-    socialMix: "Enable Mix Mode",
+    socialMix: `Enable "Mix-mode"`,
     socialLayers: "Show layers:",
     socialBoundary: "Area boundaries",
     socialZones: "Analytical zones",
     socialSelected: "Selected area:",
-    socialName: "Selection Name",
+    socialName: "Selection name",
     socialSaved: "Saved areas:",
 
     demandTitle: "Demand Data",

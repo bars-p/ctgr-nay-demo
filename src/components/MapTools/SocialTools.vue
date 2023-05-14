@@ -6,11 +6,22 @@
         v-model="searchString"
         density="compact"
         variant="underlined"
-        style="width: 40px"
+        class="search-field"
         hide-details
-        clearable
         @blur="showResults"
-      ></v-text-field>
+      >
+        <template v-slot:append-inner>
+          <v-btn
+            v-show="searchString.length"
+            density="compact"
+            icon="mdi-close"
+            size="small"
+            class="mt-2"
+            @click="clearSearch"
+          >
+          </v-btn>
+        </template>
+      </v-text-field>
       <v-btn
         density="comfortable"
         icon="mdi-magnify"
@@ -80,21 +91,22 @@
           <v-label class="mr-3">
             {{ $t("general.size") }}
           </v-label>
-          <strong>36000</strong> {{ $t("general.m") }}<sup>2</sup>
+          <strong>{{ (36000).toLocaleString() }}</strong> {{ $t("general.m")
+          }}<sup>2</sup>
         </div>
         <div>
           <v-label class="mr-3">
             {{ $t("general.population") }}
           </v-label>
-          <strong>3407</strong> (<strong>23</strong> {{ $t("general.perKm")
-          }}<sup>2</sup>)
+          <strong>{{ (3407).toLocaleString() }}</strong> (<strong>23</strong>
+          {{ $t("general.perKm") }}<sup>2</sup>)
         </div>
         <div>
           <v-label class="mr-3">
             {{ $t("general.employment") }}
           </v-label>
-          <strong>803</strong> (<strong>8</strong> {{ $t("general.perKm")
-          }}<sup>2</sup>)
+          <strong>{{ (803).toLocaleString() }}</strong> (<strong>8</strong>
+          {{ $t("general.perKm") }}<sup>2</sup>)
         </div>
         <div class="mt-3">
           <v-text-field
@@ -117,7 +129,7 @@
         }}</v-label>
         <v-list density="compact">
           <v-list-item
-            v-for="(area, idx) in areas"
+            v-for="(area, idx) in areasFiltered"
             :key="area.id"
             @click="selectSavedArea(area)"
           >
@@ -164,12 +176,22 @@ const props = defineProps(["title"]);
 //Search logic
 const isSearching = ref(false);
 const searchString = ref("");
-const toggleSearch = () => (isSearching.value = !isSearching.value);
-const areaFiltered = computed(() => {
-  return areas.value.filter((area) => area.name == searchString.value);
+
+const clearSearch = () => (searchString.value = "");
+const toggleSearch = () => {
+  isSearching.value = !isSearching.value;
+  if (searchString.value) {
+    searchString.value = "";
+  }
+};
+const areasFiltered = computed(() => {
+  return areas.value.filter((area) =>
+    area.name.toLowerCase().includes(searchString.value)
+  );
 });
+// FIXME: Remove later with onblur event
 const showResults = () => {
-  console.log("Filtered list:", areaFiltered.value);
+  console.log("Filtered list:", areasFiltered.value);
 };
 
 // Areas logic
@@ -222,5 +244,9 @@ const deleteSavedArea = (area) => {
 .area-data {
   display: flex;
   flex-direction: column;
+}
+.search-field {
+  width: 50px;
+  padding-bottom: 15px;
 }
 </style>
