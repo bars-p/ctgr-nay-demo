@@ -8,7 +8,6 @@
         variant="underlined"
         class="search-field"
         hide-details
-        @blur="showResults"
       >
         <template v-slot:append-inner>
           <v-btn
@@ -42,6 +41,7 @@
         :items="[
           'Population',
           'Employment',
+          'Visitors',
           'Population +5 years',
           'Employment +5 years',
         ]"
@@ -56,6 +56,7 @@
         :items="[
           'Population',
           'Employment',
+          'Visitors',
           'Population +5 years',
           'Employment +5 years',
         ]"
@@ -74,11 +75,13 @@
         hide-details
         density="compact"
         :label="$t('tools.socialBoundary')"
+        v-model="borderShownState"
       ></v-checkbox>
       <v-checkbox
         hide-details
         density="compact"
         :label="$t('tools.socialZones')"
+        v-model="zonesShownState"
       ></v-checkbox>
     </template>
 
@@ -170,10 +173,38 @@
 <script setup>
 import ToolsComponent from "../ToolsComponent.vue";
 
-import { defineProps, ref, computed } from "vue";
+import { onMounted, defineProps, ref, computed } from "vue";
+
+import { useMapStore } from "@/store/map";
+
+const mapStore = useMapStore();
+
 const props = defineProps(["title"]);
 
-//Search logic
+// General tasks
+onMounted(() => {
+  console.log("Social Tools Mounted");
+  // TODO: Init component controls to default state (in sync with map layers state)
+});
+
+const borderShownState = computed({
+  get() {
+    return mapStore.layers[0].shown;
+  },
+  set(newValue) {
+    mapStore.layers[0].shown = newValue;
+  },
+});
+const zonesShownState = computed({
+  get() {
+    return mapStore.layers[3].shown;
+  },
+  set(newValue) {
+    mapStore.layers[3].shown = newValue;
+  },
+});
+
+// Search logic
 const isSearching = ref(false);
 const searchString = ref("");
 
@@ -189,10 +220,6 @@ const areasFiltered = computed(() => {
     area.name.toLowerCase().includes(searchString.value)
   );
 });
-// FIXME: Remove later with onblur event
-const showResults = () => {
-  console.log("Filtered list:", areasFiltered.value);
-};
 
 // Areas logic
 const activeAreaName = ref(null);
@@ -219,7 +246,14 @@ const mockSavedAreas = [
 ];
 const areas = ref(mockSavedAreas);
 
+// FIXME:
+
 const saveArea = () => {
+  // FIXME: Store test -- REMOVE
+
+  mapStore.layers[0].shown = !mapStore.layers[0].shown;
+
+  // FIXME:
   if (!activeAreaName.value) {
     return;
   }
