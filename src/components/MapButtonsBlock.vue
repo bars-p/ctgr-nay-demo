@@ -1,7 +1,7 @@
 <template>
   <div>
     <map-button
-      icon-symbol="mdi-compass-outline"
+      icon-symbol="mdi-format-rotate-90"
       @click="$emit('compass')"
       class="button-item"
     ></map-button>

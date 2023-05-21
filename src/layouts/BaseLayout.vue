@@ -11,7 +11,7 @@
           {{ projectName }}
         </v-btn>
       </router-link>
-      <v-btn icon>
+      <v-btn icon @click="toggleUserSettings">
         <v-avatar>
           <img src="@/assets/male.svg" alt="avatar" />
         </v-avatar>
@@ -34,6 +34,9 @@ import { ref, computed } from "vue";
 import { useI18n } from "vue-i18n";
 const { t } = useI18n();
 
+import { useMapStore } from "@/store/map";
+const mapStore = useMapStore();
+
 const drawer = ref(true);
 const menuRefresh = ref(0);
 // FIXME: Change to the store derived field
@@ -42,6 +45,10 @@ const projectNameMock = "Almaty Demo";
 const projectName = computed(
   () => projectNameMock || t("navigation.fallbackProjectName")
 );
+
+const toggleUserSettings = () => {
+  mapStore.userSettingsShown = !mapStore.userSettingsShown;
+};
 
 const restoreMain = () => {
   menuRefresh.value++;
