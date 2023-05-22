@@ -81,6 +81,7 @@ export const useMapStore = defineStore("mapStore", () => {
       (item) => item.properties.id != feature.properties.id
     );
   };
+
   const clearSelectedCells = () => {
     selectedCellsFeatures.value = [];
   };
@@ -114,6 +115,40 @@ export const useMapStore = defineStore("mapStore", () => {
         );
   });
 
+  const savedCellsData = ref([]);
+  const savedAreas = ref([]);
+  const savedAreasNames = new Set(); // FIXME: Map() should be better name+color
+  const saveSelectedFeatures = (name, color) => {
+    console.log("Save Params", name, color);
+    console.log("Save Features", selectedCellsFeatures.value);
+    let dataBlock = [...savedCellsData.value];
+    if (savedAreasNames.has(name)) {
+      dataBlock = dataBlock.filter((item) => item.properties.name != name);
+    } else {
+      savedAreasNames.add(name);
+      savedAreas.value.push({ name, color });
+    }
+    console.log("Saved Areas", savedAreas);
+
+    selectedCellsFeatures.value.forEach((item) =>
+      dataBlock.push({
+        ...item,
+        properties: {
+          ...item.properties,
+          name: name,
+          color: color,
+        },
+      })
+    );
+    console.log("Data to Save:", dataBlock);
+    savedCellsData.value = [...dataBlock];
+
+    clearSelectedCells();
+  };
+  const removeFromSaved = (id) => {
+    console.log(id);
+  };
+
   return {
     userSettingsShown,
     mapStyles,
@@ -124,6 +159,10 @@ export const useMapStore = defineStore("mapStore", () => {
     newLayerFilter,
     updateLayers,
     selectedCellsFeatures,
+    savedCellsData,
+    savedAreas,
+    saveSelectedFeatures,
+    removeFromSaved,
     selectedSize,
     selectedPopulation,
     selectedPopulationDensity,

@@ -91,12 +91,28 @@ watch(
     console.log("Watch for Selection");
     if (mapStore.selectedCellsFeatures.length == 0) {
       selectedCellsIds.clear();
+      console.log("SET FILTER 2");
+
       map.setFilter(mapStore.layers[mapStore.layersIdxs.cellsSelected].name, [
         "in",
         "id",
         ...selectedCellsIds,
       ]);
     }
+  }
+);
+watch(
+  () => mapStore.savedCellsData,
+  () => {
+    // const data = {
+    //   type: "FeatureCollection",
+    //   features: [...mapStore.savedCellsData],
+    // };
+    // console.log("Data to place on Saved Layer:", data);
+
+    selectedSource.data.features = [...mapStore.savedCellsData];
+    console.log("Saved data to Display:", selectedSource);
+    map.getSource("saved-areas-source").setData(selectedSource.data);
   }
 );
 
@@ -175,6 +191,42 @@ const cellPopup = new mapboxgl.Popup({
   closeOnClick: false,
 });
 
+const selectedSource = {
+  type: "geojson",
+  data: {
+    type: "FeatureCollection",
+    features: [
+      {
+        // FIXME: Test only, delete later
+        type: "Feature",
+        properties: {
+          id: 435340,
+          cell_id: 997,
+          district_id: 6,
+          pop: 0.000155943,
+          emp: 0.0,
+          color: "#ffff00",
+          name: "Mock Name",
+        },
+        geometry: {
+          type: "MultiPolygon",
+          coordinates: [
+            [
+              [
+                [77.167654898056, 43.349168945956301],
+                [77.167654898056, 43.350064494066501],
+                [77.168881952552098, 43.350064494066501],
+                [77.168881952552098, 43.349168945956301],
+                [77.167654898056, 43.349168945956301],
+              ],
+            ],
+          ],
+        },
+      },
+    ],
+  },
+};
+
 // const sizeSelected = computed(() => {
 //   return selectedCellsFeatures.value.length * 10;
 // });
@@ -211,40 +263,45 @@ const buildLayers = () => {
       type: "geojson",
       data: sourceBaseCells,
     });
-    map.addSource("saved-areas-source", {
-      type: "geojson",
-      data: {
-        type: "FeatureCollection",
-        features: [
-          {
-            // FIXME: Test only, delete later
-            type: "Feature",
-            properties: {
-              id: 435340,
-              cell_id: 997,
-              district_id: 6,
-              pop: 0.000155943,
-              emp: 0.0,
-              color: "#ff1100",
-            },
-            geometry: {
-              type: "MultiPolygon",
-              coordinates: [
-                [
-                  [
-                    [77.167654898056, 43.349168945956301],
-                    [77.167654898056, 43.350064494066501],
-                    [77.168881952552098, 43.350064494066501],
-                    [77.168881952552098, 43.349168945956301],
-                    [77.167654898056, 43.349168945956301],
-                  ],
-                ],
-              ],
-            },
-          },
-        ],
-      },
-    });
+    map.addSource(
+      "saved-areas-source",
+      selectedSource
+      // {
+      //   type: "geojson",
+      //   data: {
+      //     type: "FeatureCollection",
+      //     features: [
+      //       {
+      //         // FIXME: Test only, delete later
+      //         type: "Feature",
+      //         properties: {
+      //           id: 435340,
+      //           cell_id: 997,
+      //           district_id: 6,
+      //           pop: 0.000155943,
+      //           emp: 0.0,
+      //           color: "#ffff00",
+      //           name: "Mock Name",
+      //         },
+      //         geometry: {
+      //           type: "MultiPolygon",
+      //           coordinates: [
+      //             [
+      //               [
+      //                 [77.167654898056, 43.349168945956301],
+      //                 [77.167654898056, 43.350064494066501],
+      //                 [77.168881952552098, 43.350064494066501],
+      //                 [77.168881952552098, 43.349168945956301],
+      //                 [77.167654898056, 43.349168945956301],
+      //               ],
+      //             ],
+      //           ],
+      //         },
+      //       },
+      //     ],
+      //   },
+      // }
+    );
 
     map.addLayer(
       {
@@ -538,10 +595,20 @@ const processCellsSelected = (cellsIds, cellsFeatures) => {
       //   (item) => item.properties.id != id
       // );
     } else {
+      const objectToStore = {
+        id: cellsFeatures[idx].id,
+        layer: { ...cellsFeatures[idx].layer },
+        properties: { ...cellsFeatures[idx].properties },
+        source: cellsFeatures[idx].source,
+        type: cellsFeatures[idx].type,
+        geometry: { ...cellsFeatures[idx].geometry },
+      };
+      console.log("Object to Store:", objectToStore);
       selectedCellsIds.add(id);
-      mapStore.addCellToSelected(cellsFeatures[idx]);
+      mapStore.addCellToSelected(objectToStore);
     }
   });
+  console.log("SET FILTER 1");
   map.setFilter(mapStore.layers[mapStore.layersIdxs.cellsSelected].name, [
     "in",
     "id",

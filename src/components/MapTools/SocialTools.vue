@@ -142,14 +142,18 @@
             :label="$t('tools.socialName')"
             variant="outlined"
             density="compact"
-            append-icon="mdi-content-save"
-            @click:append="saveArea"
             hide-details
-          ></v-text-field>
+          >
+            <template v-slot:append-inner>
+              <v-icon v-if="readyToSaveArea" @click="saveArea"
+                >mdi-content-save</v-icon
+              >
+            </template>
+          </v-text-field>
         </div>
       </div>
 
-      <div v-if="areas.length">
+      <div v-if="mapStore.savedAreas.length">
         <v-divider></v-divider>
         <v-label class="text-subtitle-2 mt-3">{{
           $t("tools.socialSaved")
@@ -161,7 +165,7 @@
             @click="selectSavedArea(area)"
           >
             <v-list-item-title class="text-body-2">
-              {{ idx + 1 }}. {{ area.name }} ({{ area.cells.length }})
+              {{ idx + 1 }}. {{ area.name }}
             </v-list-item-title>
             <template #append>
               <v-btn
@@ -502,48 +506,56 @@ const toggleSearch = () => {
   }
 };
 const areasFiltered = computed(() => {
-  return areas.value.filter((area) =>
+  return mapStore.savedAreas.filter((area) =>
     area.name.toLowerCase().includes(searchString.value)
   );
+  // return areas.value.filter((area) =>
+  //   area.name.toLowerCase().includes(searchString.value)
+  // );
 });
 
 // Areas logic
-const activeAreaName = ref(null);
+const activeAreaName = ref("");
 
-const mockSavedAreas = [
-  {
-    id: 1,
-    name: "Deep forest",
-    cells: [1, 2, 3],
-    color: "#228B22",
-  },
-  {
-    id: 2,
-    name: "Urban zone",
-    cells: [32, 54, 332],
-    color: "#DC143C",
-  },
-  {
-    id: 3,
-    name: "City Center",
-    cells: [123, 242, 312, 2112],
-    color: "#4169E1",
-  },
-];
-// FIXME:
-const areas = ref(mockSavedAreas);
+// const mockSavedAreas = [
+//   {
+//     id: 1,
+//     name: "Deep forest",
+//     cells: [1, 2, 3],
+//     color: "#228B22",
+//   },
+//   {
+//     id: 2,
+//     name: "Urban zone",
+//     cells: [32, 54, 332],
+//     color: "#DC143C",
+//   },
+//   {
+//     id: 3,
+//     name: "City Center",
+//     cells: [123, 242, 312, 2112],
+//     color: "#4169E1",
+//   },
+// ];
+// // FIXME:
+// const areas = ref(mockSavedAreas);
 
 const clearSelection = () => {
   mapStore.clearSelectedCells();
 };
 
+const readyToSaveArea = computed(() => {
+  return activeAreaName.value && mapStore.selectedCellsFeatures.length;
+});
 const saveArea = () => {
-  if (!activeAreaName.value) {
+  if (!readyToSaveArea.value) {
+    console.log("Cannot save", mapStore.selectedCellsFeatures.length);
     return;
   }
-  // TODO: Check name to be unique
-
-  console.log("Save Area", activeAreaName.value);
+  const name = activeAreaName.value.trim();
+  const color = `#${Math.floor(Math.random() * 16777215).toString(16)}`;
+  mapStore.saveSelectedFeatures(name, color);
+  activeAreaName.value = "";
 };
 
 const selectSavedArea = (area) => {
