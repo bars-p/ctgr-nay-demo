@@ -77,9 +77,15 @@ export const useMapStore = defineStore("mapStore", () => {
     selectedCellsFeatures.value.push(feature);
   };
   const removeCellFromSelected = (feature) => {
-    selectedCellsFeatures.value = selectedCellsFeatures.value.filter(
-      (item) => item.properties.id != feature.properties.id
+    const idx = selectedCellsFeatures.value.findIndex(
+      (item) => item.properties.id == feature.properties.id
     );
+    console.warn("Index:", idx);
+    selectedCellsFeatures.value.splice(idx, 1);
+
+    // selectedCellsFeatures.value = selectedCellsFeatures.value.filter(
+    //   (item) => item.properties.id != feature.properties.id
+    // );
   };
 
   const clearSelectedCells = () => {
@@ -142,11 +148,42 @@ export const useMapStore = defineStore("mapStore", () => {
     );
     console.log("Data to Save:", dataBlock);
     savedCellsData.value = [...dataBlock];
-
+    console.log("Save Result:", savedCellsData.value);
     clearSelectedCells();
   };
-  const removeFromSaved = (id) => {
-    console.log(id);
+  const removeFromSaved = (name) => {
+    if (savedAreasNames.has(name)) {
+      savedAreasNames.delete(name);
+      savedAreas.value = savedAreas.value.filter((item) => item.name != name);
+      savedCellsData.value = savedCellsData.value.filter(
+        (item) => item.properties.name != name
+      );
+    } else {
+      console.warn("Area name not found:", name);
+    }
+  };
+  const updateSavedAreaColor = (name, color) => {
+    savedCellsData.value = savedCellsData.value.map((item) => {
+      if (item.properties.name != name) {
+        return item;
+      } else {
+        return {
+          ...item,
+          properties: {
+            ...item.properties,
+            color: color,
+          },
+        };
+      }
+    });
+  };
+  const selectSavedArea = (name) => {
+    const areaFeatures = savedCellsData.value.filter(
+      (item) => item.properties.name == name
+    );
+    console.log("Saved Data", savedCellsData.value);
+    console.log("Features found", [...areaFeatures]);
+    selectedCellsFeatures.value = [...areaFeatures];
   };
 
   return {
@@ -163,6 +200,8 @@ export const useMapStore = defineStore("mapStore", () => {
     savedAreas,
     saveSelectedFeatures,
     removeFromSaved,
+    updateSavedAreaColor,
+    selectSavedArea,
     selectedSize,
     selectedPopulation,
     selectedPopulationDensity,

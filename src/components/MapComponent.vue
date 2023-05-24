@@ -1,5 +1,6 @@
 <template>
   <div id="map"></div>
+  <div id="rect" class="boxdraw"></div>
   <map-buttons-block
     class="buttons-block"
     @compass="processCompassClicked"
@@ -48,6 +49,12 @@ watch(
         bearing: 0,
       });
     }
+    // if (to == "social") {
+    //   map.boxZoom.disable();
+    // }
+    // if (from == "social") {
+    //   map.boxZoom.enable();
+    // }
   }
 );
 watch(
@@ -90,26 +97,26 @@ watch(
   () => {
     console.log("Watch for Selection");
     if (mapStore.selectedCellsFeatures.length == 0) {
+      // Clear Selection Called
       selectedCellsIds.clear();
       console.log("SET FILTER 2");
-
-      map.setFilter(mapStore.layers[mapStore.layersIdxs.cellsSelected].name, [
-        "in",
-        "id",
-        ...selectedCellsIds,
-      ]);
+    } else {
+      // Replace Selected Called
+      selectedCellsIds.clear();
+      mapStore.selectedCellsFeatures.forEach((item) =>
+        selectedCellsIds.add(item.properties.id)
+      );
     }
+    map.setFilter(mapStore.layers[mapStore.layersIdxs.cellsSelected].name, [
+      "in",
+      "id",
+      ...selectedCellsIds,
+    ]);
   }
 );
 watch(
   () => mapStore.savedCellsData,
   () => {
-    // const data = {
-    //   type: "FeatureCollection",
-    //   features: [...mapStore.savedCellsData],
-    // };
-    // console.log("Data to place on Saved Layer:", data);
-
     selectedSource.data.features = [...mapStore.savedCellsData];
     console.log("Saved data to Display:", selectedSource);
     map.getSource("saved-areas-source").setData(selectedSource.data);
@@ -183,7 +190,11 @@ const basicLayersIdxs = [
   layersIdxs.adminFill,
   layersIdxs.zonesBorder,
 ];
-const socialLayersIdxs = [layersIdxs.adminBorder, layersIdxs.zonesBorder];
+const socialLayersIdxs = [
+  layersIdxs.adminBorder,
+  layersIdxs.zonesBorder,
+  layersIdxs.cellsSaved,
+];
 const stopsLayersIdxs = [layersIdxs.adminBorder, layersIdxs.cellsFill];
 
 const cellPopup = new mapboxgl.Popup({
@@ -195,41 +206,9 @@ const selectedSource = {
   type: "geojson",
   data: {
     type: "FeatureCollection",
-    features: [
-      {
-        // FIXME: Test only, delete later
-        type: "Feature",
-        properties: {
-          id: 435340,
-          cell_id: 997,
-          district_id: 6,
-          pop: 0.000155943,
-          emp: 0.0,
-          color: "#ffff00",
-          name: "Mock Name",
-        },
-        geometry: {
-          type: "MultiPolygon",
-          coordinates: [
-            [
-              [
-                [77.167654898056, 43.349168945956301],
-                [77.167654898056, 43.350064494066501],
-                [77.168881952552098, 43.350064494066501],
-                [77.168881952552098, 43.349168945956301],
-                [77.167654898056, 43.349168945956301],
-              ],
-            ],
-          ],
-        },
-      },
-    ],
+    features: [],
   },
 };
-
-// const sizeSelected = computed(() => {
-//   return selectedCellsFeatures.value.length * 10;
-// });
 
 const createMap = async () => {
   console.log("In createMap");
@@ -244,12 +223,14 @@ const createMap = async () => {
   } catch (err) {
     console.error("Map init error:", err);
   }
+  map.boxZoom.disable();
 };
 
 const buildLayers = () => {
   map.on("load", () => {
-    const styleJson = map.getStyle();
-    console.log("Map style", styleJson);
+    // const styleJson = map.getStyle();
+    // console.log("Map style", styleJson);
+    const canvas = map.getCanvasContainer();
 
     map.addSource("admin-areas-source", {
       type: "geojson",
@@ -263,45 +244,7 @@ const buildLayers = () => {
       type: "geojson",
       data: sourceBaseCells,
     });
-    map.addSource(
-      "saved-areas-source",
-      selectedSource
-      // {
-      //   type: "geojson",
-      //   data: {
-      //     type: "FeatureCollection",
-      //     features: [
-      //       {
-      //         // FIXME: Test only, delete later
-      //         type: "Feature",
-      //         properties: {
-      //           id: 435340,
-      //           cell_id: 997,
-      //           district_id: 6,
-      //           pop: 0.000155943,
-      //           emp: 0.0,
-      //           color: "#ffff00",
-      //           name: "Mock Name",
-      //         },
-      //         geometry: {
-      //           type: "MultiPolygon",
-      //           coordinates: [
-      //             [
-      //               [
-      //                 [77.167654898056, 43.349168945956301],
-      //                 [77.167654898056, 43.350064494066501],
-      //                 [77.168881952552098, 43.350064494066501],
-      //                 [77.168881952552098, 43.349168945956301],
-      //                 [77.167654898056, 43.349168945956301],
-      //               ],
-      //             ],
-      //           ],
-      //         },
-      //       },
-      //     ],
-      //   },
-      // }
-    );
+    map.addSource("saved-areas-source", selectedSource);
 
     map.addLayer(
       {
@@ -391,7 +334,7 @@ const buildLayers = () => {
         paint: {
           "line-color": ["get", "color"],
           "line-opacity": 0.7,
-          "line-width": 2,
+          "line-width": 3,
         },
       },
       "road-label"
@@ -482,9 +425,145 @@ const buildLayers = () => {
     );
 
     map.on("style.load", () => {
-      console.warn("STYLE CHANGE!");
+      console.warn("MAP STYLE CHANGED!");
       // TODO: Restore Layers
     });
+
+    // TODO: Bulk-select
+    // TODO: Probably change logic by mode
+    // TODO:
+    // FIXME:
+    // FIXME:
+    // FIXME:
+
+    // Variable to hold the starting xy coordinates
+    // when `mousedown` occured.
+    let start;
+
+    // Variable to hold the current xy coordinates
+    // when `mousemove` or `mouseup` occurs.
+    let current;
+
+    // Variable for the draw box element.
+    const box = document.getElementById("rect");
+
+    // Set `true` to dispatch the event before other functions
+    // call it. This is necessary for disabling the default map
+    // dragging behaviour.
+    canvas.addEventListener("mousedown", mouseDown, true);
+
+    // Return the xy coordinates of the mouse position
+    function mousePos(e) {
+      const rect = canvas.getBoundingClientRect();
+      return new mapboxgl.Point(
+        e.clientX - rect.left - canvas.clientLeft,
+        e.clientY - rect.top - canvas.clientTop
+      );
+    }
+
+    function mouseDown(e) {
+      // Continue the rest of the function if the shiftkey is pressed.
+      if (!(e.shiftKey && e.button === 0)) return;
+
+      // Disable default drag zooming when the shift key is held down.
+      map.dragPan.disable();
+
+      // Call functions for the following events
+      document.addEventListener("mousemove", onMouseMove);
+      document.addEventListener("mouseup", onMouseUp);
+      document.addEventListener("keydown", onKeyDown);
+
+      // Capture the first xy coordinates
+      start = mousePos(e);
+    }
+
+    function onMouseMove(e) {
+      // Capture the ongoing xy coordinates
+      current = mousePos(e);
+
+      // Append the box element if it doesnt exist
+      // if (!box) {
+      //   // box = document.getElementById("rect");
+      //   box = document.createElement("div");
+      //   box.classList.add("boxdraw");
+
+      //   // canvas.appendChild(box);
+      //   selectionRect.appendChild(box);
+      //   console.log("RECT", selectionRect, selectionRect.style.position);
+      // }
+
+      const minX = Math.min(start.x, current.x),
+        maxX = Math.max(start.x, current.x),
+        minY = Math.min(start.y, current.y),
+        maxY = Math.max(start.y, current.y);
+
+      // Adjust width and xy position of the box element ongoing
+      const pos = `translate(${minX - 213}px, ${minY + 64}px)`;
+      box.style.transform = pos;
+      box.style.width = maxX - minX + "px";
+      box.style.height = maxY - minY + "px";
+      // console.log("BOX:", box);
+    }
+
+    function onMouseUp(e) {
+      // Capture xy coordinates
+      finish([start, mousePos(e)]);
+    }
+
+    function onKeyDown(e) {
+      // If the ESC key is pressed
+      if (e.keyCode === 27) finish();
+    }
+
+    function finish(bbox) {
+      // Remove these events now that finish has been called.
+      document.removeEventListener("mousemove", onMouseMove);
+      document.removeEventListener("keydown", onKeyDown);
+      document.removeEventListener("mouseup", onMouseUp);
+
+      // box.style.top = 0;
+      // box.style.left = 0;
+      box.style.transform = "translate(0, 0)";
+      box.style.width = 0;
+      box.style.height = 0;
+      // if (box) {
+      // box.parentNode.removeChild(box);
+      // box = null;
+      // }
+
+      // If bbox exists. use this value as the argument for `queryRenderedFeatures`
+      if (bbox) {
+        const features = map.queryRenderedFeatures(bbox, {
+          layers: ["cells-fill"],
+        });
+
+        if (features.length >= 1000) {
+          return window.alert("Select a smaller number of features");
+        }
+
+        // Run through the selected features and set a filter
+        // to match features with unique FIPS codes to activate
+        // the `counties-highlighted` layer.
+        // const fips = features.map((feature) => feature.properties.FIPS);
+        // map.setFilter("counties-highlighted", ["in", "FIPS", ...fips]);
+
+        // FIXME: Unique test for features selected
+        console.warn("Selected", features.length);
+        const deduplicated = new Map();
+        features.forEach((item) => deduplicated.set(item.properties.id, item));
+        console.warn("Deduplicated", [...deduplicated.values()].length);
+        if (features.length > 0) {
+          processCellsSelected([...deduplicated.values()]);
+        }
+      }
+
+      map.dragPan.enable();
+    }
+
+    // FIXME:
+    // FIXME:
+    // TODO:
+    // TODO:
 
     // TODO: On-Hover definition
     map.on("mousemove", "cells-fill", (e) => {
@@ -503,12 +582,12 @@ const buildLayers = () => {
       cellPopup.remove();
     });
     map.on("click", "cells-fill", (item) => {
-      const clickedId = item.features[0].properties.id;
+      // const clickedId = item.features[0].properties.id;
       const feature = Object.assign(item.features[0]);
-      console.log("Click happened on:", clickedId, feature);
+      console.log("Click happened on:", feature);
       // selectedCellsFeatures.value.add(feature);
       // console.log("Feature stored:", selectedCellsFeatures.value);
-      processCellsSelected([clickedId], [feature]);
+      processCellsSelected([feature]);
     });
 
     setLocalLayers();
@@ -586,39 +665,57 @@ const updateLayerPaint = (data) => {
 const updateLayerFilter = (data) => {
   map.setFilter(mapStore.layers[data.layerIdx].name, data.filterProps);
 };
-const processCellsSelected = (cellsIds, cellsFeatures) => {
-  cellsIds.forEach((id, idx) => {
+const processCellsSelected = (cellsFeatures) => {
+  // console.log("Features:", cellsFeatures);
+  cellsFeatures.forEach((feature) => {
+    const id = feature.properties.id;
     if (selectedCellsIds.has(id)) {
+      // console.log("REMOVE", id);
       selectedCellsIds.delete(id);
-      mapStore.removeCellFromSelected(cellsFeatures[idx]);
-      // mapStore.selectedCellsFeatures = mapStore.selectedCellsFeatures.filter(
-      //   (item) => item.properties.id != id
-      // );
+      mapStore.removeCellFromSelected(feature);
     } else {
+      // console.log("ADD", id);
+
       const objectToStore = {
-        id: cellsFeatures[idx].id,
-        layer: { ...cellsFeatures[idx].layer },
-        properties: { ...cellsFeatures[idx].properties },
-        source: cellsFeatures[idx].source,
-        type: cellsFeatures[idx].type,
-        geometry: { ...cellsFeatures[idx].geometry },
+        id: feature.id,
+        layer: { ...feature.layer },
+        properties: { ...feature.properties },
+        source: feature.source,
+        type: feature.type,
+        geometry: { ...feature.geometry },
       };
-      console.log("Object to Store:", objectToStore);
+      // console.log("Object to Store:", objectToStore);
       selectedCellsIds.add(id);
       mapStore.addCellToSelected(objectToStore);
     }
   });
+  // cellsIds.forEach((id, idx) => {
+  //   if (selectedCellsIds.has(id)) {
+  //     selectedCellsIds.delete(id);
+  //     mapStore.removeCellFromSelected(cellsFeatures[idx]);
+  //   } else {
+  //     const objectToStore = {
+  //       id: cellsFeatures[idx].id,
+  //       layer: { ...cellsFeatures[idx].layer },
+  //       properties: { ...cellsFeatures[idx].properties },
+  //       source: cellsFeatures[idx].source,
+  //       type: cellsFeatures[idx].type,
+  //       geometry: { ...cellsFeatures[idx].geometry },
+  //     };
+  //     console.log("Object to Store:", objectToStore);
+  //     selectedCellsIds.add(id);
+  //     mapStore.addCellToSelected(objectToStore);
+  //   }
+  // });
   console.log("SET FILTER 1");
   map.setFilter(mapStore.layers[mapStore.layersIdxs.cellsSelected].name, [
     "in",
     "id",
     ...selectedCellsIds,
   ]);
-  // console.log("Selected Cells:", mapStore.selectedCellsFeatures);
-  // console.log("Selected Size:", mapStore.selectedCellsFeatures.length);
 };
 
-// TODO: Change name to appropriate
+// TODO: Change name to the appropriate one
 const processCompassClicked = () => {
   console.log("Compass");
   map.setPitch(0).setBearing(0);
@@ -640,5 +737,14 @@ const processRotateClicked = () => {
   position: absolute;
   right: 20px;
   bottom: 70px;
+}
+.boxdraw {
+  background: rgba(56, 135, 190, 0.1);
+  border: 2px solid #3887be;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
 }
 </style>

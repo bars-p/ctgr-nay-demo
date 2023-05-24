@@ -173,12 +173,14 @@
                 size="small"
                 flat
                 icon="mdi-checkbox-blank"
+                @click="areaColorSelect(area.name)"
               >
                 <v-icon :color="area.color"></v-icon>
                 <v-menu activator="parent" :close-on-content-click="false">
                   <v-color-picker
                     v-model="area.color"
                     show-swatches
+                    @update:model-value="areaColorUpdate"
                   ></v-color-picker>
                 </v-menu>
               </v-btn>
@@ -542,6 +544,7 @@ const activeAreaName = ref("");
 
 const clearSelection = () => {
   mapStore.clearSelectedCells();
+  activeAreaName.value = "";
 };
 
 const readyToSaveArea = computed(() => {
@@ -549,20 +552,37 @@ const readyToSaveArea = computed(() => {
 });
 const saveArea = () => {
   if (!readyToSaveArea.value) {
-    console.log("Cannot save", mapStore.selectedCellsFeatures.length);
+    console.warn("Cannot save");
     return;
   }
   const name = activeAreaName.value.trim();
-  const color = `#${Math.floor(Math.random() * 16777215).toString(16)}`;
+  const areaExist = mapStore.savedAreas.find((item) => item.name == name);
+
+  const color = areaExist
+    ? areaExist.color
+    : `#${Math.floor(Math.random() * 16777215)
+        .toString(16)
+        .padStart(6, 0)}`;
   mapStore.saveSelectedFeatures(name, color);
   activeAreaName.value = "";
 };
 
+let areaColorSelectName = "";
+const areaColorSelect = (areaName) => {
+  areaColorSelectName = areaName;
+};
+const areaColorUpdate = (color) => {
+  mapStore.updateSavedAreaColor(areaColorSelectName, color);
+};
 const selectSavedArea = (area) => {
   console.log("Area selected:", area);
+  activeAreaName.value = area.name;
+  // TODO: Set selected cells
+  mapStore.selectSavedArea(area.name);
+  //TODO: Fix color value
 };
 const deleteSavedArea = (area) => {
-  console.log("DELETE:", area);
+  mapStore.removeFromSaved(area.name);
 };
 </script>
 
