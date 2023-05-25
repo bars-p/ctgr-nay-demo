@@ -71,15 +71,15 @@ const routes = [
       import(/* webpackChunkName: "map" */ "@/views/MainView.vue"),
     props: { mode: "stops" },
   },
-  {
-    path: "/map",
-    name: "Map",
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () =>
-      import(/* webpackChunkName: "map" */ "@/views/MapView.vue"),
-  },
+  // {
+  //   path: "/map",
+  //   name: "Map",
+  //   // route level code-splitting
+  //   // this generates a separate chunk (about.[hash].js) for this route
+  //   // which is lazy-loaded when the route is visited.
+  //   component: () =>
+  //     import(/* webpackChunkName: "map" */ "@/views/MapView.vue"),
+  // },
 ];
 
 const router = createRouter({
