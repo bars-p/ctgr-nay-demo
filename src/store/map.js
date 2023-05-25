@@ -43,6 +43,7 @@ export const useMapStore = defineStore("mapStore", () => {
   ];
   const activeMapStyle = ref(0);
 
+  const isLayersSet = ref(false);
   const layersIdxs = {
     adminBorder: 0,
     adminFill: 1,
@@ -181,8 +182,8 @@ export const useMapStore = defineStore("mapStore", () => {
     const areaFeatures = savedCellsData.value.filter(
       (item) => item.properties.name == name
     );
-    console.log("Saved Data", savedCellsData.value);
-    console.log("Features found", [...areaFeatures]);
+    // console.log("Saved Data", savedCellsData.value);
+    // console.log("Features found", [...areaFeatures]);
     selectedCellsFeatures.value = [...areaFeatures];
   };
 
@@ -190,6 +191,7 @@ export const useMapStore = defineStore("mapStore", () => {
     userSettingsShown,
     mapStyles,
     activeMapStyle,
+    isLayersSet,
     layersIdxs,
     layers,
     newLayerPaint,

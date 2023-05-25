@@ -55,7 +55,16 @@ export default {
     socialLayerEmploymentNext: "Employment (+5 years)",
 
     // Travel Demand
-    demandTitle: "Demand Data", // FIXME: Get title from menu item?
+    demandDirection: "Direction:",
+    demandFrom: "From",
+    demandTo: "To",
+    demandMode: "Mode:",
+    demandOne: "One",
+    demandMany: "Many",
+    demandLevel: "Level",
+    demandAdminAreas: "District",
+
+    // FIXME: Get title from menu item?
     routesTitle: "Routes Data",
     stopsTitle: "Stops Data",
   },

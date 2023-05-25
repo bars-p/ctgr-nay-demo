@@ -36,11 +36,13 @@ onMounted(async () => {
 
   //
 });
+// TODO: Process mode change
 watch(
   () => props.mode,
   (to, from) => {
     console.warn(`Mode changed from ${from} to ${to}.`);
     displayModeLayers();
+
     if (to == "base") {
       map.flyTo({
         center: defaultCenter,
@@ -185,6 +187,7 @@ let map = {};
 
 let localLayersState = [];
 
+// Default sets of Layers
 const basicLayersIdxs = [
   layersIdxs.adminBorder,
   layersIdxs.adminFill,
@@ -193,7 +196,18 @@ const basicLayersIdxs = [
 const socialLayersIdxs = [
   layersIdxs.adminBorder,
   layersIdxs.zonesBorder,
+  layersIdxs.cellsSelected,
   layersIdxs.cellsSaved,
+];
+const demandLayersIdxs = [
+  layersIdxs.adminBorder,
+  layersIdxs.adminFill,
+  layersIdxs.zonesBorder,
+];
+const routesLayersIdxs = [
+  layersIdxs.adminBorder,
+  layersIdxs.adminFill,
+  layersIdxs.zonesBorder,
 ];
 const stopsLayersIdxs = [layersIdxs.adminBorder, layersIdxs.cellsFill];
 
@@ -603,18 +617,39 @@ const setLocalLayers = () => {
 const displayModeLayers = () => {
   switch (props.mode) {
     case "social":
-      console.log("Display SOCIAL layers");
-      toggleLayers(socialLayersIdxs);
+      if (mapStore.isLayersSet == false) {
+        console.log("Set SOCIAL layers");
+        toggleLayers(socialLayersIdxs);
+        mapStore.isLayersSet = true;
+      }
       break;
-
+    case "demand":
+      if (mapStore.isLayersSet == false) {
+        console.log("Set DEMAND layers");
+        toggleLayers(demandLayersIdxs);
+        mapStore.isLayersSet = true;
+      }
+      break;
+    case "routes":
+      if (mapStore.isLayersSet == false) {
+        console.log("Set ROUTES layers");
+        toggleLayers(routesLayersIdxs);
+        mapStore.isLayersSet = true;
+      }
+      break;
     case "stops":
-      console.log("Display DEMAND layers");
-      toggleLayers(stopsLayersIdxs);
+      if (mapStore.isLayersSet == false) {
+        console.log("Set STOP layers");
+        toggleLayers(stopsLayersIdxs);
+        mapStore.isLayersSet = true;
+      }
       break;
 
     default:
       console.log("Display BASIC layers");
       toggleLayers(basicLayersIdxs);
+      mapStore.isLayersSet = false;
+
       break;
   }
 };
