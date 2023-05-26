@@ -32,7 +32,7 @@
 
     <template #tools>
       <v-select
-        v-model="colorSelection"
+        v-model="mapStore.socialColor"
         clearable
         hide-details
         single-line
@@ -40,17 +40,19 @@
         density="compact"
         :label="$t('tools.socialColor')"
         class="mb-4"
+        :no-data-text="$t('general.noData')"
         :items="selectItemsColor"
         @update:model-value="processColorChange"
       ></v-select>
       <v-select
-        v-model="barsSelection"
+        v-model="mapStore.socialBars"
         clearable
         hide-details
         variant="outlined"
         density="compact"
         :label="$t('tools.socialBars')"
         class="mb-2"
+        :no-data-text="$t('general.noData')"
         :items="selectItemsBars"
         @update:model-value="processBarsChange"
       ></v-select>
@@ -203,13 +205,14 @@
 <script setup>
 import ToolsComponent from "../ToolsComponent.vue";
 
-import { onMounted, defineProps, ref, computed } from "vue";
+import { onMounted, ref, computed } from "vue";
+
 import { useI18n } from "vue-i18n";
+const { t } = useI18n();
 
 import { useMapStore } from "@/store/map";
 
 const props = defineProps(["title"]);
-const { t } = useI18n();
 
 const mapStore = useMapStore();
 
@@ -413,10 +416,10 @@ const selectItemsBars = [
   },
 ];
 
-let colorSelected = null;
-let barsSelected = null;
-const colorSelection = ref(null);
-const barsSelection = ref(null);
+let colorSelected = mapStore.socialColor;
+let barsSelected = mapStore.socialBars;
+// const colorSelection = ref(null);
+// const barsSelection = ref(null);
 // const mixMode = ref(false);
 
 const processColorChange = (val) => {

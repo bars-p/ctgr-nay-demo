@@ -11,12 +11,14 @@
 <script setup>
 import MapButtonsBlock from "@/components/MapButtonsBlock.vue";
 
-import { onMounted, defineProps, watch } from "vue";
+import { onMounted, watch } from "vue";
+import { useI18n } from "vue-i18n";
 
 import mapboxgl from "mapbox-gl";
 import axios from "axios";
 
 import { useMapStore } from "@/store/map";
+const { t } = useI18n();
 
 // General component logic
 const mapStore = useMapStore();
@@ -50,6 +52,11 @@ watch(
         pitch: 0,
         bearing: 0,
       });
+    }
+    if (to == "demand") {
+      if (mapStore.demandLevel == "area" && mapStore.savedAreas.length == 0) {
+        mapStore.demandLevel = null;
+      }
     }
     // if (to == "social") {
     //   map.boxZoom.disable();
@@ -122,6 +129,12 @@ watch(
     selectedSource.data.features = [...mapStore.savedCellsData];
     console.log("Saved data to Display:", selectedSource);
     map.getSource("saved-areas-source").setData(selectedSource.data);
+  }
+);
+watch(
+  () => mapStore.demandItemsForProcessing,
+  () => {
+    getDemandStatistics();
   }
 );
 
@@ -201,8 +214,10 @@ const socialLayersIdxs = [
 ];
 const demandLayersIdxs = [
   layersIdxs.adminBorder,
-  layersIdxs.adminFill,
+  // layersIdxs.adminFill,
   layersIdxs.zonesBorder,
+  layersIdxs.adminAreaSelect,
+  layersIdxs.zoneSelect,
 ];
 const routesLayersIdxs = [
   layersIdxs.adminBorder,
@@ -340,19 +355,34 @@ const buildLayers = () => {
     map.addLayer(
       {
         id: "cells-saved",
-        type: "line",
+        type: "fill",
         source: "saved-areas-source",
         layout: {
           visibility: "none",
         },
         paint: {
-          "line-color": ["get", "color"],
-          "line-opacity": 0.7,
-          "line-width": 3,
+          "fill-color": ["get", "color"],
+          "fill-opacity": 0.7,
         },
       },
       "road-label"
     );
+    // map.addLayer(
+    //   {
+    //     id: "cells-saved",
+    //     type: "line",
+    //     source: "saved-areas-source",
+    //     layout: {
+    //       visibility: "none",
+    //     },
+    //     paint: {
+    //       "line-color": ["get", "color"],
+    //       "line-opacity": 0.7,
+    //       "line-width": 3,
+    //     },
+    //   },
+    //   "road-label"
+    // );
     map.addLayer(
       {
         id: "cells-selected",
@@ -438,6 +468,96 @@ const buildLayers = () => {
       "road-label"
     );
 
+    map.addLayer(
+      {
+        id: mapStore.layers[layersIdxs.adminAreaSelect].name,
+        type: "fill",
+        source: "admin-areas-source",
+        layout: {
+          visibility: "none",
+        },
+        paint: {
+          "fill-color": "#ffffff",
+          "fill-opacity": 0,
+        },
+      },
+      "road-label"
+    );
+    map.addLayer(
+      {
+        id: mapStore.layers[layersIdxs.adminAreasSelected].name,
+        type: "line",
+        source: "admin-areas-source",
+        layout: {
+          "line-join": "round",
+          "line-cap": "round",
+          visibility: "none",
+        },
+        filter: ["in", "id", ""],
+        paint: {
+          "line-width": 5,
+          "line-color": "#802000",
+          "line-opacity": 0.6,
+        },
+      },
+      "road-label"
+    );
+
+    map.addLayer(
+      {
+        id: mapStore.layers[layersIdxs.zoneSelect].name,
+        type: "fill",
+        source: "analytical-zones-source",
+        layout: {
+          visibility: "none",
+        },
+        paint: {
+          "fill-color": "#ffffff",
+          "fill-opacity": 0,
+        },
+      },
+      "road-label"
+    );
+    map.addLayer(
+      {
+        id: mapStore.layers[layersIdxs.zonesSelected].name,
+        type: "line",
+        source: "analytical-zones-source",
+        layout: {
+          "line-join": "round",
+          "line-cap": "round",
+          visibility: "none",
+        },
+        filter: ["in", "id", ""],
+        paint: {
+          "line-width": 3,
+          // "line-dasharray": [8, 8],
+          "line-color": "#802000",
+          "line-opacity": 0.7,
+        },
+      },
+      "road-label"
+    );
+    map.addLayer(
+      {
+        id: mapStore.layers[layersIdxs.savedAreasSelected].name,
+        type: "line",
+        source: "saved-areas-source",
+        layout: {
+          "line-join": "round",
+          "line-cap": "round",
+          visibility: "none",
+        },
+        filter: ["in", "name", ""],
+        paint: {
+          "line-width": 2,
+          "line-color": "#802000",
+          "line-opacity": 0.7,
+        },
+      },
+      "road-label"
+    );
+
     map.on("style.load", () => {
       console.warn("MAP STYLE CHANGED!");
       // TODO: Restore Layers
@@ -476,6 +596,7 @@ const buildLayers = () => {
     }
 
     function mouseDown(e) {
+      if (props.mode != "social") return;
       // Continue the rest of the function if the shiftkey is pressed.
       if (!(e.shiftKey && e.button === 0)) return;
 
@@ -552,7 +673,7 @@ const buildLayers = () => {
         });
 
         if (features.length >= 1000) {
-          return window.alert("Select a smaller number of features");
+          return window.alert(t("tools.socialSelectedToMany"));
         }
 
         // Run through the selected features and set a filter
@@ -581,27 +702,119 @@ const buildLayers = () => {
 
     // TODO: On-Hover definition
     map.on("mousemove", "cells-fill", (e) => {
-      map.getCanvas().style.cursor = "pointer";
-      // console.log("Hovered:", e.features[0]);
-      const cellData = e.features[0].properties;
-      const cellPop = `<br><strong>🏠:</strong> ${cellData.pop}`;
-      const cellEmp = `<br><strong>🏢:</strong> ${cellData.emp}`;
+      if (props.mode == "social") {
+        map.getCanvas().style.cursor = "pointer";
+        // console.log("Hovered:", e.features[0]);
+        const cellData = e.features[0].properties;
+        const cellPop = `<br><strong>🏠:</strong> ${cellData.pop}`;
+        const cellEmp = `<br><strong>🏢:</strong> ${cellData.emp}`;
 
-      const description = `id: ${cellData.id}${cellPop}${cellEmp}`;
+        const description = `id: ${cellData.id}${cellPop}${cellEmp}`;
 
-      cellPopup.setLngLat(e.lngLat).setHTML(description).addTo(map);
+        cellPopup.setLngLat(e.lngLat).setHTML(description).addTo(map);
+      }
     });
     map.on("mouseleave", "cells-fill", () => {
-      map.getCanvas().style.cursor = "";
-      cellPopup.remove();
+      if (props.mode == "social") {
+        map.getCanvas().style.cursor = "";
+        cellPopup.remove();
+      }
     });
     map.on("click", "cells-fill", (item) => {
-      // const clickedId = item.features[0].properties.id;
-      const feature = Object.assign(item.features[0]);
-      console.log("Click happened on:", feature);
-      // selectedCellsFeatures.value.add(feature);
-      // console.log("Feature stored:", selectedCellsFeatures.value);
-      processCellsSelected([feature]);
+      if (props.mode == "social") {
+        // const clickedId = item.features[0].properties.id;
+        const feature = Object.assign(item.features[0]);
+        console.log("Click happened on:", feature);
+        // selectedCellsFeatures.value.add(feature);
+        // console.log("Feature stored:", selectedCellsFeatures.value);
+        processCellsSelected([feature]);
+      }
+    });
+    map.on(
+      "mousemove",
+      mapStore.layers[layersIdxs.adminAreaSelect].name,
+      (e) => {
+        if (props.mode == "demand") {
+          if (mapStore.demandLevel == "district") {
+            map.getCanvas().style.cursor = "pointer";
+            // console.log("Hovered:", e.features[0]);
+            const cellData = e.features[0].properties;
+            const description = `${cellData.name}`;
+
+            cellPopup.setLngLat(e.lngLat).setHTML(description).addTo(map);
+          }
+        }
+      }
+    );
+    map.on(
+      "mouseleave",
+      mapStore.layers[layersIdxs.adminAreaSelect].name,
+      () => {
+        if (props.mode == "demand") {
+          if (mapStore.demandLevel == "district") {
+            map.getCanvas().style.cursor = "";
+            cellPopup.remove();
+          }
+        }
+      }
+    );
+    map.on("mousemove", mapStore.layers[layersIdxs.zoneSelect].name, () => {
+      if (props.mode == "demand") {
+        if (mapStore.demandLevel == "zone") {
+          map.getCanvas().style.cursor = "pointer";
+          // console.log("Hovered:", e.features[0]);
+        }
+      }
+    });
+    map.on("mouseleave", mapStore.layers[layersIdxs.zoneSelect].name, () => {
+      if (props.mode == "demand") {
+        if (mapStore.demandLevel == "zone") {
+          map.getCanvas().style.cursor = "";
+          cellPopup.remove();
+        }
+      }
+    });
+    map.on("mousemove", "cells-saved", (e) => {
+      if (props.mode == "demand") {
+        if (mapStore.demandLevel == "area") {
+          map.getCanvas().style.cursor = "pointer";
+          // console.log("Hovered:", e.features[0]);
+          const cellData = e.features[0].properties;
+          const description = `${cellData.name}`;
+
+          cellPopup.setLngLat(e.lngLat).setHTML(description).addTo(map);
+        }
+      }
+    });
+    map.on("mouseleave", "cells-saved", () => {
+      if (props.mode == "demand") {
+        if (mapStore.demandLevel == "area") {
+          map.getCanvas().style.cursor = "";
+          cellPopup.remove();
+        }
+      }
+    });
+    map.on(
+      "click",
+      mapStore.layers[layersIdxs.adminAreaSelect].name,
+      (item) => {
+        if (props.mode == "demand" && mapStore.demandLevel == "district") {
+          const feature = Object.assign(item.features[0]);
+          processDemandFeatureSelect(feature.properties.id);
+        }
+      }
+    );
+    map.on("click", mapStore.layers[layersIdxs.zoneSelect].name, (item) => {
+      if (props.mode == "demand" && mapStore.demandLevel == "zone") {
+        const feature = Object.assign(item.features[0]);
+        processDemandFeatureSelect(feature.properties.id);
+      }
+    });
+    map.on("click", mapStore.layers[layersIdxs.cellsSaved].name, (item) => {
+      if (props.mode == "demand" && mapStore.demandLevel == "area") {
+        const feature = Object.assign(item.features[0]);
+        processDemandFeatureSelect(feature.properties.name);
+      }
     });
 
     setLocalLayers();
@@ -724,29 +937,112 @@ const processCellsSelected = (cellsFeatures) => {
       mapStore.addCellToSelected(objectToStore);
     }
   });
-  // cellsIds.forEach((id, idx) => {
-  //   if (selectedCellsIds.has(id)) {
-  //     selectedCellsIds.delete(id);
-  //     mapStore.removeCellFromSelected(cellsFeatures[idx]);
-  //   } else {
-  //     const objectToStore = {
-  //       id: cellsFeatures[idx].id,
-  //       layer: { ...cellsFeatures[idx].layer },
-  //       properties: { ...cellsFeatures[idx].properties },
-  //       source: cellsFeatures[idx].source,
-  //       type: cellsFeatures[idx].type,
-  //       geometry: { ...cellsFeatures[idx].geometry },
-  //     };
-  //     console.log("Object to Store:", objectToStore);
-  //     selectedCellsIds.add(id);
-  //     mapStore.addCellToSelected(objectToStore);
-  //   }
-  // });
   console.log("SET FILTER 1");
   map.setFilter(mapStore.layers[mapStore.layersIdxs.cellsSelected].name, [
     "in",
     "id",
     ...selectedCellsIds,
+  ]);
+};
+
+// Demand Logic
+
+const processDemandFeatureSelect = (id) => {
+  console.log("Select Item", id, mapStore.demandLevel);
+  if (mapStore.demandSelectMode == "one") {
+    mapStore.demandItemsSelectedIds.clear();
+    mapStore.demandItemsSelectedIds.add(id);
+    mapStore.demandIdsFromLevel = mapStore.demandLevel;
+  } else if (mapStore.demandSelectMode == "many") {
+    if (mapStore.demandIdsFromLevel != mapStore.demandLevel) {
+      mapStore.demandItemsSelectedIds.clear();
+      mapStore.demandIdsFromLevel = mapStore.demandLevel;
+    }
+    if (mapStore.demandItemsSelectedIds.has(id)) {
+      mapStore.demandItemsSelectedIds.delete(id);
+    } else {
+      mapStore.demandItemsSelectedIds.add(id);
+    }
+  }
+  setDemandSelectFilter();
+  if (mapStore.demandSelectMode == "one") {
+    getDemandStatistics();
+  }
+};
+const setDemandSelectFilter = () => {
+  let idName = "id";
+  let layerIdx = null;
+  switch (mapStore.demandLevel) {
+    case "district":
+      layerIdx = mapStore.layersIdxs.adminAreasSelected;
+      break;
+    case "zone":
+      layerIdx = mapStore.layersIdxs.zonesSelected;
+      break;
+    case "area":
+      layerIdx = mapStore.layersIdxs.savedAreasSelected;
+      idName = "name";
+      break;
+
+    default:
+      return;
+  }
+  map.setFilter(mapStore.layers[layerIdx].name, [
+    "in",
+    idName,
+    ...[...mapStore.demandItemsSelectedIds],
+  ]);
+};
+const getDemandStatistics = () => {
+  console.log(
+    "🐷 Demand Statistics Processed",
+    mapStore.demandItemsSelectedIds
+  );
+  if (mapStore.demandItemsSelectedIds.size == 0) {
+    // TODO: For empty request - clear all
+    clearAdminAreasSelected();
+    clearZonesSelected();
+    clearSavedAreasSelected();
+  } else {
+    // TODO: If any item selected - clear others
+    switch (mapStore.demandLevel) {
+      case "district":
+        clearZonesSelected();
+        clearSavedAreasSelected();
+        break;
+      case "zone":
+        clearAdminAreasSelected();
+        clearSavedAreasSelected();
+        break;
+      case "area":
+        clearAdminAreasSelected();
+        clearZonesSelected();
+        break;
+      default:
+        console.warn("Not implemented level");
+        break;
+    }
+  }
+};
+const clearAdminAreasSelected = () => {
+  map.setFilter(mapStore.layers[layersIdxs.adminAreasSelected].name, [
+    "in",
+    "id",
+    "",
+  ]);
+};
+const clearZonesSelected = () => {
+  map.setFilter(mapStore.layers[layersIdxs.zonesSelected].name, [
+    "in",
+    "id",
+    "",
+  ]);
+};
+const clearSavedAreasSelected = () => {
+  map.setFilter(mapStore.layers[layersIdxs.savedAreasSelected].name, [
+    "in",
+    "name",
+    "",
   ]);
 };
 

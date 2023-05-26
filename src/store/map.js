@@ -53,6 +53,11 @@ export const useMapStore = defineStore("mapStore", () => {
     cellsExtrusion: 5,
     cellsSaved: 6,
     cellsSelected: 7,
+    adminAreaSelect: 8,
+    adminAreasSelected: 9,
+    zoneSelect: 10,
+    zonesSelected: 11,
+    savedAreasSelected: 12,
   };
   const layers = ref([
     { idx: 0, name: "admin-areas-border", shown: false },
@@ -63,6 +68,11 @@ export const useMapStore = defineStore("mapStore", () => {
     { idx: 5, name: "cells-extrusion", shown: false },
     { idx: 6, name: "cells-saved", shown: false },
     { idx: 7, name: "cells-selected", shown: false },
+    { idx: 8, name: "admin-area-select", shown: false },
+    { idx: 9, name: "admin-areas-selected", shown: false },
+    { idx: 10, name: "zone-select", shown: false },
+    { idx: 11, name: "zones-selected", shown: false },
+    { idx: 12, name: "saved-areas-selected", shown: false },
   ]);
 
   const updateLayers = (newState) => {
@@ -71,6 +81,10 @@ export const useMapStore = defineStore("mapStore", () => {
 
   const newLayerPaint = ref(null);
   const newLayerFilter = ref(null);
+
+  // Social data
+  const socialColor = ref(null);
+  const socialBars = ref(null);
 
   const selectedCellsFeatures = ref([]);
 
@@ -187,6 +201,18 @@ export const useMapStore = defineStore("mapStore", () => {
     selectedCellsFeatures.value = [...areaFeatures];
   };
 
+  // Demand data
+  const demandLevel = ref(null);
+  const demandDirection = ref("from");
+  const demandSelectMode = ref("one");
+  const demandItemsSelectedIds = new Set();
+  const demandIdsFromLevel = null;
+  const demandItemsForProcessing = ref([]);
+  const demandProcessItems = () => {
+    console.log("Map Store - Demand processed");
+    demandItemsForProcessing.value = [...demandItemsSelectedIds];
+  };
+
   return {
     userSettingsShown,
     mapStyles,
@@ -197,6 +223,8 @@ export const useMapStore = defineStore("mapStore", () => {
     newLayerPaint,
     newLayerFilter,
     updateLayers,
+    socialColor,
+    socialBars,
     selectedCellsFeatures,
     savedCellsData,
     savedAreas,
@@ -212,5 +240,12 @@ export const useMapStore = defineStore("mapStore", () => {
     addCellToSelected,
     removeCellFromSelected,
     clearSelectedCells,
+    demandLevel,
+    demandDirection,
+    demandSelectMode,
+    demandItemsSelectedIds,
+    demandIdsFromLevel,
+    demandItemsForProcessing,
+    demandProcessItems,
   };
 });

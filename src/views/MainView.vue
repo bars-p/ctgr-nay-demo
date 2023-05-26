@@ -12,8 +12,6 @@ import MapComponent from "@/components/MapComponent.vue";
 import MapTools from "@/components/MapTools.vue";
 import UserSettings from "@/components/UserSettings.vue";
 
-import { defineProps } from "vue";
-
 import { useMapStore } from "@/store/map";
 const mapStore = useMapStore();
 

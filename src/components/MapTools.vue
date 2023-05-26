@@ -19,6 +19,5 @@ import ToolsComponent from "./ToolsComponent.vue";
 import SocialTools from "./MapTools/SocialTools.vue";
 import DemandTools from "./MapTools/DemandTools.vue";
 
-import { defineProps } from "vue";
 const props = defineProps(["mode"]);
 </script>

@@ -53,6 +53,7 @@ export default {
     socialLayerVisitors: "Visitors",
     socialLayerPopulationNext: "Population (+5 years)",
     socialLayerEmploymentNext: "Employment (+5 years)",
+    socialSelectedToMany: "Select a smaller number of features",
 
     // Travel Demand
     demandDirection: "Direction:",
@@ -62,7 +63,7 @@ export default {
     demandOne: "One",
     demandMany: "Many",
     demandLevel: "Level",
-    demandAdminAreas: "District",
+    demandAdminAreas: "Districts",
 
     // FIXME: Get title from menu item?
     routesTitle: "Routes Data",

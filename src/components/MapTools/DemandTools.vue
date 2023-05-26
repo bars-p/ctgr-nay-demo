@@ -2,7 +2,7 @@
   <tools-component :title="props.title">
     <template #actions>
       <v-progress-circular
-        v-if="selectMode == 'many'"
+        v-if="mapStore.demandSelectMode == 'many'"
         indeterminate
         color="primary"
         :width="3"
@@ -26,7 +26,7 @@
       <v-row dense>
         <v-col>
           <v-btn-toggle
-            v-model="demandDirection"
+            v-model="mapStore.demandDirection"
             divided
             variant="outlined"
             density="comfortable"
@@ -46,7 +46,7 @@
         </v-col>
         <v-col>
           <v-btn-toggle
-            v-model="selectMode"
+            v-model="mapStore.demandSelectMode"
             divided
             variant="outlined"
             density="comfortable"
@@ -72,11 +72,12 @@
             </v-tooltip>
           </v-btn-toggle>
           <v-btn
-            v-if="selectMode == 'many'"
+            v-if="mapStore.demandSelectMode == 'many'"
             icon="mdi-checkbox-marked-circle-outline"
             flat
             density="comfortable"
             class="ml-3"
+            @click="mapStore.demandProcessItems"
           >
             <v-icon color="grey-darken-2"></v-icon>
           </v-btn>
@@ -85,16 +86,18 @@
       <v-row>
         <v-col>
           <v-select
-            v-model="level"
+            v-model="mapStore.demandLevel"
             clearable
             hide-details
             variant="outlined"
             density="compact"
             :label="$t('tools.demandLevel')"
             class="mb-2"
+            :no-data-text="$t('general.noData')"
             :items="selectItemsLevel"
             @update:model-value="processLevelSelect"
-          ></v-select>
+          >
+          </v-select>
         </v-col>
       </v-row>
     </template>
@@ -104,16 +107,18 @@
 <script setup>
 import ToolsComponent from "../ToolsComponent.vue";
 
-import { defineProps, ref } from "vue";
+// import { ref } from "vue";
+
 import { useI18n } from "vue-i18n";
+const { t } = useI18n();
+
+import { useMapStore } from "@/store/map";
+const mapStore = useMapStore();
 
 const props = defineProps(["title"]);
 
-const { t } = useI18n();
-
-const demandDirection = ref("from");
-const selectMode = ref("one");
-const level = ref(null);
+// const demandDirection = ref("from");
+// const selectMode = ref("one");
 
 const selectItemsLevel = [
   {
@@ -124,12 +129,83 @@ const selectItemsLevel = [
     title: t("tools.socialZones"),
     value: "zone",
   },
-  {
+  mapStore.savedAreas.length > 0 && {
     title: t("tools.socialSavedDisplay"),
     value: "area",
   },
-];
-const processLevelSelect = () => {
-  console.log("Selected Level", level);
+].filter(Boolean);
+
+const processLevelSelect = (val) => {
+  console.log("Selected Level", mapStore.demandLevel);
+  console.log("Value", val);
+  switch (val) {
+    case "district":
+      if (!mapStore.layers[mapStore.layersIdxs.adminAreaSelect].shown) {
+        mapStore.layers[mapStore.layersIdxs.adminAreaSelect].shown = true;
+      }
+      if (!mapStore.layers[mapStore.layersIdxs.adminBorder].shown) {
+        mapStore.layers[mapStore.layersIdxs.adminBorder].shown = true;
+      }
+      if (!mapStore.layers[mapStore.layersIdxs.adminAreasSelected].shown) {
+        mapStore.layers[mapStore.layersIdxs.adminAreasSelected].shown = true;
+      }
+      if (mapStore.layers[mapStore.layersIdxs.zonesSelected].shown) {
+        mapStore.layers[mapStore.layersIdxs.zonesSelected].shown = false;
+      }
+      if (mapStore.layers[mapStore.layersIdxs.savedAreasSelected].shown) {
+        mapStore.layers[mapStore.layersIdxs.savedAreasSelected].shown = false;
+      }
+
+      break;
+    case "zone":
+      if (!mapStore.layers[mapStore.layersIdxs.zoneSelect].shown) {
+        mapStore.layers[mapStore.layersIdxs.zoneSelect].shown = true;
+      }
+      if (!mapStore.layers[mapStore.layersIdxs.zonesBorder].shown) {
+        mapStore.layers[mapStore.layersIdxs.zonesBorder].shown = true;
+      }
+      if (!mapStore.layers[mapStore.layersIdxs.zonesSelected].shown) {
+        mapStore.layers[mapStore.layersIdxs.zonesSelected].shown = true;
+      }
+      if (mapStore.layers[mapStore.layersIdxs.adminAreasSelected].shown) {
+        mapStore.layers[mapStore.layersIdxs.adminAreasSelected].shown = false;
+      }
+      if (mapStore.layers[mapStore.layersIdxs.savedAreasSelected].shown) {
+        mapStore.layers[mapStore.layersIdxs.savedAreasSelected].shown = false;
+      }
+
+      break;
+    case "area":
+      if (!mapStore.layers[mapStore.layersIdxs.cellsSaved].shown) {
+        mapStore.layers[mapStore.layersIdxs.cellsSaved].shown = true;
+      }
+      if (!mapStore.layers[mapStore.layersIdxs.savedAreasSelected].shown) {
+        mapStore.layers[mapStore.layersIdxs.savedAreasSelected].shown = true;
+      }
+      if (mapStore.layers[mapStore.layersIdxs.zonesSelected].shown) {
+        mapStore.layers[mapStore.layersIdxs.zonesSelected].shown = false;
+      }
+      if (mapStore.layers[mapStore.layersIdxs.adminAreasSelected].shown) {
+        mapStore.layers[mapStore.layersIdxs.adminAreasSelected].shown = false;
+      }
+
+      break;
+
+    default:
+      if (mapStore.layers[mapStore.layersIdxs.adminAreasSelected].shown) {
+        mapStore.layers[mapStore.layersIdxs.adminAreasSelected].shown = false;
+      }
+      if (mapStore.layers[mapStore.layersIdxs.zonesSelected].shown) {
+        mapStore.layers[mapStore.layersIdxs.zonesSelected].shown = false;
+      }
+      clearSelection();
+      break;
+  }
+};
+
+const clearSelection = () => {
+  console.log("Clear Selection");
+  mapStore.demandItemsSelectedIds.clear();
+  mapStore.demandProcessItems();
 };
 </script>
