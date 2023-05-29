@@ -876,14 +876,14 @@ const toggleLayers = (idxs) => {
   mapStore.updateLayers(layers);
 };
 const processLayersDisplay = () => {
-  console.log("In Layers Display Method");
-  console.log("Local Layers:", localLayersState);
-  console.log("Store Layers", mapStore.layers);
+  // console.log("In Layers Display Method");
+  // console.log("Local Layers:", localLayersState);
+  // console.log("Store Layers", mapStore.layers);
   for (const layer of mapStore.layers) {
     const idx = layer.idx;
-    console.log("Store Layer Processed:", idx, layer);
+    // console.log("Store Layer Processed:", idx, layer);
     if (layer.shown != localLayersState[idx]) {
-      console.log("New state for:", mapStore.layers[idx]);
+      // console.log("New state for:", mapStore.layers[idx]);
       map.setLayoutProperty(
         layer.name,
         "visibility",

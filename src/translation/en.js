@@ -16,6 +16,10 @@ export default {
     poi: "POI",
 
     noData: "No data",
+
+    workdayMorning: "Workday, morning peak",
+    workdayMidday: "Workday, midday",
+    weekendMidday: "Weekend, midday",
   },
 
   // Navigation Items
@@ -49,7 +53,7 @@ export default {
     socialSaved: "Saved areas:",
     socialLayerPopulation: "Population",
     socialLayerEmployment: "Employment",
-    socialLayerMix: "Population / Employment",
+    socialLayerMix: "Mix (Pop / Emp)",
     socialLayerVisitors: "Visitors",
     socialLayerPopulationNext: "Population (+5 years)",
     socialLayerEmploymentNext: "Employment (+5 years)",
@@ -65,8 +69,7 @@ export default {
     demandLevel: "Level",
     demandAdminAreas: "Districts",
 
-    // FIXME: Get title from menu item?
-    routesTitle: "Routes Data",
-    stopsTitle: "Stops Data",
+    // Routes
+    routesSelectMode: "Select mode",
   },
 };

@@ -139,6 +139,11 @@ export const useMapStore = defineStore("mapStore", () => {
   const savedCellsData = ref([]);
   const savedAreas = ref([]);
   const savedAreasNames = new Set(); // FIXME: Map() should be better name+color
+  const clearSavedCellsData = () => {
+    savedCellsData.value = [];
+    savedAreas.value = [];
+    savedAreasNames.clear();
+  };
   const saveSelectedFeatures = (name, color) => {
     console.log("Save Params", name, color);
     console.log("Save Features", selectedCellsFeatures.value);
@@ -206,11 +211,19 @@ export const useMapStore = defineStore("mapStore", () => {
   const demandDirection = ref("from");
   const demandSelectMode = ref("one");
   const demandItemsSelectedIds = new Set();
-  const demandIdsFromLevel = null;
+  const demandIdsFromLevel = ref(null);
   const demandItemsForProcessing = ref([]);
   const demandProcessItems = () => {
     console.log("Map Store - Demand processed");
     demandItemsForProcessing.value = [...demandItemsSelectedIds];
+  };
+  const demandResetData = () => {
+    demandLevel.value = null;
+    demandDirection.value = "from";
+    demandSelectMode.value = "one";
+    demandItemsSelectedIds.clear();
+    demandIdsFromLevel.value = null;
+    demandItemsForProcessing.value = [];
   };
 
   return {
@@ -228,6 +241,7 @@ export const useMapStore = defineStore("mapStore", () => {
     selectedCellsFeatures,
     savedCellsData,
     savedAreas,
+    clearSavedCellsData,
     saveSelectedFeatures,
     removeFromSaved,
     updateSavedAreaColor,
@@ -247,5 +261,6 @@ export const useMapStore = defineStore("mapStore", () => {
     demandIdsFromLevel,
     demandItemsForProcessing,
     demandProcessItems,
+    demandResetData,
   };
 });

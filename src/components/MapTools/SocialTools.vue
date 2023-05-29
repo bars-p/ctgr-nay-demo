@@ -15,7 +15,7 @@
             density="compact"
             icon="mdi-close"
             size="small"
-            class="mt-2"
+            class="mt-1"
             @click="clearSearch"
           >
           </v-btn>
@@ -35,7 +35,6 @@
         v-model="mapStore.socialColor"
         clearable
         hide-details
-        single-line
         variant="outlined"
         density="compact"
         :label="$t('tools.socialColor')"
@@ -94,17 +93,10 @@
           <v-label class="text-subtitle-2 mb-2">
             {{ $t("tools.socialSelected") }}
           </v-label>
-          <v-btn
+          <cancel-button
             v-show="mapStore.selectedCellsFeatures.length > 0"
-            flat
-            density="compact"
-            icon
-            class="cancel-button"
             @click="clearSelection"
-            ><v-icon size="small" color="grey-darken-1"
-              >mdi-cancel</v-icon
-            ></v-btn
-          >
+          ></cancel-button>
         </div>
         <div>
           <v-label class="mr-3">
@@ -204,6 +196,7 @@
 
 <script setup>
 import ToolsComponent from "../ToolsComponent.vue";
+import CancelButton from "../elements/CancelButton.vue";
 
 import { onMounted, ref, computed } from "vue";
 
@@ -218,7 +211,7 @@ const mapStore = useMapStore();
 
 // General tasks
 onMounted(() => {
-  console.log("Social Tools Mounted");
+  console.log("🟢 Social Tools Mounted");
   // TODO: Init component controls to default state (in sync with map layers state)
 });
 
@@ -514,36 +507,10 @@ const areasFiltered = computed(() => {
   return mapStore.savedAreas.filter((area) =>
     area.name.toLowerCase().includes(searchString.value)
   );
-  // return areas.value.filter((area) =>
-  //   area.name.toLowerCase().includes(searchString.value)
-  // );
 });
 
 // Areas logic
 const activeAreaName = ref("");
-
-// const mockSavedAreas = [
-//   {
-//     id: 1,
-//     name: "Deep forest",
-//     cells: [1, 2, 3],
-//     color: "#228B22",
-//   },
-//   {
-//     id: 2,
-//     name: "Urban zone",
-//     cells: [32, 54, 332],
-//     color: "#DC143C",
-//   },
-//   {
-//     id: 3,
-//     name: "City Center",
-//     cells: [123, 242, 312, 2112],
-//     color: "#4169E1",
-//   },
-// ];
-// // FIXME:
-// const areas = ref(mockSavedAreas);
 
 const clearSelection = () => {
   mapStore.clearSelectedCells();
@@ -601,9 +568,5 @@ const deleteSavedArea = (area) => {
 .search-field {
   width: 50px;
   padding-bottom: 15px;
-}
-.cancel-button {
-  position: absolute;
-  right: 15px;
 }
 </style>

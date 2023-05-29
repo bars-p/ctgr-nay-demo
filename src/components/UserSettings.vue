@@ -42,6 +42,7 @@ const mapStore = useMapStore();
   position: absolute;
   right: 20px;
   top: calc(64px + 20px);
+  z-index: 20;
 }
 .close-icon {
   position: absolute;
