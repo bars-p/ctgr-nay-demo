@@ -1,33 +1,7 @@
 <template>
   <tools-component :title="props.title">
     <template #actions>
-      <v-text-field
-        v-if="isSearching"
-        v-model="searchString"
-        density="compact"
-        variant="underlined"
-        class="search-field"
-        hide-details
-      >
-        <template v-slot:append-inner>
-          <v-btn
-            v-show="searchString.length"
-            density="compact"
-            icon="mdi-close"
-            size="small"
-            class="mt-1"
-            @click="clearSearch"
-          >
-          </v-btn>
-        </template>
-      </v-text-field>
-      <v-btn
-        density="comfortable"
-        icon="mdi-magnify"
-        size="small"
-        @click="toggleSearch"
-      >
-      </v-btn>
+      <search-bar v-model="searchString"></search-bar>
     </template>
 
     <template #tools>
@@ -55,14 +29,6 @@
         :items="selectItemsBars"
         @update:model-value="processBarsChange"
       ></v-select>
-      <!-- <v-switch
-        v-model="mixMode"
-        density="compact"
-        :label="$t('tools.socialMix')"
-        hide-details
-        class="ml-1"
-        @update:model-value="processMixMode"
-      ></v-switch> -->
       <v-label
         class="mt-1 text-subtitle-2"
         :text="$t('tools.socialLayers')"
@@ -197,6 +163,7 @@
 <script setup>
 import ToolsComponent from "../ToolsComponent.vue";
 import CancelButton from "../elements/CancelButton.vue";
+import SearchBar from "../elements/SearchBar.vue";
 
 import { onMounted, ref, computed } from "vue";
 
@@ -488,21 +455,10 @@ const processBarsChange = (val) => {
   }
   barsSelected = val;
 };
-// const processMixMode = () => {
-//   console.log("Mix Mode:", mixMode);
-// };
 
 // Search logic
-const isSearching = ref(false);
 const searchString = ref("");
 
-const clearSearch = () => (searchString.value = "");
-const toggleSearch = () => {
-  isSearching.value = !isSearching.value;
-  if (searchString.value) {
-    searchString.value = "";
-  }
-};
 const areasFiltered = computed(() => {
   return mapStore.savedAreas.filter((area) =>
     area.name.toLowerCase().includes(searchString.value)
@@ -564,9 +520,5 @@ const deleteSavedArea = (area) => {
 .area-data {
   display: flex;
   flex-direction: column;
-}
-.search-field {
-  width: 50px;
-  padding-bottom: 15px;
 }
 </style>

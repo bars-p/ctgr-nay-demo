@@ -36,6 +36,19 @@ export default {
     menuGroupNetwork: "PUBLIC TRANSPORT",
     menuItemRoutes: "Routes",
     menuItemStops: "Stops",
+
+    menuGroupAnalytics: "ANALYTICS",
+    menuItemDuplication: "Routes duplication",
+    menuItemDirectness: "Routes directness",
+    menuItemRidership: "Ridership",
+    menuItemConnectivity: "Connectivity",
+    menuItemPtal: "PTAL",
+
+    menuGroupEdit: "EDIT DATA",
+    menuItemEditRoutes: "Routes",
+    menuItemEditStops: "Stops",
+    menuItemEditZones: "Zones",
+    menuItemEditCells: "Cells",
   },
 
   // Tools Items

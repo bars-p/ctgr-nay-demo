@@ -6,11 +6,9 @@
         <v-icon v-else>mdi-chevron-up</v-icon>
       </v-btn>
       <v-toolbar-title class="text-body-1 font-weight-medium">
-        <span>
-          {{ props.title }}
-        </span>
+        {{ props.title }}
       </v-toolbar-title>
-      <v-spacer></v-spacer>
+      <!-- <v-spacer></v-spacer> -->
       <slot name="actions"></slot>
     </v-toolbar>
     <div v-if="!hidden">
