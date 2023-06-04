@@ -25,6 +25,7 @@
             variant="outlined"
             color="grey-darken-3"
             class="mr-3"
+            @click="showDistribution = true"
             >!Distribution</v-btn
           >
           <v-btn
@@ -33,6 +34,7 @@
             variant="outlined"
             color="grey-darken-3"
             class="ml-3"
+            @click="showSearch = true"
             >!Search</v-btn
           >
         </v-row>
@@ -87,6 +89,9 @@
             density="comfortable"
             prepend-icon="mdi-plus"
           >
+            <template #prepend>
+              <v-icon color="green-darken-2"></v-icon>
+            </template>
             !Add
             <v-tooltip activator="parent" location="bottom"
               >!Add selected</v-tooltip
@@ -97,6 +102,9 @@
             density="comfortable"
             prepend-icon="mdi-refresh"
           >
+            <template #prepend>
+              <v-icon color="red-darken-2"></v-icon>
+            </template>
             !Replace
             <v-tooltip activator="parent" location="bottom"
               >!Replace with selected</v-tooltip
@@ -183,8 +191,8 @@
           </v-tab>
         </v-tabs>
         <v-window v-model="tabSelected">
-          <v-window-item v-for="item in groupTabs" :key="item" :value="item">
-            <v-list density="compact" v-if="item == 'LADs'">
+          <v-window-item value="LADs">
+            <v-list density="compact">
               <v-list-item
                 v-for="(ladGroup, idx) in savedLadsMock"
                 :key="ladGroup.name"
@@ -205,7 +213,9 @@
                 </template>
               </v-list-item>
             </v-list>
-            <v-list density="compact" v-else>
+          </v-window-item>
+          <v-window-item value="Stops">
+            <v-list density="compact">
               <v-list-item
                 v-for="(stopGroup, idx) in savedStopsMock"
                 :key="stopGroup.name"
@@ -273,6 +283,7 @@
     >
       <template #actions>
         <search-bar v-model="searchLad"></search-bar>
+        <close-button @close="processCloseGroup"></close-button>
       </template>
       <template #tools>
         <div class="mt-0">
@@ -413,6 +424,11 @@
         </p> -->
       </v-container>
     </tools-component>
+    <distribution-dialog
+      v-model="showDistribution"
+      title="!LADs Distribution"
+    ></distribution-dialog>
+    <search-dialog v-model="showSearch" title="!Search LADs"></search-dialog>
   </div>
 </template>
 
@@ -422,10 +438,13 @@ import CancelButton from "../elements/CancelButton.vue";
 import ApplyButton from "../elements/ApplyButton.vue";
 import ConfigButton from "../elements/ConfigButton.vue";
 import SearchBar from "../elements/SearchBar.vue";
+import DistributionDialog from "../DistributionDialog.vue";
+import SearchDialog from "../SearchDialog.vue";
 
 import { ref, computed } from "vue";
 
 import { useI18n } from "vue-i18n";
+import CloseButton from "../elements/CloseButton.vue";
 const { t } = useI18n();
 
 // import { useMapStore } from "@/store/map";
@@ -453,6 +472,9 @@ const selectModes = [
 const changeSelectMode = () => {
   console.log("Select Mode:", selectMode.value);
 };
+
+const showDistribution = ref(false);
+const showSearch = ref(false);
 
 const showSkeleton = ref(true);
 const showStops = ref(false);
@@ -580,6 +602,10 @@ const ladsInGroupMock = ref([
     shown: true,
   },
 ]);
+
+const processCloseGroup = () => {
+  console.log("Close Group panel");
+};
 
 const searchLad = ref("");
 
