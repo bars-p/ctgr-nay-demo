@@ -15,7 +15,7 @@
       <v-card-text class="overflow-auto">
         <v-autocomplete
           :items="mockLads"
-          label="!LADs"
+          :label="$t('tools.routesLads')"
           density="compact"
           item-title="name"
           item-value="name"
@@ -33,10 +33,13 @@
           @click="dialogOpened = false"
           :disabled="false"
           min-width="200px"
-          >!Select</v-btn
+          >{{ $t("tools.routesDialogSelect") }}</v-btn
         >
-        <v-btn color="primary" @click="dialogOpened = false" min-width="200px"
-          >!Close</v-btn
+        <v-btn
+          color="primary"
+          @click="dialogOpened = false"
+          min-width="200px"
+          >{{ $t("tools.routesDialogClose") }}</v-btn
         >
         <v-spacer></v-spacer>
       </v-card-actions>

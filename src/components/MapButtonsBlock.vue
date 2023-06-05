@@ -1,5 +1,36 @@
 <template>
   <div>
+    <v-menu location="top" :close-on-content-click="false">
+      <template v-slot:activator="{ props }">
+        <map-button
+          icon-symbol="mdi-layers-outline"
+          class="button-item mr-5"
+          v-bind="props"
+          @click="showLayers"
+        ></map-button>
+      </template>
+      <v-list class="mb-1" min-width="100px">
+        <v-list-item
+          v-for="layer in layers"
+          :key="layer.idx"
+          :value="layer.idx"
+          density="compact"
+          @click="layer.state = !layer.state"
+        >
+          <template #prepend>
+            <v-icon v-if="layer.state" size="small" class="mr-2"
+              >mdi-eye-outline</v-icon
+            >
+            <v-icon v-else size="small" class="mr-2"
+              >mdi-eye-off-outline</v-icon
+            >
+          </template>
+          <v-list-item-title class="text-body-2">{{
+            layer.title
+          }}</v-list-item-title>
+        </v-list-item>
+      </v-list>
+    </v-menu>
     <map-button
       icon-symbol="mdi-format-rotate-90"
       @click="$emit('compass')"
@@ -16,12 +47,75 @@
 <script setup>
 import MapButton from "./MapButton.vue";
 
+import { ref, computed } from "vue";
+
+import { useMapStore } from "@/store/map";
+const mapStore = useMapStore();
+
 // const handleCompassClick = () => {
 //   console.log("Compass button clicked");
 // };
 // const handleRotateClick = () => {
 //   console.log("Rotate button clicked");
 // };
+const layers = ref([
+  {
+    title: "Borders",
+    idx: 0,
+    state: computed({
+      get() {
+        return mapStore.layers[0].shown;
+      },
+      set(value) {
+        mapStore.layers[0].shown = value;
+      },
+    }),
+  },
+  {
+    title: "Districts",
+    idx: 1,
+    state: computed({
+      get() {
+        return mapStore.layers[1].shown;
+      },
+      set(value) {
+        mapStore.layers[1].shown = value;
+      },
+    }),
+  },
+  {
+    title: "Zones",
+    idx: 2,
+    state: computed({
+      get() {
+        return mapStore.layers[2].shown;
+      },
+      set(value) {
+        mapStore.layers[2].shown = value;
+      },
+    }),
+  },
+  {
+    title: "Cells",
+    idx: 4,
+    state: computed({
+      get() {
+        return mapStore.layers[4].shown;
+      },
+      set(value) {
+        mapStore.layers[4].shown = value;
+      },
+    }),
+  },
+]);
+
+// const borderState = computed(() => {
+//   return mapStore.layers[0].shown;
+// });
+
+const showLayers = () => {
+  console.log("Layers State", layers.value);
+};
 </script>
 
 <style scoped>

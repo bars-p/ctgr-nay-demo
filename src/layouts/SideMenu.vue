@@ -45,13 +45,22 @@ const items = [
       to: "/routes",
     },
   },
+  // {
+  //   title: t("navigation.menuItemStops"),
+  //   value: 4,
+  //   props: {
+  //     nav: "nav",
+  //     "prepend-icon": "mdi-store-outline",
+  //     to: "/stops",
+  //   },
+  // },
   {
-    title: t("navigation.menuItemStops"),
+    title: t("navigation.menuItemSites"),
     value: 4,
     props: {
       nav: "nav",
       "prepend-icon": "mdi-store-outline",
-      to: "/stops",
+      to: "/sites",
     },
   },
   {
@@ -67,7 +76,7 @@ const items = [
     props: {
       nav: "nav",
       "prepend-icon": "mdi-poll",
-      to: "/stops",
+      to: "/duplication",
     },
   },
   {
@@ -76,7 +85,7 @@ const items = [
     props: {
       nav: "nav",
       "prepend-icon": "mdi-transit-connection-variant",
-      to: "/stops",
+      to: "/directness",
     },
   },
   {
@@ -85,7 +94,7 @@ const items = [
     props: {
       nav: "nav",
       "prepend-icon": "mdi-account-group",
-      to: "/stops",
+      to: "/ridership",
     },
   },
   {
@@ -94,7 +103,7 @@ const items = [
     props: {
       nav: "nav",
       "prepend-icon": "mdi-transit-connection",
-      to: "/stops",
+      to: "/connectivity",
     },
   },
   {
@@ -103,7 +112,7 @@ const items = [
     props: {
       nav: "nav",
       "prepend-icon": "mdi-land-plots-circle",
-      to: "/stops",
+      to: "/ptal",
     },
   },
   {
@@ -119,16 +128,25 @@ const items = [
     props: {
       nav: "nav",
       "prepend-icon": "mdi-vector-polyline-edit",
-      to: "/stops",
+      to: "/edit/routes",
     },
   },
+  // {
+  //   title: t("navigation.menuItemEditStops"),
+  //   value: 5,
+  //   props: {
+  //     nav: "nav",
+  //     "prepend-icon": "mdi-store-edit-outline",
+  //     to: "/edit/stops",
+  //   },
+  // },
   {
-    title: t("navigation.menuItemEditStops"),
+    title: t("navigation.menuItemEditSites"),
     value: 5,
     props: {
       nav: "nav",
       "prepend-icon": "mdi-store-edit-outline",
-      to: "/stops",
+      to: "/edit/sites",
     },
   },
   {
@@ -137,7 +155,7 @@ const items = [
     props: {
       nav: "nav",
       "prepend-icon": "mdi-view-dashboard-edit-outline",
-      to: "/stops",
+      to: "/edit/zones",
     },
   },
   {
@@ -146,7 +164,7 @@ const items = [
     props: {
       nav: "nav",
       "prepend-icon": "mdi-vector-point-edit",
-      to: "/stops",
+      to: "/edit/cells",
     },
   },
 ];

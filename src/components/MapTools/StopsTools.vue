@@ -12,7 +12,7 @@
           hide-details
           variant="outlined"
           density="compact"
-          :label="$t('tools.routesSelectMode')"
+          :label="$t('tools.stopsSelectMode')"
           class="mb-4"
           :no-data-text="$t('general.noData')"
           :items="selectModes"
@@ -48,8 +48,8 @@
             <v-checkbox
               hide-details
               density="compact"
-              :label="$t('tools.routesSkeleton')"
-              v-model="showSkeleton"
+              :label="$t('tools.stopsSites')"
+              v-model="showSites"
             ></v-checkbox>
           </v-col>
           <v-col cols="2" align-self="center">
@@ -59,12 +59,12 @@
               flat
               icon="mdi-checkbox-blank"
             >
-              <v-icon :color="skeletonColor"></v-icon>
+              <v-icon :color="sitesColor"></v-icon>
               <v-menu activator="parent" :close-on-content-click="false">
                 <v-color-picker
-                  v-model="skeletonColor"
+                  v-model="sitesColor"
                   show-swatches
-                  @update:model-value="skeletonColorUpdate"
+                  @update:model-value="sitesColorUpdate"
                 ></v-color-picker>
               </v-menu>
             </v-btn>
@@ -79,8 +79,8 @@
 
         <v-row dense class="mt-2 mb-4">
           <v-col>
-            {{ $t("tools.routesLadsSelected") }}: <strong>0</strong>
-            <cancel-button @click="clearSelectedLads"></cancel-button>
+            {{ $t("tools.stopsStopsSelected") }}: <strong>0</strong>
+            <cancel-button @click="clearSelectedStops"></cancel-button>
           </v-col>
         </v-row>
         <v-row dense class="my-3" justify="space-around">
@@ -94,7 +94,7 @@
             </template>
             {{ $t("general.add") }}
             <v-tooltip activator="parent" location="bottom">{{
-              $t("tools.routesAddTooltip")
+              $t("tools.stopsAddTooltip")
             }}</v-tooltip>
           </v-btn>
           <v-btn
@@ -107,7 +107,7 @@
             </template>
             {{ $t("general.replace") }}
             <v-tooltip activator="parent" location="bottom">{{
-              $t("tools.routesReplaceTooltip")
+              $t("tools.stopsReplaceTooltip")
             }}</v-tooltip>
           </v-btn>
         </v-row>
@@ -178,25 +178,25 @@
     </tools-component>
 
     <tools-component
-      :title="`${t('tools.routesLadGroup')} (${ladsInGroupMock.length})`"
-      class="lad-group"
+      :title="`${t('tools.stopsStopsGroup')} (${stopsInGroupMock.length})`"
+      class="data-group"
     >
       <template #actions>
-        <search-bar v-model="searchLad"></search-bar>
+        <search-bar v-model="searchStop"></search-bar>
         <close-button @close="processCloseGroup"></close-button>
       </template>
       <template #tools>
         <div class="mt-0">
           <v-text-field
-            v-model="ladGroupName"
+            v-model="stopsGroupName"
             clearable
-            :label="$t('tools.routesGroupName')"
+            :label="$t('tools.stopsGroupName')"
             variant="outlined"
             density="compact"
             hide-details
           >
             <template v-slot:append-inner>
-              <v-icon v-if="readyToSave" @click="saveLadGroup"
+              <v-icon v-if="readyToSave" @click="saveStopsGroup"
                 >mdi-content-save</v-icon
               >
             </template>
@@ -209,17 +209,18 @@
               <apply-button></apply-button>
             </v-col>
           </v-row>
+
           <v-row no-gutters class="mb-3">
             <v-col cols="9">
               <v-select
                 clearable
                 density="compact"
                 variant="underlined"
-                :label="$t('tools.routesLadColor')"
+                :label="$t('tools.stopsColor')"
                 hide-details
                 class="mr-3 mt-1"
                 :no-data-text="$t('general.noData')"
-                :items="ladDisplayOptions"
+                :items="stopDisplayOptions"
               ></v-select>
             </v-col>
             <v-col cols="3" align-self="end">
@@ -232,11 +233,11 @@
                 clearable
                 density="compact"
                 variant="underlined"
-                :label="$t('tools.routesLadWidth')"
+                :label="$t('tools.stopsSize')"
                 hide-details
                 class="mr-3 mt-1"
                 :no-data-text="$t('general.noData')"
-                :items="ladDisplayOptions"
+                :items="stopDisplayOptions"
               ></v-select>
             </v-col>
             <v-col cols="3" align-self="end">
@@ -249,52 +250,54 @@
               ></v-text-field>
             </v-col>
           </v-row>
+          <v-row no-gutters class="mb-3">
+            <v-col cols="9">
+              <v-select
+                clearable
+                density="compact"
+                variant="underlined"
+                :label="$t('tools.stopsShape')"
+                hide-details
+                class="mr-3 mt-1"
+                :no-data-text="$t('general.noData')"
+                :items="stopDisplayOptions"
+              ></v-select>
+            </v-col>
+            <v-col cols="3" align-self="end">
+              <config-button></config-button>
+            </v-col>
+          </v-row>
         </div>
       </template>
-      <v-container class="data-lad-group">
+      <v-container class="data-stops-group">
         <v-label class="mb-0 text-subtitle-2">
-          {{ $t("tools.routesLads") }}:
+          {{ $t("tools.routesStops") }}:
         </v-label>
 
         <v-list density="compact">
           <v-list-item
-            v-for="(lad, idx) in ladsInGroupMock"
-            :key="lad.id"
-            @click="selectSavedLad(lad)"
+            v-for="(stop, idx) in stopsInGroupMock"
+            :key="stop.id"
+            @click="selectSavedStop(stop)"
           >
             <v-list-item-title class="text-body-2">
-              {{ idx + 1 }}. {{ lad.name }}
+              {{ idx + 1 }}. {{ stop.name }}
             </v-list-item-title>
             <template #append>
               <v-btn
                 density="comfortable"
                 size="small"
                 flat
-                :icon="lad.shown ? 'mdi-eye-outline' : 'mdi-eye-off-outline'"
-                @click.stop="toggleLadShown(idx)"
+                :icon="stop.shown ? 'mdi-eye-outline' : 'mdi-eye-off-outline'"
+                @click.stop="toggleStopShown(idx)"
               >
-              </v-btn>
-              <v-btn
-                density="comfortable"
-                size="small"
-                flat
-                icon="mdi-checkbox-blank"
-              >
-                <v-icon :color="lad.color"></v-icon>
-                <v-menu activator="parent" :close-on-content-click="false">
-                  <v-color-picker
-                    v-model="lad.color"
-                    show-swatches
-                    @update:model-value="ladColorUpdate"
-                  ></v-color-picker>
-                </v-menu>
               </v-btn>
               <v-btn
                 density="comfortable"
                 size="small"
                 flat
                 icon="mdi-trash-can-outline"
-                @click.stop="deleteLad(lad)"
+                @click.stop="deleteStop(stop)"
               >
               </v-btn>
             </template>
@@ -304,11 +307,11 @@
     </tools-component>
     <distribution-dialog
       v-model="showDistribution"
-      :title="$t('tools.routesDistributionTitle')"
+      :title="$t('tools.stopsDistributionTitle')"
     ></distribution-dialog>
     <search-dialog
       v-model="showSearch"
-      :title="$t('tools.routesSearchTitle')"
+      :title="$t('tools.stopsSearchTitle')"
     ></search-dialog>
   </div>
 </template>
@@ -338,8 +341,12 @@ const searchString = ref("");
 const selectMode = ref(null);
 const selectModes = [
   {
-    title: t("tools.routesSelect"),
-    value: "routes",
+    title: t("tools.stopsSelect"),
+    value: "stops",
+  },
+  {
+    title: t("tools.stopsSitesSelect"),
+    value: "sites",
   },
   {
     title: t("tools.demandAdminAreas"),
@@ -357,18 +364,15 @@ const changeSelectMode = () => {
 const showDistribution = ref(false);
 const showSearch = ref(false);
 
-const showSkeleton = ref(true);
-const showStops = ref(false);
+const showSites = ref(false);
+const showStops = ref(true);
 
-const skeletonColor = ref("#757575");
-// const skeletonColorSelect = () => {
-//   console.log("Skeleton color select");
-// };
-const skeletonColorUpdate = () => {
-  console.log("Skeleton new color", skeletonColor.value);
+const sitesColor = ref("#757575");
+const sitesColorUpdate = () => {
+  console.log("Sites new color", sitesColor.value);
 };
 
-const clearSelectedLads = () => {
+const clearSelectedStops = () => {
   console.log("Clear selected");
 };
 
@@ -398,7 +402,7 @@ const savedStopsMock = [
 ];
 
 const groupTabs = ["LADs", "Stops"];
-const tabSelected = ref("LADs");
+const tabSelected = ref("Stops");
 const getSavedNumber = (name) => {
   return name == "LADs" ? savedLadsMock.value.length : savedStopsMock.length;
 };
@@ -418,49 +422,49 @@ const deleteStopsGroup = (item) => {
   console.log("Delete stops group", item);
 };
 
-// LAD Group
-const ladDisplayOptions = [
+// Stops Group
+const stopDisplayOptions = [
   {
-    title: t("tools.routesFrequency"),
-    value: "freq",
+    title: t("tools.stopsTripsNumber"),
+    value: "trips",
   },
   {
-    title: t("tools.routesRidership"),
-    value: "ride",
+    title: t("tools.stopsLadsNumber"),
+    value: "lads",
   },
   {
-    title: t("tools.routesSpeed"),
-    value: "speed",
+    title: t("tools.stopsBoarding"),
+    value: "in",
   },
   {
-    title: t("tools.routesMode"),
-    value: "mode",
+    title: t("tools.stopsAlighting"),
+    value: "out",
   },
 ];
 
-const ladsInGroupMock = ref([
+const stopsInGroupMock = ref([
   {
-    id: 101,
-    name: "1-0-1",
-    color: "#DCE775",
+    id: 1,
+    site_id: 100,
+    name: "Gogol St.",
     shown: true,
   },
   {
-    id: 102,
-    name: "1-0-2",
-    color: "#C0CA33",
+    id: 2,
+    site_id: 100,
+    name: "Alatau drive",
     shown: true,
   },
   {
-    id: 201,
-    name: "M-0-1",
-    color: "#FF4081",
+    id: 3,
+    site_id: 100,
+    name: "Abay",
     shown: false,
   },
   {
-    id: 202,
-    name: "M-0-2",
-    color: "#C51162",
+    id: 4,
+    site_id: 200,
+    name: "Dostyk Hwy",
     shown: true,
   },
 ]);
@@ -469,32 +473,32 @@ const processCloseGroup = () => {
   console.log("Close Group panel");
 };
 
-const searchLad = ref("");
+const searchStop = ref("");
 
-const toggleLadShown = (ladIdx) => {
-  ladsInGroupMock.value[ladIdx].shown = !ladsInGroupMock.value[ladIdx].shown;
+const toggleStopShown = (ladIdx) => {
+  stopsInGroupMock.value[ladIdx].shown = !stopsInGroupMock.value[ladIdx].shown;
 };
 
-const ladGroupName = ref(null);
+const stopsGroupName = ref(null);
 const readyToSave = computed(() => {
-  return ladGroupName.value?.length > 0;
+  return stopsGroupName.value?.length > 0;
 });
-const saveLadGroup = () => {
-  console.log("Save LadGroup", ladGroupName.value);
+const saveStopsGroup = () => {
+  console.log("Save StopsGroup", stopsGroupName.value);
 };
 
-const selectSavedLad = (lad) => {
-  console.log("LAD selected", lad);
+const selectSavedStop = (stop) => {
+  console.log("Stops selected", stop);
 };
-const deleteLad = (lad) => {
-  console.log("Delete LAD", lad.name);
+const deleteStop = (stop) => {
+  console.log("Delete Stop", stop.name);
 };
 // const ladColorSelect = (ladName) => {
 //   console.log("Select Color for LAD:", ladName);
 // };
-const ladColorUpdate = (color) => {
-  console.log("Set New color to:", color);
-};
+// const ladColorUpdate = (color) => {
+//   console.log("Set New color to:", color);
+// };
 </script>
 
 <style scoped>
@@ -502,11 +506,11 @@ const ladColorUpdate = (color) => {
   overflow: auto;
   max-height: calc(100vh - 582px);
 }
-.data-lad-group {
+.data-stops-group {
   overflow: auto;
-  max-height: calc(100vh - 470px);
+  max-height: calc(100vh - 540px);
 }
-.lad-group {
+.data-group {
   position: absolute;
   top: calc(64px + 20px);
   left: calc(100dvw - 340px);

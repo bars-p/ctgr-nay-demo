@@ -34,9 +34,6 @@ const routes = [
   {
     path: "/social",
     name: "Social",
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
     component: () =>
       import(/* webpackChunkName: "map" */ "@/views/MainView.vue"),
     props: { mode: "social" },
@@ -44,9 +41,6 @@ const routes = [
   {
     path: "/demand",
     name: "Demand",
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
     component: () =>
       import(/* webpackChunkName: "map" */ "@/views/MainView.vue"),
     props: { mode: "demand" },
@@ -54,32 +48,31 @@ const routes = [
   {
     path: "/routes",
     name: "Routes",
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
     component: () =>
       import(/* webpackChunkName: "map" */ "@/views/MainView.vue"),
     props: { mode: "routes" },
   },
+  // {
+  //   path: "/stops",
+  //   name: "Stops",
+  //   component: () =>
+  //     import(/* webpackChunkName: "map" */ "@/views/MainView.vue"),
+  //   props: { mode: "stops" },
+  // },
   {
-    path: "/stops",
-    name: "Stops",
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
+    path: "/sites",
+    name: "Sites",
     component: () =>
       import(/* webpackChunkName: "map" */ "@/views/MainView.vue"),
-    props: { mode: "stops" },
+    props: { mode: "sites" },
   },
-  // {
-  //   path: "/map",
-  //   name: "Map",
-  //   // route level code-splitting
-  //   // this generates a separate chunk (about.[hash].js) for this route
-  //   // which is lazy-loaded when the route is visited.
-  //   component: () =>
-  //     import(/* webpackChunkName: "map" */ "@/views/MapView.vue"),
-  // },
+  {
+    path: "/:pathMatch(.*)*",
+    name: "NotFound",
+    component: () =>
+      import(/* webpackChunkName: "map" */ "@/views/MainView.vue"),
+    props: { mode: "base" },
+  },
 ];
 
 const router = createRouter({

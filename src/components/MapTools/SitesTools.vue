@@ -12,7 +12,7 @@
           hide-details
           variant="outlined"
           density="compact"
-          :label="$t('tools.routesSelectMode')"
+          :label="$t('tools.sitesSelectMode')"
           class="mb-4"
           :no-data-text="$t('general.noData')"
           :items="selectModes"
@@ -48,8 +48,8 @@
             <v-checkbox
               hide-details
               density="compact"
-              :label="$t('tools.routesSkeleton')"
-              v-model="showSkeleton"
+              :label="$t('tools.sitesSites')"
+              v-model="showSites"
             ></v-checkbox>
           </v-col>
           <v-col cols="2" align-self="center">
@@ -59,12 +59,12 @@
               flat
               icon="mdi-checkbox-blank"
             >
-              <v-icon :color="skeletonColor"></v-icon>
+              <v-icon :color="sitesColor"></v-icon>
               <v-menu activator="parent" :close-on-content-click="false">
                 <v-color-picker
-                  v-model="skeletonColor"
+                  v-model="sitesColor"
                   show-swatches
-                  @update:model-value="skeletonColorUpdate"
+                  @update:model-value="sitesColorUpdate"
                 ></v-color-picker>
               </v-menu>
             </v-btn>
@@ -79,8 +79,8 @@
 
         <v-row dense class="mt-2 mb-4">
           <v-col>
-            {{ $t("tools.routesLadsSelected") }}: <strong>0</strong>
-            <cancel-button @click="clearSelectedLads"></cancel-button>
+            {{ $t("tools.sitesSelected") }}: <strong>0</strong>
+            <cancel-button @click="clearSelectedSites"></cancel-button>
           </v-col>
         </v-row>
         <v-row dense class="my-3" justify="space-around">
@@ -94,7 +94,7 @@
             </template>
             {{ $t("general.add") }}
             <v-tooltip activator="parent" location="bottom">{{
-              $t("tools.routesAddTooltip")
+              $t("tools.sitesAddTooltip")
             }}</v-tooltip>
           </v-btn>
           <v-btn
@@ -107,10 +107,76 @@
             </template>
             {{ $t("general.replace") }}
             <v-tooltip activator="parent" location="bottom">{{
-              $t("tools.routesReplaceTooltip")
+              $t("tools.sitesReplaceTooltip")
             }}</v-tooltip>
           </v-btn>
         </v-row>
+
+        <!-- <div v-if="false">
+          <v-divider class="my-5"></v-divider>
+
+          <v-label class="my-1 text-subtitle-2"
+            >!!Stops display options:</v-label
+          >
+          <apply-button></apply-button>
+          <v-row no-gutters class="mb-3">
+            <v-col cols="9">
+              <v-select
+                clearable
+                density="compact"
+                variant="underlined"
+                label="!Stop Color"
+                hide-details
+                class="mr-3 mt-1"
+                :no-data-text="$t('general.noData')"
+                :items="stopDisplayOptions"
+              ></v-select>
+            </v-col>
+            <v-col cols="3" align-self="end">
+              <config-button></config-button>
+            </v-col>
+          </v-row>
+          <v-row no-gutters class="mb-3">
+            <v-col cols="9">
+              <v-select
+                clearable
+                density="compact"
+                variant="underlined"
+                label="!Stop Size"
+                hide-details
+                class="mr-3 mt-1"
+                :no-data-text="$t('general.noData')"
+                :items="stopDisplayOptions"
+              ></v-select>
+            </v-col>
+            <v-col cols="3" align-self="end">
+              <v-text-field
+                density="compact"
+                hide-details
+                variant="underlined"
+                label="!Max"
+                type="number"
+              ></v-text-field>
+            </v-col>
+          </v-row>
+          <v-row no-gutters class="mb-3">
+            <v-col cols="9">
+              <v-select
+                clearable
+                density="compact"
+                variant="underlined"
+                label="!Stop Shape"
+                hide-details
+                class="mr-3 mt-1"
+                :no-data-text="$t('general.noData')"
+                :items="stopDisplayOptions"
+              ></v-select>
+            </v-col>
+            <v-col cols="3" align-self="end">
+              <config-button></config-button>
+            </v-col>
+          </v-row>
+        </div> -->
       </template>
       <v-container class="data-block">
         <v-label class="mb-0 text-subtitle-2"
@@ -150,15 +216,15 @@
               </v-list-item>
             </v-list>
           </v-window-item>
-          <v-window-item value="Stops">
+          <v-window-item value="Sites">
             <v-list density="compact">
               <v-list-item
-                v-for="(stopGroup, idx) in savedStopsMock"
-                :key="stopGroup.name"
-                @click="selectStopsGroup(stopGroup)"
+                v-for="(siteGroup, idx) in savedSitesMock"
+                :key="siteGroup.name"
+                @click="selectSitesGroup(siteGroup)"
               >
                 <v-list-item-title class="text-body-2">
-                  {{ idx + 1 }}. {{ stopGroup.name }} ({{ stopGroup.count }})
+                  {{ idx + 1 }}. {{ siteGroup.name }} ({{ siteGroup.count }})
                 </v-list-item-title>
                 <template #append>
                   <v-btn
@@ -166,7 +232,7 @@
                     size="small"
                     flat
                     icon="mdi-trash-can-outline"
-                    @click.stop="deleteStopsGroup(idx)"
+                    @click.stop="deleteSitesGroup(idx)"
                   >
                   </v-btn>
                 </template>
@@ -178,25 +244,25 @@
     </tools-component>
 
     <tools-component
-      :title="`${t('tools.routesLadGroup')} (${ladsInGroupMock.length})`"
-      class="lad-group"
+      :title="`${t('tools.sitesGroup')} (${sitesInGroupMock.length})`"
+      class="data-group"
     >
       <template #actions>
-        <search-bar v-model="searchLad"></search-bar>
+        <search-bar v-model="searchSite"></search-bar>
         <close-button @close="processCloseGroup"></close-button>
       </template>
       <template #tools>
         <div class="mt-0">
           <v-text-field
-            v-model="ladGroupName"
+            v-model="sitesGroupName"
             clearable
-            :label="$t('tools.routesGroupName')"
+            :label="$t('tools.sitesGroupName')"
             variant="outlined"
             density="compact"
             hide-details
           >
             <template v-slot:append-inner>
-              <v-icon v-if="readyToSave" @click="saveLadGroup"
+              <v-icon v-if="readyToSave" @click="saveSitesGroup"
                 >mdi-content-save</v-icon
               >
             </template>
@@ -209,17 +275,18 @@
               <apply-button></apply-button>
             </v-col>
           </v-row>
+
           <v-row no-gutters class="mb-3">
             <v-col cols="9">
               <v-select
                 clearable
                 density="compact"
                 variant="underlined"
-                :label="$t('tools.routesLadColor')"
+                :label="$t('tools.sitesColor')"
                 hide-details
                 class="mr-3 mt-1"
                 :no-data-text="$t('general.noData')"
-                :items="ladDisplayOptions"
+                :items="siteDisplayOptions"
               ></v-select>
             </v-col>
             <v-col cols="3" align-self="end">
@@ -232,11 +299,11 @@
                 clearable
                 density="compact"
                 variant="underlined"
-                :label="$t('tools.routesLadWidth')"
+                :label="$t('tools.sitesSize')"
                 hide-details
                 class="mr-3 mt-1"
                 :no-data-text="$t('general.noData')"
-                :items="ladDisplayOptions"
+                :items="siteDisplayOptions"
               ></v-select>
             </v-col>
             <v-col cols="3" align-self="end">
@@ -249,52 +316,54 @@
               ></v-text-field>
             </v-col>
           </v-row>
+          <v-row no-gutters class="mb-3">
+            <v-col cols="9">
+              <v-select
+                clearable
+                density="compact"
+                variant="underlined"
+                :label="$t('tools.sitesShape')"
+                hide-details
+                class="mr-3 mt-1"
+                :no-data-text="$t('general.noData')"
+                :items="siteDisplayOptions"
+              ></v-select>
+            </v-col>
+            <v-col cols="3" align-self="end">
+              <config-button></config-button>
+            </v-col>
+          </v-row>
         </div>
       </template>
-      <v-container class="data-lad-group">
+      <v-container class="data-sites-group">
         <v-label class="mb-0 text-subtitle-2">
-          {{ $t("tools.routesLads") }}:
+          {{ $t("tools.sitesSites") }}:
         </v-label>
 
         <v-list density="compact">
           <v-list-item
-            v-for="(lad, idx) in ladsInGroupMock"
-            :key="lad.id"
-            @click="selectSavedLad(lad)"
+            v-for="(site, idx) in sitesInGroupMock"
+            :key="site.id"
+            @click="selectSavedSite(site)"
           >
             <v-list-item-title class="text-body-2">
-              {{ idx + 1 }}. {{ lad.name }}
+              {{ idx + 1 }}. {{ site.name }}
             </v-list-item-title>
             <template #append>
               <v-btn
                 density="comfortable"
                 size="small"
                 flat
-                :icon="lad.shown ? 'mdi-eye-outline' : 'mdi-eye-off-outline'"
-                @click.stop="toggleLadShown(idx)"
+                :icon="site.shown ? 'mdi-eye-outline' : 'mdi-eye-off-outline'"
+                @click.stop="toggleSiteShown(idx)"
               >
-              </v-btn>
-              <v-btn
-                density="comfortable"
-                size="small"
-                flat
-                icon="mdi-checkbox-blank"
-              >
-                <v-icon :color="lad.color"></v-icon>
-                <v-menu activator="parent" :close-on-content-click="false">
-                  <v-color-picker
-                    v-model="lad.color"
-                    show-swatches
-                    @update:model-value="ladColorUpdate"
-                  ></v-color-picker>
-                </v-menu>
               </v-btn>
               <v-btn
                 density="comfortable"
                 size="small"
                 flat
                 icon="mdi-trash-can-outline"
-                @click.stop="deleteLad(lad)"
+                @click.stop="deleteSite(site)"
               >
               </v-btn>
             </template>
@@ -304,11 +373,11 @@
     </tools-component>
     <distribution-dialog
       v-model="showDistribution"
-      :title="$t('tools.routesDistributionTitle')"
+      :title="$t('tools.sitesDistributionTitle')"
     ></distribution-dialog>
     <search-dialog
       v-model="showSearch"
-      :title="$t('tools.routesSearchTitle')"
+      :title="$t('tools.sitesSearchTitle')"
     ></search-dialog>
   </div>
 </template>
@@ -338,8 +407,8 @@ const searchString = ref("");
 const selectMode = ref(null);
 const selectModes = [
   {
-    title: t("tools.routesSelect"),
-    value: "routes",
+    title: t("tools.stopsSitesSelect"),
+    value: "sites",
   },
   {
     title: t("tools.demandAdminAreas"),
@@ -357,18 +426,15 @@ const changeSelectMode = () => {
 const showDistribution = ref(false);
 const showSearch = ref(false);
 
-const showSkeleton = ref(true);
-const showStops = ref(false);
+const showSites = ref(false);
+const showStops = ref(true);
 
-const skeletonColor = ref("#757575");
-// const skeletonColorSelect = () => {
-//   console.log("Skeleton color select");
-// };
-const skeletonColorUpdate = () => {
-  console.log("Skeleton new color", skeletonColor.value);
+const sitesColor = ref("#757575");
+const sitesColorUpdate = () => {
+  console.log("Sites new color", sitesColor.value);
 };
 
-const clearSelectedLads = () => {
+const clearSelectedSites = () => {
   console.log("Clear selected");
 };
 
@@ -386,7 +452,7 @@ const savedLadsMock = ref([
     count: 15,
   },
 ]);
-const savedStopsMock = [
+const savedSitesMock = [
   {
     name: "Stops around Hospital",
     count: 9,
@@ -397,10 +463,10 @@ const savedStopsMock = [
   },
 ];
 
-const groupTabs = ["LADs", "Stops"];
-const tabSelected = ref("LADs");
+const groupTabs = ["LADs", "Sites"];
+const tabSelected = ref("Sites");
 const getSavedNumber = (name) => {
-  return name == "LADs" ? savedLadsMock.value.length : savedStopsMock.length;
+  return name == "LADs" ? savedLadsMock.value.length : savedSitesMock.length;
 };
 
 const selectLadGroup = (ladGroup) => {
@@ -411,56 +477,56 @@ const deleteLadGroup = (ladGroup) => {
   savedLadsMock.value.splice(ladGroup, 1);
   console.log("LADs:", savedLadsMock.value);
 };
-const selectStopsGroup = (item) => {
-  console.log("Select stops group", item);
+const selectSitesGroup = (item) => {
+  console.log("Select sites group", item);
 };
-const deleteStopsGroup = (item) => {
-  console.log("Delete stops group", item);
+const deleteSitesGroup = (item) => {
+  console.log("Delete sites group", item);
 };
 
-// LAD Group
-const ladDisplayOptions = [
+// Sites Group
+const siteDisplayOptions = [
   {
-    title: t("tools.routesFrequency"),
-    value: "freq",
+    title: t("tools.sitesTripsNumber"),
+    value: "trips",
   },
   {
-    title: t("tools.routesRidership"),
-    value: "ride",
+    title: t("tools.sitesLadsNumber"),
+    value: "lads",
   },
   {
-    title: t("tools.routesSpeed"),
-    value: "speed",
+    title: t("tools.sitesBoarding"),
+    value: "in",
   },
   {
-    title: t("tools.routesMode"),
-    value: "mode",
+    title: t("tools.sitesAlighting"),
+    value: "out",
   },
 ];
 
-const ladsInGroupMock = ref([
+const sitesInGroupMock = ref([
   {
-    id: 101,
-    name: "1-0-1",
-    color: "#DCE775",
+    id: 1,
+    site_id: 100,
+    name: "Gogol St.",
     shown: true,
   },
   {
-    id: 102,
-    name: "1-0-2",
-    color: "#C0CA33",
+    id: 2,
+    site_id: 100,
+    name: "Alatau drive",
     shown: true,
   },
   {
-    id: 201,
-    name: "M-0-1",
-    color: "#FF4081",
+    id: 3,
+    site_id: 100,
+    name: "Abay",
     shown: false,
   },
   {
-    id: 202,
-    name: "M-0-2",
-    color: "#C51162",
+    id: 4,
+    site_id: 200,
+    name: "Dostyk Hwy",
     shown: true,
   },
 ]);
@@ -469,32 +535,33 @@ const processCloseGroup = () => {
   console.log("Close Group panel");
 };
 
-const searchLad = ref("");
+const searchSite = ref("");
 
-const toggleLadShown = (ladIdx) => {
-  ladsInGroupMock.value[ladIdx].shown = !ladsInGroupMock.value[ladIdx].shown;
+const toggleSiteShown = (siteIdx) => {
+  sitesInGroupMock.value[siteIdx].shown =
+    !sitesInGroupMock.value[siteIdx].shown;
 };
 
-const ladGroupName = ref(null);
+const sitesGroupName = ref(null);
 const readyToSave = computed(() => {
-  return ladGroupName.value?.length > 0;
+  return sitesGroupName.value?.length > 0;
 });
-const saveLadGroup = () => {
-  console.log("Save LadGroup", ladGroupName.value);
+const saveSitesGroup = () => {
+  console.log("Save Sites Group", sitesGroupName.value);
 };
 
-const selectSavedLad = (lad) => {
-  console.log("LAD selected", lad);
+const selectSavedSite = (site) => {
+  console.log("Site selected", site);
 };
-const deleteLad = (lad) => {
-  console.log("Delete LAD", lad.name);
+const deleteSite = (site) => {
+  console.log("Delete Site", site.name);
 };
 // const ladColorSelect = (ladName) => {
 //   console.log("Select Color for LAD:", ladName);
 // };
-const ladColorUpdate = (color) => {
-  console.log("Set New color to:", color);
-};
+// const ladColorUpdate = (color) => {
+//   console.log("Set New color to:", color);
+// };
 </script>
 
 <style scoped>
@@ -502,11 +569,11 @@ const ladColorUpdate = (color) => {
   overflow: auto;
   max-height: calc(100vh - 582px);
 }
-.data-lad-group {
+.data-sites-group {
   overflow: auto;
-  max-height: calc(100vh - 470px);
+  max-height: calc(100vh - 540px);
 }
-.lad-group {
+.data-group {
   position: absolute;
   top: calc(64px + 20px);
   left: calc(100dvw - 340px);
