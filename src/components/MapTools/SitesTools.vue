@@ -426,8 +426,8 @@ const changeSelectMode = () => {
 const showDistribution = ref(false);
 const showSearch = ref(false);
 
-const showSites = ref(false);
-const showStops = ref(true);
+const showSites = ref(true);
+const showStops = ref(false);
 
 const sitesColor = ref("#757575");
 const sitesColorUpdate = () => {

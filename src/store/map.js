@@ -225,6 +225,36 @@ export const useMapStore = defineStore("mapStore", () => {
     demandIdsFromLevel.value = null;
     demandItemsForProcessing.value = [];
   };
+  let demandVectors = [];
+  // FIXME: Data loading with BackEnd
+  const loadDemandVectors = async () => {
+    if (demandVectors.length == 0) {
+      demandVectors = [];
+    }
+  };
+
+  // Connectivity data
+  const connectivityType = ref(null);
+  const connectivityDirection = ref("from");
+  const connectivitySelectMode = ref("one");
+  const connectivityItemsSelectedIds = new Set();
+  const connectivityIdsFromType = ref(null);
+  const connectivityItemsForProcessing = ref([]);
+  const connectivityProcessItems = () => {
+    console.log(
+      "Map Store - Connectivity processed",
+      connectivityItemsSelectedIds
+    );
+    connectivityItemsForProcessing.value = [...connectivityItemsSelectedIds];
+  };
+  const connectivityResetData = () => {
+    // connectivityLevel.value = null;
+    connectivityDirection.value = "from";
+    connectivitySelectMode.value = "one";
+    connectivityItemsSelectedIds.clear();
+    connectivityIdsFromType.value = null;
+    connectivityItemsForProcessing.value = [];
+  };
 
   return {
     userSettingsShown,
@@ -254,6 +284,7 @@ export const useMapStore = defineStore("mapStore", () => {
     addCellToSelected,
     removeCellFromSelected,
     clearSelectedCells,
+    loadDemandVectors,
     demandLevel,
     demandDirection,
     demandSelectMode,
@@ -262,5 +293,13 @@ export const useMapStore = defineStore("mapStore", () => {
     demandItemsForProcessing,
     demandProcessItems,
     demandResetData,
+    connectivityType,
+    connectivityDirection,
+    connectivitySelectMode,
+    connectivityItemsSelectedIds,
+    connectivityIdsFromType,
+    connectivityItemsForProcessing,
+    connectivityProcessItems,
+    connectivityResetData,
   };
 });

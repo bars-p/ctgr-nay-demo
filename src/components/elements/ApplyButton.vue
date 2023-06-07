@@ -1,6 +1,8 @@
 <template>
   <v-btn flat density="compact" icon class="cancel-button">
-    <v-icon color="green-lighten-2"> mdi-check-circle-outline </v-icon>
+    <v-icon color="green-lighten-2">
+      mdi-checkbox-marked-circle-outline
+    </v-icon>
   </v-btn>
 </template>
 

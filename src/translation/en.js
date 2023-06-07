@@ -27,6 +27,12 @@ export default {
     add: "Add",
     replace: "Replace",
     displayOptions: "Display options",
+    direction: "Direction",
+    mode: "Mode",
+    from: "From",
+    to: "To",
+    one: "One",
+    many: "Many",
   },
 
   // Navigation Items
@@ -82,12 +88,6 @@ export default {
     socialSelectedToMany: "Select a smaller number of features",
 
     // Travel Demand
-    demandDirection: "Direction:",
-    demandFrom: "From",
-    demandTo: "To",
-    demandMode: "Mode:",
-    demandOne: "One",
-    demandMany: "Many",
     demandLevel: "Level",
     demandAdminAreas: "Districts",
 
@@ -109,7 +109,6 @@ export default {
     routesGroupName: "LAD group name",
     routesLadColor: "Color",
     routesLadWidth: "Width",
-    // routesWidthMax: "Max",
     routesFrequency: "Frequency",
     routesRidership: "Ridership",
     routesSpeed: "Speed",
@@ -153,5 +152,10 @@ export default {
     sitesColor: "Site color",
     sitesSize: "Site stop size",
     sitesShape: "Site stop shape",
+
+    //Connectivity
+    connectivityType: "Type of connectivity",
+    connectivitySpeed: "LAD speed",
+    connectivityRoute: "Routes change level",
   },
 };

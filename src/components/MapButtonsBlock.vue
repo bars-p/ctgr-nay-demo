@@ -58,54 +58,37 @@ const mapStore = useMapStore();
 // const handleRotateClick = () => {
 //   console.log("Rotate button clicked");
 // };
+
+const getLayerData = (idx) => {
+  return {
+    idx: idx,
+    state: computed({
+      get() {
+        return mapStore.layers[idx].shown;
+      },
+      set(value) {
+        mapStore.layers[idx].shown = value;
+      },
+    }),
+  };
+};
+
 const layers = ref([
   {
     title: "Borders",
-    idx: 0,
-    state: computed({
-      get() {
-        return mapStore.layers[0].shown;
-      },
-      set(value) {
-        mapStore.layers[0].shown = value;
-      },
-    }),
+    ...getLayerData(mapStore.layersIdxs.adminBorder),
   },
   {
     title: "Districts",
-    idx: 1,
-    state: computed({
-      get() {
-        return mapStore.layers[1].shown;
-      },
-      set(value) {
-        mapStore.layers[1].shown = value;
-      },
-    }),
+    ...getLayerData(mapStore.layersIdxs.adminFill),
   },
   {
     title: "Zones",
-    idx: 2,
-    state: computed({
-      get() {
-        return mapStore.layers[2].shown;
-      },
-      set(value) {
-        mapStore.layers[2].shown = value;
-      },
-    }),
+    ...getLayerData(mapStore.layersIdxs.zonesBorder),
   },
   {
     title: "Cells",
-    idx: 4,
-    state: computed({
-      get() {
-        return mapStore.layers[4].shown;
-      },
-      set(value) {
-        mapStore.layers[4].shown = value;
-      },
-    }),
+    ...getLayerData(mapStore.layersIdxs.cellsFill),
   },
 ]);
 

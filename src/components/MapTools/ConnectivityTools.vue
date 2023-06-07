@@ -2,7 +2,7 @@
   <tools-component :title="props.title">
     <template #actions>
       <v-progress-circular
-        v-if="mapStore.demandSelectMode == 'many'"
+        v-if="mapStore.connectivitySelectMode == 'many'"
         indeterminate
         color="primary"
         :width="3"
@@ -26,7 +26,7 @@
       <v-row dense>
         <v-col>
           <v-btn-toggle
-            v-model="mapStore.demandDirection"
+            v-model="mapStore.connectivityDirection"
             divided
             variant="outlined"
             density="comfortable"
@@ -46,7 +46,7 @@
         </v-col>
         <v-col>
           <v-btn-toggle
-            v-model="mapStore.demandSelectMode"
+            v-model="mapStore.connectivitySelectMode"
             divided
             variant="outlined"
             density="comfortable"
@@ -72,12 +72,12 @@
             </v-tooltip>
           </v-btn-toggle>
           <apply-button
-            v-if="mapStore.demandSelectMode == 'many'"
+            v-if="mapStore.connectivitySelectMode == 'many'"
             density="comfortable"
-            @click="mapStore.demandProcessItems"
+            @click="mapStore.connectivityProcessItems"
           ></apply-button>
           <!-- <v-btn
-            v-if="mapStore.demandSelectMode == 'many'"
+            v-if="mapStore.connectivitySelectMode == 'many'"
             icon="mdi-checkbox-marked-circle-outline"
             flat
             density="comfortable"
@@ -91,16 +91,16 @@
       <v-row>
         <v-col>
           <v-select
-            v-model="mapStore.demandLevel"
+            v-model="mapStore.connectivityType"
             clearable
             hide-details
             variant="outlined"
             density="compact"
-            :label="$t('tools.demandLevel')"
+            :label="$t('tools.connectivityType')"
             class="mb-2"
             :no-data-text="$t('general.noData')"
-            :items="selectItemsLevel"
-            @update:model-value="processLevelSelect"
+            :items="connectivityTypes"
+            @update:model-value="processTypeChange"
           >
           </v-select>
         </v-col>
@@ -113,8 +113,6 @@
 import ToolsComponent from "../ToolsComponent.vue";
 import ApplyButton from "../elements/ApplyButton.vue";
 
-// import { ref } from "vue";
-
 import { useI18n } from "vue-i18n";
 const { t } = useI18n();
 
@@ -123,83 +121,40 @@ const mapStore = useMapStore();
 
 const props = defineProps(["title"]);
 
-// const demandDirection = ref("from");
-// const selectMode = ref("one");
-
-const selectItemsLevel = [
+const connectivityTypes = [
   {
-    title: t("tools.demandAdminAreas"),
-    value: "district",
+    title: t("tools.connectivitySpeed"),
+    value: "speed",
   },
   {
-    title: t("tools.socialZones"),
-    value: "zone",
+    title: t("tools.connectivityRoute"),
+    value: "route",
   },
-  mapStore.savedAreas.length > 0 && {
-    title: t("tools.socialSavedDisplay"),
-    value: "area",
-  },
-].filter(Boolean);
+];
 
-const processLevelSelect = (val) => {
-  console.log("Selected Level", mapStore.demandLevel);
+const processTypeChange = (val) => {
+  console.log("Selected Type", mapStore.connectivityType);
   console.log("Value", val);
   switch (val) {
-    case "district":
-      if (!mapStore.layers[mapStore.layersIdxs.adminAreaSelect].shown) {
-        mapStore.layers[mapStore.layersIdxs.adminAreaSelect].shown = true;
-      }
-      if (!mapStore.layers[mapStore.layersIdxs.adminBorder].shown) {
-        mapStore.layers[mapStore.layersIdxs.adminBorder].shown = true;
-      }
-      if (!mapStore.layers[mapStore.layersIdxs.adminAreasSelected].shown) {
-        mapStore.layers[mapStore.layersIdxs.adminAreasSelected].shown = true;
-      }
-      if (mapStore.layers[mapStore.layersIdxs.zonesSelected].shown) {
-        mapStore.layers[mapStore.layersIdxs.zonesSelected].shown = false;
-      }
-      if (mapStore.layers[mapStore.layersIdxs.savedAreasSelected].shown) {
-        mapStore.layers[mapStore.layersIdxs.savedAreasSelected].shown = false;
-      }
-      break;
-
-    case "zone":
-      if (!mapStore.layers[mapStore.layersIdxs.zoneSelect].shown) {
-        mapStore.layers[mapStore.layersIdxs.zoneSelect].shown = true;
-      }
-      if (!mapStore.layers[mapStore.layersIdxs.zonesBorder].shown) {
-        mapStore.layers[mapStore.layersIdxs.zonesBorder].shown = true;
-      }
+    case "speed":
+      console.log("Speed statistics");
       if (!mapStore.layers[mapStore.layersIdxs.zonesSelected].shown) {
         mapStore.layers[mapStore.layersIdxs.zonesSelected].shown = true;
       }
-      if (mapStore.layers[mapStore.layersIdxs.adminAreasSelected].shown) {
-        mapStore.layers[mapStore.layersIdxs.adminAreasSelected].shown = false;
-      }
-      if (mapStore.layers[mapStore.layersIdxs.savedAreasSelected].shown) {
-        mapStore.layers[mapStore.layersIdxs.savedAreasSelected].shown = false;
-      }
+      // TODO: Process Speed Stats for Zones selected
+
       break;
 
-    case "area":
-      if (!mapStore.layers[mapStore.layersIdxs.cellsSaved].shown) {
-        mapStore.layers[mapStore.layersIdxs.cellsSaved].shown = true;
+    case "route":
+      console.log("Route statistics");
+      if (!mapStore.layers[mapStore.layersIdxs.zonesSelected].shown) {
+        mapStore.layers[mapStore.layersIdxs.zonesSelected].shown = true;
       }
-      if (!mapStore.layers[mapStore.layersIdxs.savedAreasSelected].shown) {
-        mapStore.layers[mapStore.layersIdxs.savedAreasSelected].shown = true;
-      }
-      if (mapStore.layers[mapStore.layersIdxs.zonesSelected].shown) {
-        mapStore.layers[mapStore.layersIdxs.zonesSelected].shown = false;
-      }
-      if (mapStore.layers[mapStore.layersIdxs.adminAreasSelected].shown) {
-        mapStore.layers[mapStore.layersIdxs.adminAreasSelected].shown = false;
-      }
+      // TODO: Process Route Stats for Zones selected
+
       break;
 
     default:
-      if (mapStore.layers[mapStore.layersIdxs.adminAreasSelected].shown) {
-        mapStore.layers[mapStore.layersIdxs.adminAreasSelected].shown = false;
-      }
       if (mapStore.layers[mapStore.layersIdxs.zonesSelected].shown) {
         mapStore.layers[mapStore.layersIdxs.zonesSelected].shown = false;
       }
@@ -210,7 +165,7 @@ const processLevelSelect = (val) => {
 
 const clearSelection = () => {
   console.log("Clear Selection");
-  mapStore.demandItemsSelectedIds.clear();
-  mapStore.demandProcessItems();
+  mapStore.connectivityItemsSelectedIds.clear();
+  mapStore.connectivityProcessItems();
 };
 </script>

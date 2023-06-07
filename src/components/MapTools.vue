@@ -19,6 +19,14 @@
     v-else-if="props.mode === 'sites'"
     :title="$t('navigation.menuItemSites')"
   />
+  <connectivity-tools
+    v-else-if="props.mode === 'connectivity'"
+    :title="$t('navigation.menuItemConnectivity')"
+  />
+  <ptal-tools
+    v-else-if="props.mode === 'ptal'"
+    :title="$t('navigation.menuItemPtal')"
+  />
 
   <tools-component v-else :title="props.mode">
     <template v-slot:actions>
@@ -34,6 +42,8 @@ import DemandTools from "./MapTools/DemandTools.vue";
 import RoutesTools from "./MapTools/RoutesTools.vue";
 // import StopsTools from "./MapTools/StopsTools.vue";
 import SitesTools from "./MapTools/SitesTools.vue";
+import ConnectivityTools from "./MapTools/ConnectivityTools.vue";
+import PtalTools from "./MapTools/PtalTools.vue";
 
 const props = defineProps(["mode"]);
 </script>

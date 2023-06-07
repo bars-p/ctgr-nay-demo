@@ -67,6 +67,20 @@ const routes = [
     props: { mode: "sites" },
   },
   {
+    path: "/connectivity",
+    name: "Connectivity",
+    component: () =>
+      import(/* webpackChunkName: "map" */ "@/views/MainView.vue"),
+    props: { mode: "connectivity" },
+  },
+  {
+    path: "/ptal",
+    name: "Ptal",
+    component: () =>
+      import(/* webpackChunkName: "map" */ "@/views/MainView.vue"),
+    props: { mode: "ptal" },
+  },
+  {
     path: "/:pathMatch(.*)*",
     name: "NotFound",
     component: () =>

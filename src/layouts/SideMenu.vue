@@ -81,7 +81,7 @@ const items = [
   },
   {
     title: t("navigation.menuItemDirectness"),
-    value: 5,
+    value: 6,
     props: {
       nav: "nav",
       "prepend-icon": "mdi-transit-connection-variant",
@@ -90,7 +90,7 @@ const items = [
   },
   {
     title: t("navigation.menuItemRidership"),
-    value: 5,
+    value: 7,
     props: {
       nav: "nav",
       "prepend-icon": "mdi-account-group",
@@ -99,7 +99,7 @@ const items = [
   },
   {
     title: t("navigation.menuItemConnectivity"),
-    value: 5,
+    value: 8,
     props: {
       nav: "nav",
       "prepend-icon": "mdi-transit-connection",
@@ -108,7 +108,7 @@ const items = [
   },
   {
     title: t("navigation.menuItemPtal"),
-    value: 5,
+    value: 9,
     props: {
       nav: "nav",
       "prepend-icon": "mdi-land-plots-circle",
@@ -124,7 +124,7 @@ const items = [
   },
   {
     title: t("navigation.menuItemEditRoutes"),
-    value: 5,
+    value: 10,
     props: {
       nav: "nav",
       "prepend-icon": "mdi-vector-polyline-edit",
@@ -133,7 +133,7 @@ const items = [
   },
   // {
   //   title: t("navigation.menuItemEditStops"),
-  //   value: 5,
+  //   value: 11,
   //   props: {
   //     nav: "nav",
   //     "prepend-icon": "mdi-store-edit-outline",
@@ -142,7 +142,7 @@ const items = [
   // },
   {
     title: t("navigation.menuItemEditSites"),
-    value: 5,
+    value: 12,
     props: {
       nav: "nav",
       "prepend-icon": "mdi-store-edit-outline",
@@ -151,7 +151,7 @@ const items = [
   },
   {
     title: t("navigation.menuItemEditZones"),
-    value: 5,
+    value: 13,
     props: {
       nav: "nav",
       "prepend-icon": "mdi-view-dashboard-edit-outline",
@@ -160,7 +160,7 @@ const items = [
   },
   {
     title: t("navigation.menuItemEditCells"),
-    value: 5,
+    value: 14,
     props: {
       nav: "nav",
       "prepend-icon": "mdi-vector-point-edit",
@@ -173,5 +173,3 @@ const items = [
 //   console.log(itemSelected);
 // };
 </script>
-
-<style scoped></style>

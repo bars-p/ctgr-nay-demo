@@ -137,6 +137,12 @@ watch(
     getDemandStatistics();
   }
 );
+watch(
+  () => mapStore.connectivityItemsForProcessing,
+  () => {
+    getConnectivityStatistics();
+  }
+);
 
 // Data processing
 let sourceAdminAreas = null;
@@ -219,12 +225,19 @@ const demandLayersIdxs = [
   layersIdxs.adminAreaSelect,
   layersIdxs.zoneSelect,
 ];
+const connectivityLayersIdxs = [
+  layersIdxs.adminBorder,
+  // layersIdxs.adminFill,
+  layersIdxs.zonesBorder,
+  layersIdxs.adminAreaSelect,
+  layersIdxs.zoneSelect,
+];
 const routesLayersIdxs = [
   layersIdxs.adminBorder,
   layersIdxs.adminFill,
   layersIdxs.zonesBorder,
 ];
-const stopsLayersIdxs = [layersIdxs.adminBorder, layersIdxs.cellsFill];
+// const stopsLayersIdxs = [layersIdxs.adminBorder, layersIdxs.cellsFill];
 
 const cellPopup = new mapboxgl.Popup({
   closeButton: false,
@@ -764,6 +777,8 @@ const buildLayers = () => {
           map.getCanvas().style.cursor = "pointer";
           // console.log("Hovered:", e.features[0]);
         }
+      } else if (props.mode == "connectivity" && mapStore.connectivityType) {
+        map.getCanvas().style.cursor = "pointer";
       }
     });
     map.on("mouseleave", mapStore.layers[layersIdxs.zoneSelect].name, () => {
@@ -772,6 +787,8 @@ const buildLayers = () => {
           map.getCanvas().style.cursor = "";
           cellPopup.remove();
         }
+      } else if (props.mode == "connectivity" && mapStore.connectivityType) {
+        map.getCanvas().style.cursor = "";
       }
     });
     map.on("mousemove", "cells-saved", (e) => {
@@ -808,6 +825,9 @@ const buildLayers = () => {
       if (props.mode == "demand" && mapStore.demandLevel == "zone") {
         const feature = Object.assign(item.features[0]);
         processDemandFeatureSelect(feature.properties.id);
+      } else if (props.mode == "connectivity" && mapStore.connectivityType) {
+        const feature = Object.assign(item.features[0]);
+        processConnectivityFeatureSelect(feature.properties.id);
       }
     });
     map.on("click", mapStore.layers[layersIdxs.cellsSaved].name, (item) => {
@@ -830,6 +850,7 @@ const setLocalLayers = () => {
 const displayModeLayers = () => {
   switch (props.mode) {
     case "social":
+    case "ptal":
       if (mapStore.isLayersSet == false) {
         console.log("Set SOCIAL layers");
         toggleLayers(socialLayersIdxs);
@@ -843,6 +864,13 @@ const displayModeLayers = () => {
         mapStore.isLayersSet = true;
       }
       break;
+    case "connectivity":
+      if (mapStore.isLayersSet == false) {
+        console.log("Set CONNECTIVITY layers");
+        toggleLayers(connectivityLayersIdxs);
+        mapStore.isLayersSet = true;
+      }
+      break;
     case "routes":
       if (mapStore.isLayersSet == false) {
         console.log("Set ROUTES layers");
@@ -850,10 +878,17 @@ const displayModeLayers = () => {
         mapStore.isLayersSet = true;
       }
       break;
-    case "stops":
+    // case "stops":
+    //   if (mapStore.isLayersSet == false) {
+    //     console.log("Set STOP layers");
+    //     toggleLayers(stopsLayersIdxs);
+    //     mapStore.isLayersSet = true;
+    //   }
+    //   break;
+    case "sites":
       if (mapStore.isLayersSet == false) {
-        console.log("Set STOP layers");
-        toggleLayers(stopsLayersIdxs);
+        console.log("Set Sites layers");
+        toggleLayers(routesLayersIdxs);
         mapStore.isLayersSet = true;
       }
       break;
@@ -946,7 +981,6 @@ const processCellsSelected = (cellsFeatures) => {
 };
 
 // Demand Logic
-
 const processDemandFeatureSelect = (id) => {
   console.log("Select Item", id, mapStore.demandLevel);
   if (mapStore.demandSelectMode == "one") {
@@ -1024,6 +1058,88 @@ const getDemandStatistics = () => {
     }
   }
 };
+
+//Connectivity logic
+const processConnectivityFeatureSelect = (id) => {
+  console.log("Select Item Connectivity", id, mapStore.connectivityType);
+  if (mapStore.connectivitySelectMode == "one") {
+    mapStore.connectivityItemsSelectedIds.clear();
+    mapStore.connectivityItemsSelectedIds.add(id);
+    mapStore.connectivityIdsFromType = mapStore.connectivityType;
+  } else if (mapStore.connectivitySelectMode == "many") {
+    if (mapStore.connectivityIdsFromType != mapStore.connectivityType) {
+      mapStore.connectivityItemsSelectedIds.clear();
+      mapStore.connectivityIdsFromType = mapStore.connectivityType;
+    }
+    if (mapStore.connectivityItemsSelectedIds.has(id)) {
+      mapStore.connectivityItemsSelectedIds.delete(id);
+    } else {
+      mapStore.connectivityItemsSelectedIds.add(id);
+    }
+  }
+  setConnectivitySelectFilter();
+  if (mapStore.connectivitySelectMode == "one") {
+    getConnectivityStatistics();
+  }
+};
+const setConnectivitySelectFilter = () => {
+  // let idName = "id";
+  const layerIdx = mapStore.layersIdxs.zonesSelected;
+  // switch (mapStore.demandLevel) {
+  //   case "district":
+  //     layerIdx = mapStore.layersIdxs.adminAreasSelected;
+  //     break;
+  //   case "zone":
+  //     layerIdx = mapStore.layersIdxs.zonesSelected;
+  //     break;
+  //   case "area":
+  //     layerIdx = mapStore.layersIdxs.savedAreasSelected;
+  //     idName = "name";
+  //     break;
+
+  //   default:
+  //     return;
+  // }
+  map.setFilter(mapStore.layers[layerIdx].name, [
+    "in",
+    "id",
+    ...[...mapStore.connectivityItemsSelectedIds],
+  ]);
+};
+const getConnectivityStatistics = () => {
+  console.log(
+    "🦊 Connectivity Statistics Processed",
+    mapStore.connectivityItemsSelectedIds
+  );
+  if (mapStore.connectivityItemsSelectedIds.size == 0) {
+    // TODO: For empty request - clear all
+    console.log("Clear All 🧹");
+    clearAdminAreasSelected();
+    clearZonesSelected();
+    clearSavedAreasSelected();
+  } else {
+    // // TODO: If any item selected - clear others
+    // switch (mapStore.demandLevel) {
+    //   case "district":
+    //     clearZonesSelected();
+    //     clearSavedAreasSelected();
+    //     break;
+    //   case "zone":
+    //     clearAdminAreasSelected();
+    //     clearSavedAreasSelected();
+    //     break;
+    //   case "area":
+    //     clearAdminAreasSelected();
+    //     clearZonesSelected();
+    //     break;
+    //   default:
+    //     console.warn("Not implemented level");
+    //     break;
+    // }
+  }
+};
+
+// Layers Clear
 const clearAdminAreasSelected = () => {
   map.setFilter(mapStore.layers[layersIdxs.adminAreasSelected].name, [
     "in",
