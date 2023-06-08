@@ -2,7 +2,7 @@
   <tools-component :title="props.title">
     <template #actions>
       <v-progress-circular
-        v-if="mapStore.demandSelectMode == 'many'"
+        v-if="mapStore.demandProcessing"
         indeterminate
         color="primary"
         :width="3"
@@ -74,7 +74,7 @@
           <apply-button
             v-if="mapStore.demandSelectMode == 'many'"
             density="comfortable"
-            @click="mapStore.demandProcessItems"
+            @click="processManyItems"
           ></apply-button>
           <!-- <v-btn
             v-if="mapStore.demandSelectMode == 'many'"
@@ -105,6 +105,23 @@
           </v-select>
         </v-col>
       </v-row>
+      <v-row>
+        <v-col>
+          <v-select
+            v-model="mapStore.demandReference"
+            mandatory
+            hide-details
+            variant="outlined"
+            density="compact"
+            :label="$t('tools.demandReference')"
+            class="mb-2"
+            :no-data-text="$t('general.noData')"
+            :items="selectItemsReference"
+            @update:model-value="processReferenceSelect"
+          >
+          </v-select>
+        </v-col>
+      </v-row>
     </template>
   </tools-component>
 </template>
@@ -114,6 +131,7 @@ import ToolsComponent from "../ToolsComponent.vue";
 import ApplyButton from "../elements/ApplyButton.vue";
 
 // import { ref } from "vue";
+import { onMounted } from "vue";
 
 import { useI18n } from "vue-i18n";
 const { t } = useI18n();
@@ -125,6 +143,11 @@ const props = defineProps(["title"]);
 
 // const demandDirection = ref("from");
 // const selectMode = ref("one");
+
+onMounted(async () => {
+  console.log("🫣 Demand Mounted");
+  await mapStore.loadDemandVectors();
+});
 
 const selectItemsLevel = [
   {
@@ -140,6 +163,30 @@ const selectItemsLevel = [
     value: "area",
   },
 ].filter(Boolean);
+
+const selectItemsReference = [
+  {
+    title: t("tools.demandSelection"),
+    value: "selection",
+    props: {
+      disabled: false,
+    },
+  },
+  {
+    title: t("tools.demandCity"),
+    value: "city",
+    props: {
+      disabled: false,
+    },
+  },
+  {
+    title: t("tools.demandGlobal"),
+    value: "global",
+    props: {
+      disabled: true,
+    },
+  },
+];
 
 const processLevelSelect = (val) => {
   console.log("Selected Level", mapStore.demandLevel);
@@ -203,6 +250,9 @@ const processLevelSelect = (val) => {
       if (mapStore.layers[mapStore.layersIdxs.zonesSelected].shown) {
         mapStore.layers[mapStore.layersIdxs.zonesSelected].shown = false;
       }
+      if (mapStore.layers[mapStore.layersIdxs.zonesFill].shown) {
+        mapStore.layers[mapStore.layersIdxs.zonesFill].shown = false;
+      }
       clearSelection();
       break;
   }
@@ -212,5 +262,13 @@ const clearSelection = () => {
   console.log("Clear Selection");
   mapStore.demandItemsSelectedIds.clear();
   mapStore.demandProcessItems();
+};
+
+const processManyItems = () => {
+  mapStore.demandProcessItems();
+};
+
+const processReferenceSelect = () => {
+  console.log("Reference level:", mapStore.demandReference);
 };
 </script>

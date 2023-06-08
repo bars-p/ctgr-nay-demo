@@ -1,4 +1,5 @@
 // Utilities
+import axios from "axios";
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
 
@@ -207,14 +208,18 @@ export const useMapStore = defineStore("mapStore", () => {
   };
 
   // Demand data
+  const demandProcessing = ref(false);
   const demandLevel = ref(null);
+  const demandReference = ref("selection");
+  const demandCityMax = 329; // FIXME: Calculate on data load or get from BE
   const demandDirection = ref("from");
   const demandSelectMode = ref("one");
   const demandItemsSelectedIds = new Set();
   const demandIdsFromLevel = ref(null);
   const demandItemsForProcessing = ref([]);
   const demandProcessItems = () => {
-    console.log("Map Store - Demand processed");
+    console.log("Map Store - Demand processed", demandProcessing.value);
+    // demandProcessing.value = true;
     demandItemsForProcessing.value = [...demandItemsSelectedIds];
   };
   const demandResetData = () => {
@@ -229,8 +234,23 @@ export const useMapStore = defineStore("mapStore", () => {
   // FIXME: Data loading with BackEnd
   const loadDemandVectors = async () => {
     if (demandVectors.length == 0) {
-      demandVectors = [];
+      console.log("😡 Demand loading...");
+      await axios
+        .get("Almaty_Demand.json")
+        .then((result) => (demandVectors = result.data))
+        .catch((err) => console.warn("Error loading Demand vectors", err));
+      console.log("😲 Loading finished", demandVectors.length);
     }
+  };
+  const getDemandFrom = (id) => {
+    return demandVectors
+      .filter((item) => item.fromZoneId == id)
+      .map((item) => ({ zoneId: item.toZoneId, value: item.value }));
+  };
+  const getDemandTo = (id) => {
+    return demandVectors
+      .filter((item) => item.toZoneId == id)
+      .map((item) => ({ zoneId: item.fromZoneId, value: item.value }));
   };
 
   // Connectivity data
@@ -284,8 +304,14 @@ export const useMapStore = defineStore("mapStore", () => {
     addCellToSelected,
     removeCellFromSelected,
     clearSelectedCells,
+    // demandVectors, // FIXME: Access by getters
     loadDemandVectors,
+    getDemandFrom,
+    getDemandTo,
+    demandProcessing,
     demandLevel,
+    demandReference,
+    demandCityMax,
     demandDirection,
     demandSelectMode,
     demandItemsSelectedIds,

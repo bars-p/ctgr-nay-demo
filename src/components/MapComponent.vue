@@ -145,6 +145,7 @@ watch(
 );
 
 // Data processing
+// FIXME: Data loading with BackEnd
 let sourceAdminAreas = null;
 let sourceAnalyticalZones = null;
 let sourceBaseCells = null;
@@ -290,7 +291,7 @@ const buildLayers = () => {
 
     map.addLayer(
       {
-        id: "analytical-zones-fill",
+        id: mapStore.layers[layersIdxs.zonesFill].name,
         type: "fill",
         source: "analytical-zones-source",
         layout: {
@@ -298,22 +299,18 @@ const buildLayers = () => {
         },
         paint: {
           "fill-color": {
-            property: "pop",
+            property: "value",
             stops: [
-              [10, "#FFEDA0"],
-              [50, "#FED976"],
-              [100, "#FC4E2A"],
-              [1000, "#E31A1C"],
-              [50000, "#BD0026"],
-              [200000, "#800026"],
+              [0, "#ffff00"],
+              [5, "#ffbf00"],
+              [10, "#ff8000"],
+              [25, "#ff4000"],
+              [50, "#00ff00"],
+              [75, "#00bfff"],
+              [100, "#0000ff"],
             ],
           },
-          "fill-opacity": [
-            "case",
-            ["boolean", ["feature-state", "hover"], false],
-            0.7,
-            0.5,
-          ],
+          "fill-opacity": 0.7,
         },
       },
       "road-label"
@@ -380,22 +377,7 @@ const buildLayers = () => {
       },
       "road-label"
     );
-    // map.addLayer(
-    //   {
-    //     id: "cells-saved",
-    //     type: "line",
-    //     source: "saved-areas-source",
-    //     layout: {
-    //       visibility: "none",
-    //     },
-    //     paint: {
-    //       "line-color": ["get", "color"],
-    //       "line-opacity": 0.7,
-    //       "line-width": 3,
-    //     },
-    //   },
-    //   "road-label"
-    // );
+
     map.addLayer(
       {
         id: "cells-selected",
@@ -1037,6 +1019,7 @@ const getDemandStatistics = () => {
     clearAdminAreasSelected();
     clearZonesSelected();
     clearSavedAreasSelected();
+    return;
   } else {
     // TODO: If any item selected - clear others
     switch (mapStore.demandLevel) {
@@ -1044,19 +1027,77 @@ const getDemandStatistics = () => {
         clearZonesSelected();
         clearSavedAreasSelected();
         break;
+
       case "zone":
         clearAdminAreasSelected();
         clearSavedAreasSelected();
+        displayDemandZones();
         break;
+
       case "area":
         clearAdminAreasSelected();
         clearZonesSelected();
         break;
+
       default:
         console.warn("Not implemented level");
         break;
     }
   }
+};
+const displayDemandZones = () => {
+  //Calculate Demand statistics
+  const zonesData = getDemandZonesStatistics();
+  console.log("Data:", zonesData);
+
+  // TODO: Reference level adjustment
+  let maxValue = mapStore.demandCityMax;
+  if (mapStore.demandReference == "selection") {
+    maxValue = Math.max(...zonesData.map((item) => item.value));
+    console.log("Max Value found:", maxValue);
+  }
+  // zonesData.forEach(item => item.value = item.value/maxValue);
+
+  // TODO: Set new Source values and setSource
+  zonesData.forEach((item, i) => {
+    if (item.zoneId != sourceAnalyticalZones.features[i].properties.id) {
+      console.error("Demand data incorrect order.");
+      return;
+    }
+    sourceAnalyticalZones.features[i].properties.value =
+      maxValue != 0 ? (item.value * 100) / maxValue : 0;
+  });
+  console.log("Source data:", sourceAnalyticalZones);
+  map.getSource("analytical-zones-source").setData(sourceAnalyticalZones);
+
+  // TODO: Turn ON layer if it's OFF
+  if (!mapStore.layers[layersIdxs.zonesFill].shown) {
+    mapStore.layers[layersIdxs.zonesFill].shown = true;
+  }
+};
+
+const getDemandZonesStatistics = () => {
+  const vectors = [];
+  mapStore.demandItemsSelectedIds.forEach((id) => {
+    const vector =
+      mapStore.demandDirection == "from"
+        ? mapStore.getDemandFrom(id)
+        : mapStore.getDemandTo(id);
+    console.log("🍄 Demand for:", id);
+    console.log(mapStore.demandDirection, vector.length);
+    vectors.push(vector);
+  });
+  console.log("Size:", vectors.length);
+  const result = vectors[0];
+  if (vectors.length > 1) {
+    result.forEach((item, i) => {
+      for (let j = 1; j < vectors.length; j++) {
+        item.value += vectors[j][i].value;
+      }
+    });
+  }
+  // console.log("Result", result);
+  return result;
 };
 
 //Connectivity logic

@@ -88,7 +88,11 @@ export default {
     socialSelectedToMany: "Select a smaller number of features",
 
     // Travel Demand
-    demandLevel: "Level",
+    demandLevel: "Selection type",
+    demandReference: "Reference level",
+    demandSelection: "Selection",
+    demandCity: "City",
+    demandGlobal: "Global",
     demandAdminAreas: "Districts",
 
     // Routes
