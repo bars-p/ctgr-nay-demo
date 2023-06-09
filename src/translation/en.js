@@ -33,6 +33,7 @@ export default {
     to: "To",
     one: "One",
     many: "Many",
+    level: "Level",
   },
 
   // Navigation Items
@@ -56,7 +57,7 @@ export default {
     menuItemDirectness: "Routes directness",
     menuItemRidership: "Ridership",
     menuItemConnectivity: "Connectivity",
-    menuItemPtal: "PTAL",
+    menuItemAccess: "Accessability",
 
     menuGroupEdit: "EDIT DATA",
     menuItemEditRoutes: "Routes",
@@ -88,12 +89,13 @@ export default {
     socialSelectedToMany: "Select a smaller number of features",
 
     // Travel Demand
-    demandLevel: "Selection type",
+    demandLevel: "Area type",
     demandReference: "Reference level",
     demandSelection: "Selection",
     demandCity: "City",
     demandGlobal: "Global",
     demandAdminAreas: "Districts",
+    demandSplit: "Split demand by cells",
 
     // Routes
     routesSelectMode: "Select mode",
@@ -142,6 +144,7 @@ export default {
     sitesSelectMode: "Select mode",
     sitesSelect: "Select sites",
     sitesSites: "Sites",
+    sitesCentroids: "Sites centroids",
     sitesSelected: "Sites selected",
     sitesAddTooltip: "Add selected Sites",
     sitesReplaceTooltip: "Replace with selected Sites",
@@ -161,5 +164,10 @@ export default {
     connectivityType: "Type of connectivity",
     connectivitySpeed: "LAD speed",
     connectivityRoute: "Routes change level",
+
+    //Accessability
+    accessHighlight: "Highlight areas",
+    accessPopulation: "Population above",
+    accessAccessability: "Accessability below",
   },
 };

@@ -27,18 +27,17 @@ const props = defineProps(["mode"]);
 
 onMounted(async () => {
   console.log("Map onMounted Called,", `mode "${props.mode}"`);
-  // TODO: Load Data
+
+  // Load Data
   //
   await loadData();
 
-  // TODO: Init map instance
+  // Init map instance
   //
   await createMap();
   buildLayers();
-
-  //
 });
-// TODO: Process mode change
+// Process mode change
 watch(
   () => props.mode,
   (to, from) => {
@@ -58,6 +57,14 @@ watch(
         mapStore.demandLevel = null;
       }
     }
+    if (to == "sites") {
+      // TODO: Display SitesFill Layer
+      // FIXME:
+      console.log("Sites selected");
+      mapStore.turnOnLayer(layersIdxs.sitesFill);
+      mapStore.turnOnLayer(layersIdxs.sitesCentroids);
+    }
+
     // if (to == "social") {
     //   map.boxZoom.disable();
     // }
@@ -132,6 +139,24 @@ watch(
   }
 );
 watch(
+  () => mapStore.sitesColor,
+  () => {
+    setSitesColor(mapStore.sitesColor);
+  }
+);
+watch(
+  () => mapStore.centroidsColor,
+  () => {
+    setCentroidsColor(mapStore.centroidsColor);
+  }
+);
+watch(
+  () => mapStore.stopsColor,
+  () => {
+    setStopsColor(mapStore.stopsColor);
+  }
+);
+watch(
   () => mapStore.demandItemsForProcessing,
   () => {
     getDemandStatistics();
@@ -143,12 +168,23 @@ watch(
     getConnectivityStatistics();
   }
 );
+watch(
+  () => mapStore.demandSplit,
+  () => {
+    processDemandSplit();
+  }
+);
 
+//
 // Data processing
 // FIXME: Data loading with BackEnd
 let sourceAdminAreas = null;
 let sourceAnalyticalZones = null;
 let sourceBaseCells = null;
+let sourceSites = null;
+let sourceSitesCentroids = null;
+let sourceStops = null;
+let zonesStats = null; // FIXME: Needed because of incorrect GeoJSON 1000x1000 pop and emp data
 
 const loadData = async () => {
   await axios
@@ -178,6 +214,29 @@ const loadData = async () => {
     .then((result) => (sourceBaseCells = result.data))
     .catch((err) => console.log("ERROR load", err));
   console.log("100x100 Loaded:", sourceBaseCells.features.length);
+
+  await axios
+    .get("Almaty_sites_400.geojson")
+    .then((result) => (sourceSites = result.data))
+    .catch((err) => console.log("ERROR load", err));
+  console.log("Sites Loaded:", sourceSites.features.length);
+
+  await axios
+    .get("Almaty_sites_400_centroids.geojson")
+    .then((result) => (sourceSitesCentroids = result.data))
+    .catch((err) => console.log("ERROR load", err));
+  console.log("Sites Centroids Loaded:", sourceSitesCentroids.features.length);
+
+  await axios
+    .get("Almaty_stops.geojson")
+    .then((result) => (sourceStops = result.data))
+    .catch((err) => console.log("ERROR load", err));
+  console.log("Stops Loaded:", sourceStops.features.length);
+
+  await axios
+    .get("Almaty_zones_1000_1000_stats.json")
+    .then((result) => (zonesStats = result.data))
+    .catch((err) => console.log("ERROR load", err));
 
   // FIXME: Temp - total population data check
   // const totalPop100 = sourceBaseCells.features.reduce((sum, cur) => {
@@ -239,6 +298,17 @@ const routesLayersIdxs = [
   layersIdxs.zonesBorder,
 ];
 // const stopsLayersIdxs = [layersIdxs.adminBorder, layersIdxs.cellsFill];
+const sitesLayersIdxs = [
+  layersIdxs.zonesBorder,
+  layersIdxs.adminBorder,
+  layersIdxs.sitesFill,
+  layersIdxs.sitesCentroids,
+];
+const accessLayersIdxs = [
+  layersIdxs.cellsFill,
+  layersIdxs.zonesBorder,
+  layersIdxs.adminBorder,
+];
 
 const cellPopup = new mapboxgl.Popup({
   closeButton: false,
@@ -287,6 +357,19 @@ const buildLayers = () => {
       type: "geojson",
       data: sourceBaseCells,
     });
+    map.addSource("sites-source", {
+      type: "geojson",
+      data: sourceSites,
+    });
+    map.addSource("sites-centroids-source", {
+      type: "geojson",
+      data: sourceSitesCentroids,
+    });
+    map.addSource("stops-source", {
+      type: "geojson",
+      data: sourceStops,
+    });
+
     map.addSource("saved-areas-source", selectedSource);
 
     map.addLayer(
@@ -301,31 +384,16 @@ const buildLayers = () => {
           "fill-color": {
             property: "value",
             stops: [
-              [0, "#ffff00"],
-              [5, "#ffbf00"],
-              [10, "#ff8000"],
-              [25, "#ff4000"],
-              [50, "#00ff00"],
-              [75, "#00bfff"],
-              [100, "#0000ff"],
+              [0, "#fff5e6"],
+              [5, "#ffd699"],
+              [10, "#ffad33"],
+              [25, "#ff9900"],
+              [50, "#cc7a00"],
+              [75, "#995c00"],
+              [100, "#663d00"],
             ],
           },
           "fill-opacity": 0.7,
-        },
-      },
-      "road-label"
-    );
-    map.addLayer(
-      {
-        id: "admin-areas-fill",
-        type: "fill",
-        source: "admin-areas-source",
-        layout: {
-          visibility: "none",
-        },
-        paint: {
-          "fill-color": ["get", "color"],
-          "fill-opacity": 0.4,
         },
       },
       "road-label"
@@ -364,6 +432,68 @@ const buildLayers = () => {
 
     map.addLayer(
       {
+        id: mapStore.layers[layersIdxs.sitesFill].name,
+        type: "fill",
+        source: "sites-source",
+        layout: {
+          visibility: "none",
+        },
+        paint: {
+          "fill-color": mapStore.sitesColor,
+          "fill-opacity": 0.7,
+        },
+      },
+      "road-label"
+    );
+    map.addLayer(
+      {
+        id: mapStore.layers[layersIdxs.sitesCentroids].name,
+        type: "circle",
+        source: "sites-centroids-source",
+        layout: {
+          visibility: "none",
+        },
+        paint: {
+          "circle-color": mapStore.centroidsColor,
+          "circle-radius": 5,
+        },
+      },
+      "road-label"
+    );
+    map.addLayer(
+      {
+        id: mapStore.layers[layersIdxs.stopsPoints].name,
+        type: "circle",
+        source: "stops-source",
+        layout: {
+          visibility: "none",
+        },
+        paint: {
+          "circle-color": mapStore.stopsColor,
+          "circle-radius": 3,
+        },
+      },
+      "road-label"
+    );
+
+    map.addLayer(
+      {
+        id: "admin-areas-fill",
+        type: "fill",
+        source: "admin-areas-source",
+        layout: {
+          visibility: "none",
+        },
+        paint: {
+          "fill-color": ["get", "color"],
+          "fill-opacity": 0.4,
+        },
+      },
+      "road-label"
+    );
+
+    map.addLayer(
+      {
         id: "cells-saved",
         type: "fill",
         source: "saved-areas-source",
@@ -395,34 +525,6 @@ const buildLayers = () => {
       },
       "road-label"
     );
-
-    map.addLayer({
-      id: "cells-extrusion",
-      type: "fill-extrusion",
-      source: "cells-source",
-      layout: {
-        visibility: "none",
-      },
-      paint: {
-        "fill-extrusion-color": [
-          "step",
-          ["get", "pop"],
-          "#e6ccb3",
-          0.02,
-          "#d9b38c",
-          1,
-          "#ce9564",
-          10,
-          "#cc9966",
-          100,
-          "#996633",
-          1000,
-          "#604020",
-        ],
-        "fill-extrusion-height": ["get", "pop"],
-        "fill-extrusion-opacity": 0.5,
-      },
-    });
 
     map.addLayer(
       {
@@ -525,7 +627,7 @@ const buildLayers = () => {
         },
         filter: ["in", "id", ""],
         paint: {
-          "line-width": 3,
+          "line-width": 5,
           // "line-dasharray": [8, 8],
           "line-color": "#802000",
           "line-opacity": 0.7,
@@ -552,6 +654,34 @@ const buildLayers = () => {
       },
       "road-label"
     );
+
+    map.addLayer({
+      id: "cells-extrusion",
+      type: "fill-extrusion",
+      source: "cells-source",
+      layout: {
+        visibility: "none",
+      },
+      paint: {
+        "fill-extrusion-color": [
+          "step",
+          ["get", "pop"],
+          "#e6ccb3",
+          0.02,
+          "#d9b38c",
+          1,
+          "#ce9564",
+          10,
+          "#cc9966",
+          100,
+          "#996633",
+          1000,
+          "#604020",
+        ],
+        "fill-extrusion-height": ["get", "pop"],
+        "fill-extrusion-opacity": 0.5,
+      },
+    });
 
     map.on("style.load", () => {
       console.warn("MAP STYLE CHANGED!");
@@ -695,7 +825,6 @@ const buildLayers = () => {
     // TODO:
     // TODO:
 
-    // TODO: On-Hover definition
     map.on("mousemove", "cells-fill", (e) => {
       if (props.mode == "social") {
         map.getCanvas().style.cursor = "pointer";
@@ -832,7 +961,6 @@ const setLocalLayers = () => {
 const displayModeLayers = () => {
   switch (props.mode) {
     case "social":
-    case "ptal":
       if (mapStore.isLayersSet == false) {
         console.log("Set SOCIAL layers");
         toggleLayers(socialLayersIdxs);
@@ -870,7 +998,14 @@ const displayModeLayers = () => {
     case "sites":
       if (mapStore.isLayersSet == false) {
         console.log("Set Sites layers");
-        toggleLayers(routesLayersIdxs);
+        toggleLayers(sitesLayersIdxs);
+        mapStore.isLayersSet = true;
+      }
+      break;
+    case "access":
+      if (mapStore.isLayersSet == false) {
+        console.log("Set Access layers");
+        toggleLayers(accessLayersIdxs);
         mapStore.isLayersSet = true;
       }
       break;
@@ -962,7 +1097,68 @@ const processCellsSelected = (cellsFeatures) => {
   ]);
 };
 
+//
+// Sites Logic
+//
+const setSitesColor = (color) => {
+  const layerPaintData = {
+    layerIdx: layersIdxs.sitesFill,
+    paintProps: {
+      "fill-color": color,
+    },
+  };
+  updateLayerPaint(layerPaintData);
+};
+
+const setCentroidsColor = (color) => {
+  const layerPaintData = {
+    layerIdx: layersIdxs.sitesCentroids,
+    paintProps: {
+      "circle-color": color,
+    },
+  };
+  updateLayerPaint(layerPaintData);
+};
+
+const setStopsColor = (color) => {
+  const layerPaintData = {
+    layerIdx: layersIdxs.stopsPoints,
+    paintProps: {
+      "circle-color": color,
+    },
+  };
+  updateLayerPaint(layerPaintData);
+};
+
+// FIXME:
+// FIXME:
+// FIXME:
+// FIXME:
+// FIXME:
+// FIXME:
+// FIXME:
+// FIXME:
+// FIXME:
+// FIXME:
+// FIXME:
+// FIXME:
+// FIXME:
+// FIXME:
+// FIXME:
+// FIXME:
+// FIXME:
+// FIXME:
+// FIXME:
+// FIXME:
+// FIXME:
+// FIXME:
+// FIXME:
+// FIXME:
+
+//
 // Demand Logic
+//
+let demandSplitDone = false;
 const processDemandFeatureSelect = (id) => {
   console.log("Select Item", id, mapStore.demandLevel);
   if (mapStore.demandSelectMode == "one") {
@@ -1019,6 +1215,9 @@ const getDemandStatistics = () => {
     clearAdminAreasSelected();
     clearZonesSelected();
     clearSavedAreasSelected();
+    mapStore.demandReady = false;
+    // mapStore.demandSplit = false;
+    demandSplitDone = false;
     return;
   } else {
     // TODO: If any item selected - clear others
@@ -1032,6 +1231,9 @@ const getDemandStatistics = () => {
         clearAdminAreasSelected();
         clearSavedAreasSelected();
         displayDemandZones();
+        mapStore.demandReady = true;
+        mapStore.demandSplit = false;
+        demandSplitDone = false;
         break;
 
       case "area":
@@ -1067,8 +1269,61 @@ const displayDemandZones = () => {
     sourceAnalyticalZones.features[i].properties.value =
       maxValue != 0 ? (item.value * 100) / maxValue : 0;
   });
-  console.log("Source data:", sourceAnalyticalZones);
+  // console.log("Source data:", sourceAnalyticalZones);
+
+  let layerPaintData = null;
+  if (mapStore.demandDirection == "from") {
+    layerPaintData = {
+      layerIdx: layersIdxs.zonesFill,
+      paintProps: {
+        "fill-color": {
+          property: "value",
+          stops: [
+            // [0, "#e699ff"],
+            // [0.1, "#d966ff"],
+            // [0.2, "#cc33ff"],
+            // [0.5, "#c61aff"],
+            // [1, "#bf00ff"],
+            // [10, "#9900cc"],
+            // [20, "#730099"],
+            // [60, "#4d0066"],
+
+            [0, "#f9e6ff"],
+            [5, "#cc33ff"],
+            [10, "#c61aff"],
+            [25, "#bf00ff"],
+            [50, "#9900cc"],
+            [75, "#730099"],
+            [100, "#4d0066"],
+          ],
+        },
+        "fill-opacity": 0.7,
+      },
+    };
+  } else {
+    layerPaintData = {
+      layerIdx: layersIdxs.zonesFill,
+      paintProps: {
+        "fill-color": {
+          property: "value",
+          stops: [
+            [0, "#fff5e6"],
+            [5, "#ffd699"],
+            [10, "#ffad33"],
+            [25, "#ff9900"],
+            [50, "#cc7a00"],
+            [75, "#995c00"],
+            [100, "#663d00"],
+          ],
+        },
+        "fill-opacity": 0.7,
+      },
+    };
+  }
+
   map.getSource("analytical-zones-source").setData(sourceAnalyticalZones);
+
+  updateLayerPaint(layerPaintData);
 
   // TODO: Turn ON layer if it's OFF
   if (!mapStore.layers[layersIdxs.zonesFill].shown) {
@@ -1098,6 +1353,171 @@ const getDemandZonesStatistics = () => {
   }
   // console.log("Result", result);
   return result;
+};
+
+const processDemandSplit = () => {
+  console.log("Split:", mapStore.demandSplit);
+  if (mapStore.demandSplit) {
+    // Process split
+    if (!demandSplitDone) {
+      displaySplitDemand();
+      demandSplitDone = true;
+    } else {
+      mapStore.layers[layersIdxs.cellsFill].shown = true;
+      mapStore.layers[layersIdxs.zonesFill].shown = false;
+    }
+  } else {
+    // Display Zones demand
+    mapStore.layers[layersIdxs.cellsFill].shown = false;
+    mapStore.layers[layersIdxs.zonesFill].shown = true;
+  }
+};
+
+const displaySplitDemand = () => {
+  let layerPaintData = null;
+  if (mapStore.demandDirection == "from") {
+    layerPaintData = {
+      layerIdx: layersIdxs.cellsFill,
+      paintProps: {
+        "fill-color": {
+          property: "value",
+          stops: [
+            [0, "#f9e6ff"],
+            [0.1, "#d966ff"],
+            [0.2, "#cc33ff"],
+            [0.5, "#c61aff"],
+            [1, "#bf00ff"],
+            [10, "#9900cc"],
+            [20, "#730099"],
+            [60, "#4d0066"],
+          ],
+        },
+        "fill-opacity": 0.7,
+      },
+    };
+  } else {
+    layerPaintData = {
+      layerIdx: layersIdxs.cellsFill,
+      paintProps: {
+        "fill-color": {
+          property: "value",
+          stops: [
+            [0, "#ffebcc"],
+            [0.1, "#ffd699"],
+            [0.2, "#ffad33"],
+            [0.5, "#e68a00"],
+            [1, "#ff9900"],
+            [10, "#cc7a00"],
+            [20, "#995c00"],
+            [60, "#663d00"],
+          ],
+        },
+        "fill-opacity": 0.7,
+      },
+    };
+  }
+
+  calculateSplitDemand();
+
+  map.getSource("cells-source").setData(sourceBaseCells);
+
+  updateLayerPaint(layerPaintData);
+
+  if (mapStore.layers[layersIdxs.zonesFill].shown) {
+    mapStore.layers[layersIdxs.zonesFill].shown = false;
+  }
+  if (!mapStore.layers[layersIdxs.cellsFill].shown) {
+    mapStore.layers[layersIdxs.cellsFill].shown = true;
+  }
+};
+
+const calculateSplitDemand = () => {
+  const zonesData = sourceAnalyticalZones.features.map((item, i) => ({
+    zoneId: item.properties.id,
+    value: item.properties.value,
+    pop: +zonesStats[i].pop,
+    emp: +zonesStats[i].emp,
+  }));
+  console.log("Zones:", zonesData);
+
+  let maxValue = 0;
+
+  zonesData.forEach((zone) => {
+    const cellsSelected = sourceBaseCells.features.filter(
+      (cell) => cell.properties.cell_id == zone.zoneId
+    );
+
+    if (zone.value == 0) {
+      cellsSelected.forEach((cell) => {
+        cell.properties.value = 0;
+      });
+    } else {
+      if (mapStore.demandDirection == "from") {
+        const zoneTotal = 0.1 * zone.pop + zone.emp;
+        if (zone.zoneId == 408) {
+          console.log("Zone total", zoneTotal);
+        }
+        cellsSelected.forEach((cell) => {
+          const cellTotal = 0.1 * cell.properties.pop + cell.properties.emp;
+          const cellValue = (zone.value * cellTotal) / zoneTotal;
+          cell.properties.value = cellValue;
+          if (cellValue > maxValue) {
+            maxValue = cellValue;
+          }
+        });
+      } else {
+        const zoneTotal = zone.pop + 0.1 * zone.emp;
+        if (zone.zoneId == 408) {
+          console.log("Zone total", zoneTotal);
+        }
+        cellsSelected.forEach((cell) => {
+          const cellTotal = cell.properties.pop + 0.1 * cell.properties.emp;
+          const cellValue = (zone.value * cellTotal) / zoneTotal;
+          cell.properties.value = cellValue;
+          if (cellValue > maxValue) {
+            maxValue = cellValue;
+          }
+        });
+      }
+    }
+
+    // FIXME: Delete later
+    // if (zone.zoneId == 408) {
+    //   console.log("Zone:", zone);
+    //   const popValue = cellsSelected.reduce(
+    //     (sum, cur) => sum + cur.properties.pop,
+    //     0
+    //   );
+    //   console.log("408 pop:", popValue);
+    //   const empValue = cellsSelected.reduce(
+    //     (sum, cur) => sum + cur.properties.emp,
+    //     0
+    //   );
+    //   console.log("408 emp:", empValue);
+    //   const valValue = cellsSelected.reduce(
+    //     (sum, cur) => sum + cur.properties.value,
+    //     0
+    //   );
+    //   console.log("408 value:", valValue);
+    //   // console.log("Zones stats", zonesStats);
+    //   console.log("MaxValue", maxValue);
+    //   console.log(
+    //     "Cells values:",
+    //     cellsSelected.map((cell) => cell.properties.value)
+    //   );
+    // }
+  });
+
+  sourceBaseCells.features.forEach((cell) => {
+    cell.properties.value = (100 * cell.properties.value) / (maxValue || 1);
+  });
+
+  // console.log(
+  //   "Result for 408:",
+  //   sourceBaseCells.features
+  //     .filter((cell) => cell.properties.cell_id == 408)
+  //     .map((cell) => cell.properties.value)
+  // );
 };
 
 //Connectivity logic

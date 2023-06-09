@@ -43,39 +43,89 @@
           class="mt-2 text-subtitle-2"
           :text="$t('tools.socialLayers')"
         ></v-label>
-        <v-row>
+        <v-row dense no-gutters>
           <v-col cols="10">
             <v-checkbox
               hide-details
               density="compact"
               :label="$t('tools.sitesSites')"
-              v-model="showSites"
+              v-model="mapStore.layers[mapStore.layersIdxs.sitesFill].shown"
             ></v-checkbox>
           </v-col>
-          <v-col cols="2" align-self="center">
+          <v-col cols="2">
             <v-btn
               density="comfortable"
               size="small"
               flat
               icon="mdi-checkbox-blank"
+              class="ml-4"
             >
-              <v-icon :color="sitesColor"></v-icon>
+              <v-icon :color="mapStore.sitesColor"></v-icon>
               <v-menu activator="parent" :close-on-content-click="false">
                 <v-color-picker
-                  v-model="sitesColor"
+                  v-model="mapStore.sitesColor"
                   show-swatches
-                  @update:model-value="sitesColorUpdate"
                 ></v-color-picker>
               </v-menu>
             </v-btn>
           </v-col>
         </v-row>
-        <v-checkbox
-          hide-details
-          density="compact"
-          :label="$t('tools.routesStops')"
-          v-model="showStops"
-        ></v-checkbox>
+        <v-row dense no-gutters>
+          <v-col cols="10">
+            <v-checkbox
+              hide-details
+              density="compact"
+              :label="$t('tools.sitesCentroids')"
+              v-model="
+                mapStore.layers[mapStore.layersIdxs.sitesCentroids].shown
+              "
+            ></v-checkbox>
+          </v-col>
+          <v-col cols="2">
+            <v-btn
+              density="comfortable"
+              size="small"
+              flat
+              icon="mdi-checkbox-blank"
+              class="ml-4"
+            >
+              <v-icon :color="mapStore.centroidsColor"></v-icon>
+              <v-menu activator="parent" :close-on-content-click="false">
+                <v-color-picker
+                  v-model="mapStore.centroidsColor"
+                  show-swatches
+                ></v-color-picker>
+              </v-menu>
+            </v-btn>
+          </v-col>
+        </v-row>
+        <v-row dense no-gutters>
+          <v-col cols="10">
+            <v-checkbox
+              hide-details
+              density="compact"
+              :label="$t('tools.routesStops')"
+              v-model="mapStore.layers[mapStore.layersIdxs.stopsPoints].shown"
+            ></v-checkbox>
+          </v-col>
+          <v-col cols="2">
+            <v-btn
+              density="comfortable"
+              size="small"
+              flat
+              icon="mdi-checkbox-blank"
+              class="ml-4"
+            >
+              <v-icon :color="mapStore.stopsColor"></v-icon>
+              <v-menu activator="parent" :close-on-content-click="false">
+                <v-color-picker
+                  v-model="mapStore.stopsColor"
+                  show-swatches
+                ></v-color-picker>
+              </v-menu>
+            </v-btn>
+          </v-col>
+        </v-row>
 
         <v-row dense class="mt-2 mb-4">
           <v-col>
@@ -111,72 +161,6 @@
             }}</v-tooltip>
           </v-btn>
         </v-row>
-
-        <!-- <div v-if="false">
-          <v-divider class="my-5"></v-divider>
-
-          <v-label class="my-1 text-subtitle-2"
-            >!!Stops display options:</v-label
-          >
-          <apply-button></apply-button>
-          <v-row no-gutters class="mb-3">
-            <v-col cols="9">
-              <v-select
-                clearable
-                density="compact"
-                variant="underlined"
-                label="!Stop Color"
-                hide-details
-                class="mr-3 mt-1"
-                :no-data-text="$t('general.noData')"
-                :items="stopDisplayOptions"
-              ></v-select>
-            </v-col>
-            <v-col cols="3" align-self="end">
-              <config-button></config-button>
-            </v-col>
-          </v-row>
-          <v-row no-gutters class="mb-3">
-            <v-col cols="9">
-              <v-select
-                clearable
-                density="compact"
-                variant="underlined"
-                label="!Stop Size"
-                hide-details
-                class="mr-3 mt-1"
-                :no-data-text="$t('general.noData')"
-                :items="stopDisplayOptions"
-              ></v-select>
-            </v-col>
-            <v-col cols="3" align-self="end">
-              <v-text-field
-                density="compact"
-                hide-details
-                variant="underlined"
-                label="!Max"
-                type="number"
-              ></v-text-field>
-            </v-col>
-          </v-row>
-          <v-row no-gutters class="mb-3">
-            <v-col cols="9">
-              <v-select
-                clearable
-                density="compact"
-                variant="underlined"
-                label="!Stop Shape"
-                hide-details
-                class="mr-3 mt-1"
-                :no-data-text="$t('general.noData')"
-                :items="stopDisplayOptions"
-              ></v-select>
-            </v-col>
-            <v-col cols="3" align-self="end">
-              <config-button></config-button>
-            </v-col>
-          </v-row>
-        </div> -->
       </template>
       <v-container class="data-block">
         <v-label class="mb-0 text-subtitle-2"
@@ -397,8 +381,8 @@ import { useI18n } from "vue-i18n";
 import CloseButton from "../elements/CloseButton.vue";
 const { t } = useI18n();
 
-// import { useMapStore } from "@/store/map";
-// const mapStore = useMapStore();
+import { useMapStore } from "@/store/map";
+const mapStore = useMapStore();
 
 const props = defineProps(["title"]);
 
@@ -425,14 +409,6 @@ const changeSelectMode = () => {
 
 const showDistribution = ref(false);
 const showSearch = ref(false);
-
-const showSites = ref(true);
-const showStops = ref(false);
-
-const sitesColor = ref("#757575");
-const sitesColorUpdate = () => {
-  console.log("Sites new color", sitesColor.value);
-};
 
 const clearSelectedSites = () => {
   console.log("Clear selected");

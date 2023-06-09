@@ -31,6 +31,7 @@
             variant="outlined"
             density="comfortable"
             mandatory
+            @update:model-value="processDirectionChange"
           >
             <v-tooltip :text="$t('general.from')" location="bottom">
               <template v-slot:activator="{ props }">
@@ -88,7 +89,18 @@
           </v-btn> -->
         </v-col>
       </v-row>
-      <v-row>
+      <v-row dense v-if="mapStore.demandReady">
+        <v-col>
+          <v-switch
+            :label="$t('tools.demandSplit')"
+            v-model="mapStore.demandSplit"
+            hide-details
+            density="comfortable"
+            :disabled="!mapStore.demandReady"
+          ></v-switch>
+        </v-col>
+      </v-row>
+      <v-row :dense="mapStore.demandReady">
         <v-col>
           <v-select
             v-model="mapStore.demandLevel"
@@ -253,6 +265,9 @@ const processLevelSelect = (val) => {
       if (mapStore.layers[mapStore.layersIdxs.zonesFill].shown) {
         mapStore.layers[mapStore.layersIdxs.zonesFill].shown = false;
       }
+      if (mapStore.layers[mapStore.layersIdxs.cellsFill].shown) {
+        mapStore.layers[mapStore.layersIdxs.cellsFill].shown = false;
+      }
       clearSelection();
       break;
   }
@@ -270,5 +285,11 @@ const processManyItems = () => {
 
 const processReferenceSelect = () => {
   console.log("Reference level:", mapStore.demandReference);
+  mapStore.demandProcessItems();
+};
+
+const processDirectionChange = () => {
+  console.log("Direction", mapStore.demandDirection);
+  mapStore.demandProcessItems();
 };
 </script>

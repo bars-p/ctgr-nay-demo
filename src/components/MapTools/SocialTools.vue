@@ -165,7 +165,7 @@ import ToolsComponent from "../ToolsComponent.vue";
 import CancelButton from "../elements/CancelButton.vue";
 import SearchBar from "../elements/SearchBar.vue";
 
-import { onMounted, ref, computed } from "vue";
+import { ref, computed } from "vue";
 
 import { useI18n } from "vue-i18n";
 const { t } = useI18n();
@@ -177,11 +177,6 @@ const props = defineProps(["title"]);
 const mapStore = useMapStore();
 
 // General tasks
-onMounted(() => {
-  console.log("🟢 Social Tools Mounted");
-  // TODO: Init component controls to default state (in sync with map layers state)
-});
-
 const borderShownState = computed({
   get() {
     return mapStore.layers[mapStore.layersIdxs.adminBorder].shown;

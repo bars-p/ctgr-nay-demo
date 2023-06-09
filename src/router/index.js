@@ -74,11 +74,11 @@ const routes = [
     props: { mode: "connectivity" },
   },
   {
-    path: "/ptal",
-    name: "Ptal",
+    path: "/access",
+    name: "Accessability",
     component: () =>
       import(/* webpackChunkName: "map" */ "@/views/MainView.vue"),
-    props: { mode: "ptal" },
+    props: { mode: "access" },
   },
   {
     path: "/:pathMatch(.*)*",

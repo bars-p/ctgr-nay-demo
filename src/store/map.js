@@ -59,6 +59,9 @@ export const useMapStore = defineStore("mapStore", () => {
     zoneSelect: 10,
     zonesSelected: 11,
     savedAreasSelected: 12,
+    sitesFill: 13,
+    sitesCentroids: 14,
+    stopsPoints: 15,
   };
   const layers = ref([
     { idx: 0, name: "admin-areas-border", shown: false },
@@ -74,7 +77,21 @@ export const useMapStore = defineStore("mapStore", () => {
     { idx: 10, name: "zone-select", shown: false },
     { idx: 11, name: "zones-selected", shown: false },
     { idx: 12, name: "saved-areas-selected", shown: false },
+    { idx: 13, name: "sites-fill", shown: false },
+    { idx: 14, name: "sites-centroids", shown: false },
+    { idx: 15, name: "stops-point", shown: false },
   ]);
+
+  const turnOnLayer = (idx) => {
+    if (!layers.value[idx].shown) {
+      layers.value[idx].shown = true;
+    }
+  };
+  const turnOffLayer = (idx) => {
+    if (layers.value[idx].shown) {
+      layers.value[idx].shown = false;
+    }
+  };
 
   const updateLayers = (newState) => {
     layers.value = newState;
@@ -211,6 +228,8 @@ export const useMapStore = defineStore("mapStore", () => {
   const demandProcessing = ref(false);
   const demandLevel = ref(null);
   const demandReference = ref("selection");
+  const demandSplit = ref(false);
+  const demandReady = ref(false);
   const demandCityMax = 329; // FIXME: Calculate on data load or get from BE
   const demandDirection = ref("from");
   const demandSelectMode = ref("one");
@@ -253,6 +272,13 @@ export const useMapStore = defineStore("mapStore", () => {
       .map((item) => ({ zoneId: item.fromZoneId, value: item.value }));
   };
 
+  //
+  // Sites data
+  const sitesColor = ref("#808080");
+  const centroidsColor = ref("#595959");
+  const stopsColor = ref("#cc0066");
+
+  //
   // Connectivity data
   const connectivityType = ref(null);
   const connectivityDirection = ref("from");
@@ -285,6 +311,8 @@ export const useMapStore = defineStore("mapStore", () => {
     layers,
     newLayerPaint,
     newLayerFilter,
+    turnOnLayer,
+    turnOffLayer,
     updateLayers,
     socialColor,
     socialBars,
@@ -304,6 +332,9 @@ export const useMapStore = defineStore("mapStore", () => {
     addCellToSelected,
     removeCellFromSelected,
     clearSelectedCells,
+    sitesColor,
+    centroidsColor,
+    stopsColor,
     // demandVectors, // FIXME: Access by getters
     loadDemandVectors,
     getDemandFrom,
@@ -311,6 +342,8 @@ export const useMapStore = defineStore("mapStore", () => {
     demandProcessing,
     demandLevel,
     demandReference,
+    demandSplit,
+    demandReady,
     demandCityMax,
     demandDirection,
     demandSelectMode,

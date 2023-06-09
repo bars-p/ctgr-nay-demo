@@ -107,12 +107,12 @@ const items = [
     },
   },
   {
-    title: t("navigation.menuItemPtal"),
+    title: t("navigation.menuItemAccess"),
     value: 9,
     props: {
       nav: "nav",
       "prepend-icon": "mdi-land-plots-circle",
-      to: "/ptal",
+      to: "/access",
     },
   },
   {
@@ -128,6 +128,7 @@ const items = [
     props: {
       nav: "nav",
       "prepend-icon": "mdi-vector-polyline-edit",
+      disabled: true,
       to: "/edit/routes",
     },
   },
@@ -147,6 +148,7 @@ const items = [
       nav: "nav",
       "prepend-icon": "mdi-store-edit-outline",
       to: "/edit/sites",
+      disabled: true,
     },
   },
   {
@@ -156,6 +158,7 @@ const items = [
       nav: "nav",
       "prepend-icon": "mdi-view-dashboard-edit-outline",
       to: "/edit/zones",
+      disabled: true,
     },
   },
   {
@@ -165,6 +168,7 @@ const items = [
       nav: "nav",
       "prepend-icon": "mdi-vector-point-edit",
       to: "/edit/cells",
+      disabled: true,
     },
   },
 ];
