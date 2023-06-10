@@ -63,6 +63,10 @@ watch(
       console.log("Sites selected");
       mapStore.turnOnLayer(layersIdxs.sitesFill);
       mapStore.turnOnLayer(layersIdxs.sitesCentroids);
+      mapStore.turnOnLayer(layersIdxs.sitesSelected);
+    }
+    if (from == "sites") {
+      mapStore.turnOffLayer(layersIdxs.sitesSelected);
     }
 
     // if (to == "social") {
@@ -155,6 +159,18 @@ watch(
   () => {
     setStopsColor(mapStore.stopsColor);
   }
+);
+watch(
+  () => mapStore.selectedSiteIds,
+  () => {
+    console.log("Sites Ids Changed:", mapStore.selectedSiteIds);
+    map.setFilter(mapStore.layers[layersIdxs.sitesSelected].name, [
+      "in",
+      "id",
+      ...[...mapStore.selectedSiteIds],
+    ]);
+  },
+  { deep: true }
 );
 watch(
   () => mapStore.demandItemsForProcessing,
@@ -303,6 +319,7 @@ const sitesLayersIdxs = [
   layersIdxs.adminBorder,
   layersIdxs.sitesFill,
   layersIdxs.sitesCentroids,
+  layersIdxs.sitesSelected,
 ];
 const accessLayersIdxs = [
   layersIdxs.cellsFill,
@@ -310,7 +327,7 @@ const accessLayersIdxs = [
   layersIdxs.adminBorder,
 ];
 
-const cellPopup = new mapboxgl.Popup({
+const mapPopup = new mapboxgl.Popup({
   closeButton: false,
   closeOnClick: false,
 });
@@ -441,6 +458,23 @@ const buildLayers = () => {
         paint: {
           "fill-color": mapStore.sitesColor,
           "fill-opacity": 0.7,
+        },
+      },
+      "road-label"
+    );
+    map.addLayer(
+      {
+        id: mapStore.layers[layersIdxs.sitesSelected].name,
+        type: "line",
+        source: "sites-source",
+        layout: {
+          visibility: "none",
+        },
+        filter: ["in", "id", ""],
+        paint: {
+          "line-width": 2,
+          "line-color": "#802000",
+          "line-opacity": 0.6,
         },
       },
       "road-label"
@@ -721,7 +755,13 @@ const buildLayers = () => {
     }
 
     function mouseDown(e) {
-      if (props.mode != "social") return;
+      if (
+        !(
+          props.mode == "social" ||
+          (props.mode == "sites" && mapStore.sitesSelectionMode == "sites")
+        )
+      )
+        return;
       // Continue the rest of the function if the shiftkey is pressed.
       if (!(e.shiftKey && e.button === 0)) return;
 
@@ -793,9 +833,23 @@ const buildLayers = () => {
 
       // If bbox exists. use this value as the argument for `queryRenderedFeatures`
       if (bbox) {
-        const features = map.queryRenderedFeatures(bbox, {
-          layers: ["cells-fill"],
-        });
+        let features = null;
+        switch (props.mode) {
+          case "social":
+            features = map.queryRenderedFeatures(bbox, {
+              layers: ["cells-fill"],
+            });
+            break;
+
+          case "sites":
+            features = map.queryRenderedFeatures(bbox, {
+              layers: [mapStore.layers[layersIdxs.sitesCentroids].name],
+            });
+            break;
+
+          default:
+            break;
+        }
 
         if (features.length >= 1000) {
           return window.alert(t("tools.socialSelectedToMany"));
@@ -813,7 +867,13 @@ const buildLayers = () => {
         features.forEach((item) => deduplicated.set(item.properties.id, item));
         console.warn("Deduplicated", [...deduplicated.values()].length);
         if (features.length > 0) {
-          processCellsSelected([...deduplicated.values()]);
+          if (props.mode == "social") {
+            processCellsSelected([...deduplicated.values()]);
+          } else if (props.mode == "sites") {
+            processSitesSelected(
+              [...deduplicated.values()].map((item) => item.properties.id)
+            );
+          }
         }
       }
 
@@ -825,6 +885,8 @@ const buildLayers = () => {
     // TODO:
     // TODO:
 
+    //
+    // Social processing
     map.on("mousemove", "cells-fill", (e) => {
       if (props.mode == "social") {
         map.getCanvas().style.cursor = "pointer";
@@ -835,13 +897,13 @@ const buildLayers = () => {
 
         const description = `id: ${cellData.id}${cellPop}${cellEmp}`;
 
-        cellPopup.setLngLat(e.lngLat).setHTML(description).addTo(map);
+        mapPopup.setLngLat(e.lngLat).setHTML(description).addTo(map);
       }
     });
     map.on("mouseleave", "cells-fill", () => {
       if (props.mode == "social") {
         map.getCanvas().style.cursor = "";
-        cellPopup.remove();
+        mapPopup.remove();
       }
     });
     map.on("click", "cells-fill", (item) => {
@@ -854,6 +916,33 @@ const buildLayers = () => {
         processCellsSelected([feature]);
       }
     });
+
+    //
+    // Sites processing
+    map.on("click", mapStore.layers[layersIdxs.sitesFill].name, (item) => {
+      if (props.mode == "sites" && mapStore.sitesSelectionMode == "sites") {
+        const feature = Object.assign(item.features[0]);
+        processSitesSelected([feature.properties.id]);
+      }
+    });
+    map.on("mousemove", mapStore.layers[layersIdxs.sitesFill].name, (e) => {
+      if (props.mode == "sites" && mapStore.sitesSelectionMode == "sites") {
+        map.getCanvas().style.cursor = "pointer";
+        // console.log("Hovered:", e.features[0]);
+        const siteData = e.features[0].properties;
+        const description = `${t("tools.sitesId")}: ${siteData.id}`;
+        mapPopup.setLngLat(e.lngLat).setHTML(description).addTo(map);
+      }
+    });
+    map.on("mouseleave", mapStore.layers[layersIdxs.sitesFill].name, () => {
+      if (props.mode == "sites" && mapStore.sitesSelectionMode == "sites") {
+        map.getCanvas().style.cursor = "";
+        mapPopup.remove();
+      }
+    });
+
+    //
+    // Demand processing
     map.on(
       "mousemove",
       mapStore.layers[layersIdxs.adminAreaSelect].name,
@@ -865,7 +954,7 @@ const buildLayers = () => {
             const cellData = e.features[0].properties;
             const description = `${cellData.name}`;
 
-            cellPopup.setLngLat(e.lngLat).setHTML(description).addTo(map);
+            mapPopup.setLngLat(e.lngLat).setHTML(description).addTo(map);
           }
         }
       }
@@ -877,7 +966,7 @@ const buildLayers = () => {
         if (props.mode == "demand") {
           if (mapStore.demandLevel == "district") {
             map.getCanvas().style.cursor = "";
-            cellPopup.remove();
+            mapPopup.remove();
           }
         }
       }
@@ -896,7 +985,7 @@ const buildLayers = () => {
       if (props.mode == "demand") {
         if (mapStore.demandLevel == "zone") {
           map.getCanvas().style.cursor = "";
-          cellPopup.remove();
+          mapPopup.remove();
         }
       } else if (props.mode == "connectivity" && mapStore.connectivityType) {
         map.getCanvas().style.cursor = "";
@@ -910,7 +999,7 @@ const buildLayers = () => {
           const cellData = e.features[0].properties;
           const description = `${cellData.name}`;
 
-          cellPopup.setLngLat(e.lngLat).setHTML(description).addTo(map);
+          mapPopup.setLngLat(e.lngLat).setHTML(description).addTo(map);
         }
       }
     });
@@ -918,7 +1007,7 @@ const buildLayers = () => {
       if (props.mode == "demand") {
         if (mapStore.demandLevel == "area") {
           map.getCanvas().style.cursor = "";
-          cellPopup.remove();
+          mapPopup.remove();
         }
       }
     });
@@ -955,7 +1044,7 @@ const buildLayers = () => {
 
 const setLocalLayers = () => {
   localLayersState = mapStore.layers.map((layer) => layer.shown);
-  console.log("Local Layers State Recorded:", localLayersState);
+  // console.log("Local Layers State Recorded:", localLayersState);
 };
 
 const displayModeLayers = () => {
@@ -1129,6 +1218,24 @@ const setStopsColor = (color) => {
   };
   updateLayerPaint(layerPaintData);
 };
+
+const processSitesSelected = (sitesIds) => {
+  sitesIds.forEach((id) => {
+    if (mapStore.selectedSiteIds.has(id)) {
+      mapStore.selectedSiteIds.delete(id);
+    } else {
+      mapStore.selectedSiteIds.add(id);
+    }
+  });
+};
+
+// const clearSitesSelected = () => {
+//   map.setFilter(mapStore.layers[layersIdxs.sitesSelected].name, [
+//     "in",
+//     "id",
+//     "",
+//   ]);
+// };
 
 // FIXME:
 // FIXME:

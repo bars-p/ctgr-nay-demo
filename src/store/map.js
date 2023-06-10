@@ -62,6 +62,7 @@ export const useMapStore = defineStore("mapStore", () => {
     sitesFill: 13,
     sitesCentroids: 14,
     stopsPoints: 15,
+    sitesSelected: 16,
   };
   const layers = ref([
     { idx: 0, name: "admin-areas-border", shown: false },
@@ -80,6 +81,7 @@ export const useMapStore = defineStore("mapStore", () => {
     { idx: 13, name: "sites-fill", shown: false },
     { idx: 14, name: "sites-centroids", shown: false },
     { idx: 15, name: "stops-point", shown: false },
+    { idx: 16, name: "sites-selected", shown: false },
   ]);
 
   const turnOnLayer = (idx) => {
@@ -274,9 +276,12 @@ export const useMapStore = defineStore("mapStore", () => {
 
   //
   // Sites data
-  const sitesColor = ref("#808080");
-  const centroidsColor = ref("#595959");
-  const stopsColor = ref("#cc0066");
+  const sitesColor = ref("#FFB74D");
+  const centroidsColor = ref("#3F51B5");
+  const stopsColor = ref("#039BE5");
+  const sitesSelectionMode = ref(null);
+
+  const selectedSiteIds = ref(new Set());
 
   //
   // Connectivity data
@@ -335,6 +340,8 @@ export const useMapStore = defineStore("mapStore", () => {
     sitesColor,
     centroidsColor,
     stopsColor,
+    sitesSelectionMode,
+    selectedSiteIds,
     // demandVectors, // FIXME: Access by getters
     loadDemandVectors,
     getDemandFrom,

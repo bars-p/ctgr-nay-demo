@@ -7,7 +7,7 @@
 
       <template #tools>
         <v-select
-          v-model="selectMode"
+          v-model="mapStore.sitesSelectionMode"
           clearable
           hide-details
           variant="outlined"
@@ -129,8 +129,12 @@
 
         <v-row dense class="mt-2 mb-4">
           <v-col>
-            {{ $t("tools.sitesSelected") }}: <strong>0</strong>
-            <cancel-button @click="clearSelectedSites"></cancel-button>
+            {{ $t("tools.sitesSelected") }}:
+            <strong class="ml-2">{{ mapStore.selectedSiteIds.size }}</strong>
+            <cancel-button
+              v-if="mapStore.selectedSiteIds.size > 0"
+              @click="clearSelectedSites"
+            ></cancel-button>
           </v-col>
         </v-row>
         <v-row dense class="my-3" justify="space-around">
@@ -388,7 +392,7 @@ const props = defineProps(["title"]);
 
 const searchString = ref("");
 
-const selectMode = ref(null);
+// const selectMode = ref(null);
 const selectModes = [
   {
     title: t("tools.stopsSitesSelect"),
@@ -404,7 +408,14 @@ const selectModes = [
   },
 ];
 const changeSelectMode = () => {
-  console.log("Select Mode:", selectMode.value);
+  if (mapStore.sitesSelectionMode == "areas") {
+    mapStore.turnOnLayer(mapStore.layersIdxs.cellsSaved);
+  } else {
+    mapStore.turnOffLayer(mapStore.layersIdxs.cellsSaved);
+  }
+  if (mapStore.sitesSelectionMode == "sites") {
+    mapStore.turnOnLayer(mapStore.layersIdxs.sitesFill);
+  }
 };
 
 const showDistribution = ref(false);
@@ -412,6 +423,7 @@ const showSearch = ref(false);
 
 const clearSelectedSites = () => {
   console.log("Clear selected");
+  mapStore.selectedSiteIds.clear();
 };
 
 const savedLadsMock = ref([

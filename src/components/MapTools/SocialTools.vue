@@ -500,7 +500,7 @@ const selectSavedArea = (area) => {
   activeAreaName.value = area.name;
   // TODO: Set selected cells
   mapStore.selectSavedArea(area.name);
-  //TODO: Fix color value
+  // TODO: Fix color value
 };
 const deleteSavedArea = (area) => {
   mapStore.removeFromSaved(area.name);

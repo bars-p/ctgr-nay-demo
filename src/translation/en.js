@@ -144,7 +144,7 @@ export default {
     sitesSelectMode: "Select mode",
     sitesSelect: "Select sites",
     sitesSites: "Sites",
-    sitesCentroids: "Sites centroids",
+    sitesCentroids: "Site centroids",
     sitesSelected: "Sites selected",
     sitesAddTooltip: "Add selected Sites",
     sitesReplaceTooltip: "Replace with selected Sites",
@@ -159,6 +159,7 @@ export default {
     sitesColor: "Site color",
     sitesSize: "Site stop size",
     sitesShape: "Site stop shape",
+    sitesId: "Site ID",
 
     //Connectivity
     connectivityType: "Type of connectivity",
@@ -166,6 +167,7 @@ export default {
     connectivityRoute: "Routes change level",
 
     //Accessability
+    accessToolsTitle: "Walking Accessability",
     accessHighlight: "Highlight areas",
     accessPopulation: "Population above",
     accessAccessability: "Accessability below",

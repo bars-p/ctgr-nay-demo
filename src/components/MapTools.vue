@@ -25,7 +25,7 @@
   />
   <access-tools
     v-else-if="props.mode === 'access'"
-    :title="$t('navigation.menuItemAccess')"
+    :title="$t('tools.accessToolsTitle')"
   />
 
   <tools-component v-else :title="props.mode">

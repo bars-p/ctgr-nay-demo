@@ -6,7 +6,6 @@
           icon-symbol="mdi-layers-outline"
           class="button-item mr-5"
           v-bind="props"
-          @click="showLayers"
         ></map-button>
       </template>
       <v-list class="mb-1" min-width="100px">
@@ -52,13 +51,6 @@ import { ref, computed } from "vue";
 import { useMapStore } from "@/store/map";
 const mapStore = useMapStore();
 
-// const handleCompassClick = () => {
-//   console.log("Compass button clicked");
-// };
-// const handleRotateClick = () => {
-//   console.log("Rotate button clicked");
-// };
-
 const getLayerData = (idx) => {
   return {
     idx: idx,
@@ -91,14 +83,6 @@ const layers = ref([
     ...getLayerData(mapStore.layersIdxs.cellsFill),
   },
 ]);
-
-// const borderState = computed(() => {
-//   return mapStore.layers[0].shown;
-// });
-
-const showLayers = () => {
-  console.log("Layers State", layers.value);
-};
 </script>
 
 <style scoped>
