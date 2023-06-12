@@ -281,6 +281,9 @@ const selectItemsColor = [
     layerIdx: null,
     filterProps: null,
     paintProps: null,
+    props: {
+      disabled: true,
+    },
   },
   {
     value: 4,
@@ -288,6 +291,9 @@ const selectItemsColor = [
     layerIdx: null,
     filterProps: null,
     paintProps: null,
+    props: {
+      disabled: true,
+    },
   },
   {
     value: 5,
@@ -295,6 +301,9 @@ const selectItemsColor = [
     layerIdx: null,
     filterProps: null,
     paintProps: null,
+    props: {
+      disabled: true,
+    },
   },
 ];
 const selectItemsBars = [
@@ -354,6 +363,9 @@ const selectItemsBars = [
     layerIdx: null,
     filterProps: null,
     paintProps: null,
+    props: {
+      disabled: true,
+    },
   },
   {
     value: 3,
@@ -361,6 +373,9 @@ const selectItemsBars = [
     layerIdx: null,
     filterProps: null,
     paintProps: null,
+    props: {
+      disabled: true,
+    },
   },
   {
     value: 4,
@@ -368,6 +383,9 @@ const selectItemsBars = [
     layerIdx: null,
     filterProps: null,
     paintProps: null,
+    props: {
+      disabled: true,
+    },
   },
 ];
 
@@ -456,7 +474,7 @@ const searchString = ref("");
 
 const areasFiltered = computed(() => {
   return mapStore.savedAreas.filter((area) =>
-    area.name.toLowerCase().includes(searchString.value)
+    area.name.toLowerCase().includes(searchString.value.toLowerCase())
   );
 });
 

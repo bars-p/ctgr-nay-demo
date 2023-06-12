@@ -26,6 +26,7 @@ export default {
     search: "Search",
     add: "Add",
     replace: "Replace",
+    clear: "Clear",
     displayOptions: "Display options",
     direction: "Direction",
     mode: "Mode",
@@ -160,6 +161,8 @@ export default {
     sitesSize: "Site stop size",
     sitesShape: "Site stop shape",
     sitesId: "Site ID",
+    sitesName: "Name",
+    sitesUseCurrent: "Use current sites group",
 
     //Connectivity
     connectivityType: "Type of connectivity",

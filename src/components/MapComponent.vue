@@ -113,6 +113,23 @@ watch(
   }
 );
 watch(
+  () => mapStore.centerItem,
+  () => {
+    switch (mapStore.centerItem.type) {
+      case "site":
+        console.log("Watch - Site center");
+        centerToSite();
+        break;
+
+      default:
+        break;
+    }
+  }
+);
+
+//
+// Social
+watch(
   () => mapStore.selectedCellsFeatures,
   () => {
     console.log("Watch for Selection");
@@ -142,6 +159,30 @@ watch(
     map.getSource("saved-areas-source").setData(selectedSource.data);
   }
 );
+
+//
+//Demand
+watch(
+  () => mapStore.demandItemsForProcessing,
+  () => {
+    getDemandStatistics();
+  }
+);
+watch(
+  () => mapStore.connectivityItemsForProcessing,
+  () => {
+    getConnectivityStatistics();
+  }
+);
+watch(
+  () => mapStore.demandSplit,
+  () => {
+    processDemandSplit();
+  }
+);
+
+//
+// Sites
 watch(
   () => mapStore.sitesColor,
   () => {
@@ -173,21 +214,24 @@ watch(
   { deep: true }
 );
 watch(
-  () => mapStore.demandItemsForProcessing,
+  () => mapStore.currentSitesGroup,
   () => {
-    getDemandStatistics();
-  }
+    if (mapStore.currentSitesGroup) {
+      showCurrentSitesGroup();
+    }
+  },
+  { deep: true }
 );
 watch(
-  () => mapStore.connectivityItemsForProcessing,
+  () => mapStore.useCurrentSiteGroup,
   () => {
-    getConnectivityStatistics();
-  }
-);
-watch(
-  () => mapStore.demandSplit,
-  () => {
-    processDemandSplit();
+    if (mapStore.useCurrentSiteGroup) {
+      // Filter by current
+      showCurrentSitesGroup();
+    } else {
+      // Clear filter
+      showAllSites();
+    }
   }
 );
 
@@ -472,7 +516,7 @@ const buildLayers = () => {
         },
         filter: ["in", "id", ""],
         paint: {
-          "line-width": 2,
+          "line-width": 3,
           "line-color": "#802000",
           "line-opacity": 0.6,
         },
@@ -930,7 +974,10 @@ const buildLayers = () => {
         map.getCanvas().style.cursor = "pointer";
         // console.log("Hovered:", e.features[0]);
         const siteData = e.features[0].properties;
-        const description = `${t("tools.sitesId")}: ${siteData.id}`;
+        const name = mapStore.getSiteName(siteData.id);
+        const description = `${t("tools.sitesId")}: ${siteData.id}<br>${t(
+          "tools.sitesName"
+        )}: ${name}`;
         mapPopup.setLngLat(e.lngLat).setHTML(description).addTo(map);
       }
     });
@@ -1229,6 +1276,46 @@ const processSitesSelected = (sitesIds) => {
   });
 };
 
+const showCurrentSitesGroup = () => {
+  const ids = mapStore.currentSitesGroup.sites
+    .filter((site) => site.shown)
+    .map((site) => site.id);
+  const stopIds = ids.map((id) => mapStore.getSiteStopIds(id));
+  const stopsSet = new Set();
+  stopIds.forEach((ids) => ids.forEach((id) => stopsSet.add(id)));
+  // console.log("Stop IDS", stopIds);
+  // console.log("Stop Set", stopsSet);
+  map.setFilter(mapStore.layers[layersIdxs.sitesFill].name, [
+    "in",
+    "id",
+    ...ids,
+  ]);
+  map.setFilter(mapStore.layers[layersIdxs.sitesCentroids].name, [
+    "in",
+    "id",
+    ...ids,
+  ]);
+  map.setFilter(mapStore.layers[layersIdxs.stopsPoints].name, [
+    "in",
+    "id",
+    ...stopsSet,
+  ]);
+};
+const showAllSites = () => {
+  map.setFilter(mapStore.layers[layersIdxs.sitesFill].name, null);
+  map.setFilter(mapStore.layers[layersIdxs.sitesCentroids].name, null);
+  map.setFilter(mapStore.layers[layersIdxs.stopsPoints].name, null);
+};
+
+const centerToSite = () => {
+  const siteCentroid = sourceSitesCentroids.features.find(
+    (item) => item.properties.id == mapStore.centerItem.id
+  );
+  console.log("Centroid:", siteCentroid);
+  // console.log("Coordinates:", coordinates);
+  map.flyTo({ center: siteCentroid.geometry.coordinates });
+};
+
 // const clearSitesSelected = () => {
 //   map.setFilter(mapStore.layers[layersIdxs.sitesSelected].name, [
 //     "in",
@@ -1362,7 +1449,7 @@ const displayDemandZones = () => {
   // TODO: Reference level adjustment
   let maxValue = mapStore.demandCityMax;
   if (mapStore.demandReference == "selection") {
-    maxValue = Math.max(...zonesData.map((item) => item.value));
+    maxValue = Math.max(...zonesData.map((item) => +item.value));
     console.log("Max Value found:", maxValue);
   }
   // zonesData.forEach(item => item.value = item.value/maxValue);
@@ -1374,7 +1461,7 @@ const displayDemandZones = () => {
       return;
     }
     sourceAnalyticalZones.features[i].properties.value =
-      maxValue != 0 ? (item.value * 100) / maxValue : 0;
+      maxValue != 0 ? (+item.value * 100) / maxValue : 0;
   });
   // console.log("Source data:", sourceAnalyticalZones);
 

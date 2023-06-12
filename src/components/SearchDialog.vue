@@ -14,11 +14,12 @@
       </v-card-title>
       <v-card-text class="overflow-auto">
         <v-autocomplete
-          :items="mockLads"
-          :label="$t('tools.routesLads')"
+          :items="searchItems"
+          :label="searchLabel"
+          v-model="itemsSelected"
           density="compact"
           item-title="name"
-          item-value="name"
+          item-value="id"
           chips
           closable-chips
           multiple
@@ -30,17 +31,14 @@
         <v-spacer></v-spacer>
         <v-btn
           color="primary"
-          @click="dialogOpened = false"
+          @click="processSelect"
           :disabled="false"
           min-width="200px"
           >{{ $t("tools.routesDialogSelect") }}</v-btn
         >
-        <v-btn
-          color="primary"
-          @click="dialogOpened = false"
-          min-width="200px"
-          >{{ $t("tools.routesDialogClose") }}</v-btn
-        >
+        <v-btn color="primary" @click="closeSearch" min-width="200px">{{
+          $t("tools.routesDialogClose")
+        }}</v-btn>
         <v-spacer></v-spacer>
       </v-card-actions>
     </v-card>
@@ -50,10 +48,15 @@
 <script setup>
 import CloseButton from "./elements/CloseButton.vue";
 
-import { computed } from "vue";
+import { computed, ref } from "vue";
 
-const props = defineProps(["modelValue", "title"]);
-const emit = defineEmits(["update:modelValue"]);
+const props = defineProps([
+  "modelValue",
+  "title",
+  "searchLabel",
+  "searchItems",
+]);
+const emit = defineEmits(["update:modelValue", "select"]);
 
 const dialogOpened = computed({
   get() {
@@ -64,66 +67,83 @@ const dialogOpened = computed({
   },
 });
 
-const mockLads = [
-  {
-    name: "11-0-1",
-    selected: true,
-  },
-  {
-    name: "11-0-2",
-    selected: true,
-  },
-  {
-    name: "27-0-3",
-    selected: false,
-  },
-  {
-    name: "32-0-1",
-    selected: false,
-  },
-  {
-    name: "32-0-2",
-    selected: true,
-  },
-  {
-    name: "111-0-1",
-    selected: true,
-  },
-  {
-    name: "111-0-2",
-    selected: true,
-  },
-  {
-    name: "127-0-3",
-    selected: false,
-  },
-  {
-    name: "132-0-1",
-    selected: false,
-  },
-  {
-    name: "132-0-2",
-    selected: true,
-  },
-  {
-    name: "211-0-1",
-    selected: true,
-  },
-  {
-    name: "211-0-2",
-    selected: true,
-  },
-  {
-    name: "227-0-3",
-    selected: false,
-  },
-  {
-    name: "232-0-1",
-    selected: false,
-  },
-  {
-    name: "232-0-2",
-    selected: true,
-  },
-];
+const itemsSelected = ref([]);
+
+const processSelect = () => {
+  if (itemsSelected.value.length > 0) {
+    console.log("Selected:", itemsSelected.value);
+    emit("select", itemsSelected.value);
+  }
+  closeSearch();
+};
+
+const closeSearch = () => {
+  if (itemsSelected.value.length > 0) {
+    itemsSelected.value = [];
+  }
+  dialogOpened.value = false;
+};
+
+// const mockLads = [
+//   {
+//     name: "11-0-1",
+//     selected: true,
+//   },
+//   {
+//     name: "11-0-2",
+//     selected: true,
+//   },
+//   {
+//     name: "27-0-3",
+//     selected: false,
+//   },
+//   {
+//     name: "32-0-1",
+//     selected: false,
+//   },
+//   {
+//     name: "32-0-2",
+//     selected: true,
+//   },
+//   {
+//     name: "111-0-1",
+//     selected: true,
+//   },
+//   {
+//     name: "111-0-2",
+//     selected: true,
+//   },
+//   {
+//     name: "127-0-3",
+//     selected: false,
+//   },
+//   {
+//     name: "132-0-1",
+//     selected: false,
+//   },
+//   {
+//     name: "132-0-2",
+//     selected: true,
+//   },
+//   {
+//     name: "211-0-1",
+//     selected: true,
+//   },
+//   {
+//     name: "211-0-2",
+//     selected: true,
+//   },
+//   {
+//     name: "227-0-3",
+//     selected: false,
+//   },
+//   {
+//     name: "232-0-1",
+//     selected: false,
+//   },
+//   {
+//     name: "232-0-2",
+//     selected: true,
+//   },
+// ];
 </script>

@@ -3,31 +3,6 @@ import axios from "axios";
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
 
-// export const useMapStore = defineStore("map", {
-//   state: () => ({
-//     layersState: {
-//       adminAreasBorder: false,
-//       adminAreaFill: false,
-//       analyticalZonesBorder: false,
-//       analyticalZonesFill: false,
-//       cellsFill: false,
-//     },
-//     layers: [
-//     //   { idx: 0, name: "admin-areas-border", shown: false },
-//     //   { idx: 1, name: "admin-areas-fill", shown: false },
-//     //   { idx: 2, name: "analytical-zones-border", shown: false },
-//     //   { idx: 3, name: "analytical-zones-fill", shown: false },
-//       // { idx: 4, name: "cells-fill", shown: false, }, // FIXME: Not ready
-//     ],
-//   }),
-//   actions: {
-//     updateLayers(newState) {
-//       console.log("Update Store Layers", newState, this.layers);
-//       this.layers = [...newState];
-//     },
-//   },
-// });
-
 export const useMapStore = defineStore("mapStore", () => {
   const userSettingsShown = ref(false);
 
@@ -102,6 +77,9 @@ export const useMapStore = defineStore("mapStore", () => {
   const newLayerPaint = ref(null);
   const newLayerFilter = ref(null);
 
+  const centerItem = ref(null);
+
+  //
   // Social data
   const socialColor = ref(null);
   const socialBars = ref(null);
@@ -226,13 +204,14 @@ export const useMapStore = defineStore("mapStore", () => {
     selectedCellsFeatures.value = [...areaFeatures];
   };
 
+  //
   // Demand data
   const demandProcessing = ref(false);
   const demandLevel = ref(null);
   const demandReference = ref("selection");
   const demandSplit = ref(false);
   const demandReady = ref(false);
-  const demandCityMax = 329; // FIXME: Calculate on data load or get from BE
+  const demandCityMax = 377; // FIXME: Calculate on data load or get from BE
   const demandDirection = ref("from");
   const demandSelectMode = ref("one");
   const demandItemsSelectedIds = new Set();
@@ -265,23 +244,46 @@ export const useMapStore = defineStore("mapStore", () => {
   };
   const getDemandFrom = (id) => {
     return demandVectors
-      .filter((item) => item.fromZoneId == id)
-      .map((item) => ({ zoneId: item.toZoneId, value: item.value }));
+      .filter((item) => item.fromId == id)
+      .map((item) => ({ zoneId: item.toId, value: +item.value }));
   };
   const getDemandTo = (id) => {
     return demandVectors
-      .filter((item) => item.toZoneId == id)
-      .map((item) => ({ zoneId: item.fromZoneId, value: item.value }));
+      .filter((item) => item.toId == id)
+      .map((item) => ({ zoneId: item.fromId, value: +item.value }));
   };
 
   //
   // Sites data
+  const sitesData = ref([]);
+  // FIXME: Data loading with BackEnd
+  const loadSitesData = async () => {
+    if (sitesData.value.length == 0) {
+      await axios
+        .get("Almaty_sites_data.json")
+        .then((result) => (sitesData.value = result.data))
+        .catch((err) => console.warn("Error loading Sites data", err));
+    }
+  };
+  const getSiteName = (id) => {
+    return (
+      sitesData.value.find((site) => site.id == id).name || "Name not found"
+    );
+  };
+  const getSiteStopIds = (id) => {
+    return sitesData.value.find((site) => site.id == id).stop_ids || [];
+  };
+
   const sitesColor = ref("#FFB74D");
   const centroidsColor = ref("#3F51B5");
   const stopsColor = ref("#039BE5");
   const sitesSelectionMode = ref(null);
 
   const selectedSiteIds = ref(new Set());
+  const currentSitesGroup = ref(null);
+  const useCurrentSiteGroup = ref(false);
+
+  const savedSitesGroups = ref([]);
 
   //
   // Connectivity data
@@ -319,6 +321,7 @@ export const useMapStore = defineStore("mapStore", () => {
     turnOnLayer,
     turnOffLayer,
     updateLayers,
+    centerItem,
     socialColor,
     socialBars,
     selectedCellsFeatures,
@@ -337,11 +340,18 @@ export const useMapStore = defineStore("mapStore", () => {
     addCellToSelected,
     removeCellFromSelected,
     clearSelectedCells,
+    sitesData,
+    loadSitesData,
+    getSiteName,
+    getSiteStopIds,
     sitesColor,
     centroidsColor,
     stopsColor,
     sitesSelectionMode,
     selectedSiteIds,
+    currentSitesGroup,
+    useCurrentSiteGroup,
+    savedSitesGroups,
     // demandVectors, // FIXME: Access by getters
     loadDemandVectors,
     getDemandFrom,

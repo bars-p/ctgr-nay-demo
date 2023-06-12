@@ -127,43 +127,66 @@
           </v-col>
         </v-row>
 
-        <v-row dense class="mt-2 mb-4">
-          <v-col>
+        <v-row dense class="mt-2" no-gutters>
+          <v-col cols="9" class="mb-1">
             {{ $t("tools.sitesSelected") }}:
-            <strong class="ml-2">{{ mapStore.selectedSiteIds.size }}</strong>
-            <cancel-button
-              v-if="mapStore.selectedSiteIds.size > 0"
-              @click="clearSelectedSites"
-            ></cancel-button>
+            <strong class="ml-2">{{
+              mapStore.selectedSiteIds.size
+            }}</strong> </v-col
+          ><v-col cols="3">
+            <span v-show="mapStore.selectedSiteIds.size > 0">
+              <v-btn
+                v-if="!mapStore.useCurrentSiteGroup"
+                flat
+                density="compact"
+                icon
+                @click="addSelectedSites"
+              >
+                <v-icon color="green-darken-2"> mdi-plus </v-icon>
+                <v-tooltip activator="parent" location="bottom">{{
+                  $t("tools.sitesAddTooltip")
+                }}</v-tooltip>
+              </v-btn>
+              <v-btn
+                v-else
+                flat
+                density="compact"
+                icon
+                @click="replaceWithSelectedSites"
+              >
+                <v-icon color="red-darken-2"> mdi-refresh </v-icon>
+                <v-tooltip activator="parent" location="bottom">{{
+                  $t("tools.sitesReplaceTooltip")
+                }}</v-tooltip>
+              </v-btn>
+              <v-btn
+                flat
+                density="compact"
+                icon
+                @click="clearSelectedSites"
+                class="ml-2"
+              >
+                <v-icon color="red-lighten-2"> mdi-cancel </v-icon>
+                <v-tooltip activator="parent" location="bottom">{{
+                  $t("general.clear")
+                }}</v-tooltip>
+              </v-btn>
+            </span>
           </v-col>
         </v-row>
-        <v-row dense class="my-3" justify="space-around">
-          <v-btn
-            variant="outlined"
-            density="comfortable"
-            prepend-icon="mdi-plus"
-          >
-            <template #prepend>
-              <v-icon color="green-darken-2"></v-icon>
-            </template>
-            {{ $t("general.add") }}
-            <v-tooltip activator="parent" location="bottom">{{
-              $t("tools.sitesAddTooltip")
-            }}</v-tooltip>
-          </v-btn>
-          <v-btn
-            variant="outlined"
-            density="comfortable"
-            prepend-icon="mdi-refresh"
-          >
-            <template #prepend>
-              <v-icon color="red-darken-2"></v-icon>
-            </template>
-            {{ $t("general.replace") }}
-            <v-tooltip activator="parent" location="bottom">{{
-              $t("tools.sitesReplaceTooltip")
-            }}</v-tooltip>
-          </v-btn>
+        <v-row
+          dense
+          justify="space-around"
+          v-if="mapStore.currentSitesGroup != null"
+        >
+          <v-col>
+            <v-switch
+              v-model="mapStore.useCurrentSiteGroup"
+              :label="$t('tools.sitesUseCurrent')"
+              hide-details
+              density="compact"
+            ></v-switch>
+          </v-col>
         </v-row>
       </template>
       <v-container class="data-block">
@@ -207,12 +230,12 @@
           <v-window-item value="Sites">
             <v-list density="compact">
               <v-list-item
-                v-for="(siteGroup, idx) in savedSitesMock"
+                v-for="(siteGroup, idx) in mapStore.savedSitesGroups"
                 :key="siteGroup.name"
                 @click="selectSitesGroup(siteGroup)"
               >
                 <v-list-item-title class="text-body-2">
-                  {{ idx + 1 }}. {{ siteGroup.name }} ({{ siteGroup.count }})
+                  {{ idx + 1 }}. {{ siteGroup.name }} ({{ siteGroup.ids.size }})
                 </v-list-item-title>
                 <template #append>
                   <v-btn
@@ -232,11 +255,14 @@
     </tools-component>
 
     <tools-component
-      :title="`${t('tools.sitesGroup')} (${sitesInGroupMock.length})`"
+      v-if="mapStore.currentSitesGroup"
+      :title="`${t('tools.sitesGroup')} (${
+        mapStore.currentSitesGroup.ids.size
+      })`"
       class="data-group"
     >
       <template #actions>
-        <search-bar v-model="searchSite"></search-bar>
+        <search-bar v-model="searchSitesGroupString"></search-bar>
         <close-button @close="processCloseGroup"></close-button>
       </template>
       <template #tools>
@@ -330,12 +356,12 @@
 
         <v-list density="compact">
           <v-list-item
-            v-for="(site, idx) in sitesInGroupMock"
+            v-for="(site, idx) in sitesGroupFiltered"
             :key="site.id"
-            @click="selectSavedSite(site)"
+            @click="selectSiteInGroup(site)"
           >
             <v-list-item-title class="text-body-2">
-              {{ idx + 1 }}. {{ site.name }}
+              ({{ site.id }}) {{ site.name }}
             </v-list-item-title>
             <template #append>
               <v-btn
@@ -351,7 +377,7 @@
                 size="small"
                 flat
                 icon="mdi-trash-can-outline"
-                @click.stop="deleteSite(site)"
+                @click.stop="deleteSiteFromGroup(idx)"
               >
               </v-btn>
             </template>
@@ -366,23 +392,26 @@
     <search-dialog
       v-model="showSearch"
       :title="$t('tools.sitesSearchTitle')"
+      :search-label="$t('tools.sitesSites')"
+      :search-items="searchData"
+      @select="processSearchResults"
     ></search-dialog>
   </div>
 </template>
 
 <script setup>
 import ToolsComponent from "../ToolsComponent.vue";
-import CancelButton from "../elements/CancelButton.vue";
+// import CancelButton from "../elements/CancelButton.vue";
 import ApplyButton from "../elements/ApplyButton.vue";
 import ConfigButton from "../elements/ConfigButton.vue";
+import CloseButton from "../elements/CloseButton.vue";
 import SearchBar from "../elements/SearchBar.vue";
 import DistributionDialog from "../DistributionDialog.vue";
 import SearchDialog from "../SearchDialog.vue";
 
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
 
 import { useI18n } from "vue-i18n";
-import CloseButton from "../elements/CloseButton.vue";
 const { t } = useI18n();
 
 import { useMapStore } from "@/store/map";
@@ -390,9 +419,12 @@ const mapStore = useMapStore();
 
 const props = defineProps(["title"]);
 
+onMounted(async () => {
+  await mapStore.loadSitesData();
+});
+
 const searchString = ref("");
 
-// const selectMode = ref(null);
 const selectModes = [
   {
     title: t("tools.stopsSitesSelect"),
@@ -402,11 +434,12 @@ const selectModes = [
     title: t("tools.demandAdminAreas"),
     value: "zones",
   },
-  {
+  mapStore.savedAreas.length > 0 && {
     title: t("tools.socialSavedDisplay"),
-    value: "areas",
+    value: "area",
   },
-];
+].filter(Boolean);
+
 const changeSelectMode = () => {
   if (mapStore.sitesSelectionMode == "areas") {
     mapStore.turnOnLayer(mapStore.layersIdxs.cellsSaved);
@@ -421,8 +454,71 @@ const changeSelectMode = () => {
 const showDistribution = ref(false);
 const showSearch = ref(false);
 
+const searchData = computed(() => {
+  return mapStore.currentSitesGroup == null ||
+    mapStore.useCurrentSiteGroup == false
+    ? mapStore.sitesData.map((site) => ({
+        id: site.id,
+        name: `(${site.id}) ${site.name}`,
+      }))
+    : mapStore.currentSitesGroup.sites.map((site) => ({
+        id: site.id,
+        name: `(${site.id}) ${site.name}`,
+      }));
+});
+
+const processSearchResults = (ids) => {
+  ids.forEach((id) => mapStore.selectedSiteIds.add(id));
+};
+
 const clearSelectedSites = () => {
   console.log("Clear selected");
+  mapStore.selectedSiteIds.clear();
+};
+
+const addSelectedSites = () => {
+  console.log("Current sites group:", mapStore.currentSitesGroup);
+  if (mapStore.currentSitesGroup) {
+    // Exist - add items to if new selected
+    console.log("Add to current");
+    mapStore.selectedSiteIds.forEach((id) => {
+      if (!mapStore.currentSitesGroup.ids.has(id)) {
+        mapStore.currentSitesGroup.ids.add(id);
+        mapStore.currentSitesGroup.sites.push({
+          id: id,
+          name: mapStore.getSiteName(id),
+          shown: true,
+        });
+      }
+    });
+  } else {
+    // Not Exist - create new group
+    mapStore.currentSitesGroup = {
+      name: null,
+      ids: new Set(mapStore.selectedSiteIds),
+      sites: [...mapStore.selectedSiteIds].map((id) => ({
+        id: id,
+        name: mapStore.getSiteName(id),
+        shown: true,
+      })),
+    };
+  }
+  mapStore.useCurrentSiteGroup = true;
+  mapStore.selectedSiteIds.clear();
+};
+const replaceWithSelectedSites = () => {
+  mapStore.currentSitesGroup = {
+    name: null,
+    ids: new Set(mapStore.selectedSiteIds),
+    sites: [...mapStore.selectedSiteIds].map((id) => ({
+      id: id,
+      name: mapStore.getSiteName(id),
+      shown: true,
+    })),
+  };
+  if (!mapStore.useCurrentSiteGroup) {
+    mapStore.useCurrentSiteGroup = true;
+  }
   mapStore.selectedSiteIds.clear();
 };
 
@@ -470,6 +566,7 @@ const selectSitesGroup = (item) => {
 };
 const deleteSitesGroup = (item) => {
   console.log("Delete sites group", item);
+  // TODO: if deleted group open as current - set current to null
 };
 
 // Sites Group
@@ -492,43 +589,21 @@ const siteDisplayOptions = [
   },
 ];
 
-const sitesInGroupMock = ref([
-  {
-    id: 1,
-    site_id: 100,
-    name: "Gogol St.",
-    shown: true,
-  },
-  {
-    id: 2,
-    site_id: 100,
-    name: "Alatau drive",
-    shown: true,
-  },
-  {
-    id: 3,
-    site_id: 100,
-    name: "Abay",
-    shown: false,
-  },
-  {
-    id: 4,
-    site_id: 200,
-    name: "Dostyk Hwy",
-    shown: true,
-  },
-]);
-
 const processCloseGroup = () => {
   console.log("Close Group panel");
+  mapStore.currentSitesGroup = null;
+  mapStore.useCurrentSiteGroup = false;
 };
 
-const searchSite = ref("");
+const searchSitesGroupString = ref("");
 
-const toggleSiteShown = (siteIdx) => {
-  sitesInGroupMock.value[siteIdx].shown =
-    !sitesInGroupMock.value[siteIdx].shown;
-};
+const sitesGroupFiltered = computed(() => {
+  return mapStore.currentSitesGroup.sites.filter((site) =>
+    (site.name.toLowerCase() + site.id.toString()).includes(
+      searchSitesGroupString.value.toLowerCase()
+    )
+  );
+});
 
 const sitesGroupName = ref(null);
 const readyToSave = computed(() => {
@@ -536,13 +611,56 @@ const readyToSave = computed(() => {
 });
 const saveSitesGroup = () => {
   console.log("Save Sites Group", sitesGroupName.value);
+  console.log(("Current:", mapStore.currentSitesGroup));
+  // TODO: Check exist - yes update | no add
+  const savedGroupIdx = mapStore.savedSitesGroups.indexOf(
+    (group) => group.name == sitesGroupName.value
+  );
+  if (savedGroupIdx != -1) {
+    mapStore.currentSitesGroup[savedGroupIdx] = {
+      ...mapStore.currentSitesGroup,
+    };
+  } else {
+    mapStore.savedSitesGroups.push({
+      ...mapStore.currentSitesGroup,
+      name: sitesGroupName.value,
+    });
+  }
 };
 
-const selectSavedSite = (site) => {
+const selectSiteInGroup = (site) => {
   console.log("Site selected", site);
+  mapStore.selectedSiteIds.add(site.id);
+  mapStore.centerItem = {
+    type: "site",
+    id: site.id,
+  };
+  // console.log("Stops:", mapStore.getSiteStopIds(site.id));
 };
-const deleteSite = (site) => {
-  console.log("Delete Site", site.name);
+const toggleSiteShown = (siteIdx) => {
+  mapStore.currentSitesGroup.sites[siteIdx].shown =
+    !mapStore.currentSitesGroup.sites[siteIdx].shown;
+  if (mapStore.useCurrentSiteGroup == false) {
+    mapStore.useCurrentSiteGroup = true;
+  }
+};
+const deleteSiteFromGroup = (idx) => {
+  console.log("Delete Site", mapStore.currentSitesGroup.sites[idx]);
+  if (mapStore.selectedSiteIds.has(mapStore.currentSitesGroup.sites[idx].id)) {
+    mapStore.selectedSiteIds.delete(mapStore.currentSitesGroup.sites[idx].id);
+  }
+  if (mapStore.currentSitesGroup.ids.size == 1) {
+    mapStore.currentSitesGroup = null;
+    mapStore.useCurrentSiteGroup = false;
+  } else {
+    if (mapStore.useCurrentSiteGroup == false) {
+      mapStore.useCurrentSiteGroup = true;
+    }
+    mapStore.currentSitesGroup.ids.delete(
+      mapStore.currentSitesGroup.sites[idx].id
+    );
+    mapStore.currentSitesGroup.sites.splice(idx, 1);
+  }
 };
 // const ladColorSelect = (ladName) => {
 //   console.log("Select Color for LAD:", ladName);

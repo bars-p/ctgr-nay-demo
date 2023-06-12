@@ -82,6 +82,18 @@ const layers = ref([
     title: "Cells",
     ...getLayerData(mapStore.layersIdxs.cellsFill),
   },
+  {
+    title: "Sites",
+    ...getLayerData(mapStore.layersIdxs.sitesFill),
+  },
+  {
+    title: "Centroids",
+    ...getLayerData(mapStore.layersIdxs.sitesCentroids),
+  },
+  {
+    title: "Stops",
+    ...getLayerData(mapStore.layersIdxs.stopsPoints),
+  },
 ]);
 </script>
 
