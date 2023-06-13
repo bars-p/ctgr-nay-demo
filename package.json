@@ -12,6 +12,7 @@
     "@deck.gl/layers": "^8.9.13",
     "@deck.gl/mapbox": "^8.9.13",
     "axios": "^1.4.0",
+    "lodash": "^4.17.21",
     "mapbox-gl": "^2.14.1",
     "pinia": "^2.0.35",
     "roboto-fontface": "*",

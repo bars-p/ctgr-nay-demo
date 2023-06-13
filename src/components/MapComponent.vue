@@ -245,6 +245,7 @@ let sourceSites = null;
 let sourceSitesCentroids = null;
 let sourceStops = null;
 let zonesStats = null; // FIXME: Needed because of incorrect GeoJSON 1000x1000 pop and emp data
+let accessStats = null;
 
 const loadData = async () => {
   await axios
@@ -287,6 +288,23 @@ const loadData = async () => {
     .catch((err) => console.log("ERROR load", err));
   console.log("Sites Centroids Loaded:", sourceSitesCentroids.features.length);
 
+  // Enrich Centroids Data - Careful fo ID! - data by Index
+  // FIXME: Redundant data load, should be fixed
+  let sitesStats = null;
+  await axios
+    .get("Almaty_sites_stats.json")
+    .then((result) => (sitesStats = result.data))
+    .catch((err) => console.warn("Error loading Sites stats", err));
+  sourceSitesCentroids.features.forEach((item, i) => {
+    if (item.properties.id == sitesStats[i].id) {
+      item.properties = { ...sitesStats[i] };
+    } else {
+      console.error("Failed merge sites stats");
+      return;
+    }
+  });
+  console.log("Sites Centroids Rich data:", sourceSitesCentroids);
+
   await axios
     .get("Almaty_stops.geojson")
     .then((result) => (sourceStops = result.data))
@@ -297,6 +315,25 @@ const loadData = async () => {
     .get("Almaty_zones_1000_1000_stats.json")
     .then((result) => (zonesStats = result.data))
     .catch((err) => console.log("ERROR load", err));
+
+  // Enrich cells data with Access stats
+  await axios
+    .get("Almaty_access_cells_100_100.json")
+    .then((result) => (accessStats = result.data))
+    .catch((err) => console.warn("Error loading Accessability data", err));
+  sourceBaseCells.features.forEach((cell, i) => {
+    if (cell.properties.id == accessStats[i].id) {
+      cell.properties = {
+        ...cell.properties,
+        ...accessStats[i],
+      };
+    } else {
+      console.error("Failed merge Cells stats");
+      return;
+    }
+  });
+
+  // console.log("🙆🏻🙆🏻🙆🏻 TEST", sourceBaseCells.features[101].properties);
 
   // FIXME: Temp - total population data check
   // const totalPop100 = sourceBaseCells.features.reduce((sum, cur) => {
@@ -366,7 +403,7 @@ const sitesLayersIdxs = [
   layersIdxs.sitesSelected,
 ];
 const accessLayersIdxs = [
-  layersIdxs.cellsFill,
+  // layersIdxs.cellsFill,
   layersIdxs.zonesBorder,
   layersIdxs.adminBorder,
 ];
@@ -469,17 +506,18 @@ const buildLayers = () => {
           visibility: "none",
         },
         paint: {
-          "fill-color": {
-            property: "pop",
-            stops: [
-              [0, "#FFFFFF"],
-              [10, "#FED976"],
-              [100, "#FC4E2A"],
-              [500, "#E31A1C"],
-              [1000, "#BD0026"],
-              [20000, "#800026"],
-            ],
-          },
+          // "fill-color": {
+          //   property: "pop",
+          //   stops: [
+          //     [0, "#FFFFFF"],
+          //     [10, "#FED976"],
+          //     [100, "#FC4E2A"],
+          //     [500, "#E31A1C"],
+          //     [1000, "#BD0026"],
+          //     [20000, "#800026"],
+          //   ],
+          // },
+          "fill-color": "#FED976",
           "fill-opacity": [
             "case",
             ["boolean", ["feature-state", "hover"], false],
@@ -526,6 +564,21 @@ const buildLayers = () => {
     map.addLayer(
       {
         id: mapStore.layers[layersIdxs.sitesCentroids].name,
+        type: "circle",
+        source: "sites-centroids-source",
+        layout: {
+          visibility: "none",
+        },
+        paint: {
+          "circle-color": mapStore.centroidsColor,
+          "circle-radius": 5,
+        },
+      },
+      "road-label"
+    );
+    map.addLayer(
+      {
+        id: mapStore.layers[layersIdxs.sitesAnalytics].name,
         type: "circle",
         source: "sites-centroids-source",
         layout: {
@@ -1295,11 +1348,19 @@ const showCurrentSitesGroup = () => {
     "id",
     ...ids,
   ]);
+  map.setFilter(mapStore.layers[layersIdxs.sitesAnalytics].name, [
+    "in",
+    "id",
+    ...ids,
+  ]);
   map.setFilter(mapStore.layers[layersIdxs.stopsPoints].name, [
     "in",
     "id",
     ...stopsSet,
   ]);
+
+  // FIXME: Delete
+  console.log("🦚 Centroids Source", sourceSitesCentroids);
 };
 const showAllSites = () => {
   map.setFilter(mapStore.layers[layersIdxs.sitesFill].name, null);
@@ -1473,15 +1534,6 @@ const displayDemandZones = () => {
         "fill-color": {
           property: "value",
           stops: [
-            // [0, "#e699ff"],
-            // [0.1, "#d966ff"],
-            // [0.2, "#cc33ff"],
-            // [0.5, "#c61aff"],
-            // [1, "#bf00ff"],
-            // [10, "#9900cc"],
-            // [20, "#730099"],
-            // [60, "#4d0066"],
-
             [0, "#f9e6ff"],
             [5, "#cc33ff"],
             [10, "#c61aff"],
@@ -1632,7 +1684,7 @@ const calculateSplitDemand = () => {
     pop: +zonesStats[i].pop,
     emp: +zonesStats[i].emp,
   }));
-  console.log("Zones:", zonesData);
+  // console.log("Zones:", zonesData);
 
   let maxValue = 0;
 
@@ -1648,9 +1700,9 @@ const calculateSplitDemand = () => {
     } else {
       if (mapStore.demandDirection == "from") {
         const zoneTotal = 0.1 * zone.pop + zone.emp;
-        if (zone.zoneId == 408) {
-          console.log("Zone total", zoneTotal);
-        }
+        // if (zone.zoneId == 408) {
+        //   console.log("Zone total", zoneTotal);
+        // }
         cellsSelected.forEach((cell) => {
           const cellTotal = 0.1 * cell.properties.pop + cell.properties.emp;
           const cellValue = (zone.value * cellTotal) / zoneTotal;
@@ -1661,9 +1713,9 @@ const calculateSplitDemand = () => {
         });
       } else {
         const zoneTotal = zone.pop + 0.1 * zone.emp;
-        if (zone.zoneId == 408) {
-          console.log("Zone total", zoneTotal);
-        }
+        // if (zone.zoneId == 408) {
+        //   console.log("Zone total", zoneTotal);
+        // }
         cellsSelected.forEach((cell) => {
           const cellTotal = cell.properties.pop + 0.1 * cell.properties.emp;
           const cellValue = (zone.value * cellTotal) / zoneTotal;
@@ -1674,47 +1726,16 @@ const calculateSplitDemand = () => {
         });
       }
     }
-
-    // FIXME: Delete later
-    // if (zone.zoneId == 408) {
-    //   console.log("Zone:", zone);
-    //   const popValue = cellsSelected.reduce(
-    //     (sum, cur) => sum + cur.properties.pop,
-    //     0
-    //   );
-    //   console.log("408 pop:", popValue);
-    //   const empValue = cellsSelected.reduce(
-    //     (sum, cur) => sum + cur.properties.emp,
-    //     0
-    //   );
-    //   console.log("408 emp:", empValue);
-    //   const valValue = cellsSelected.reduce(
-    //     (sum, cur) => sum + cur.properties.value,
-    //     0
-    //   );
-    //   console.log("408 value:", valValue);
-    //   // console.log("Zones stats", zonesStats);
-    //   console.log("MaxValue", maxValue);
-    //   console.log(
-    //     "Cells values:",
-    //     cellsSelected.map((cell) => cell.properties.value)
-    //   );
-    // }
   });
 
   sourceBaseCells.features.forEach((cell) => {
     cell.properties.value = (100 * cell.properties.value) / (maxValue || 1);
   });
-
-  // console.log(
-  //   "Result for 408:",
-  //   sourceBaseCells.features
-  //     .filter((cell) => cell.properties.cell_id == 408)
-  //     .map((cell) => cell.properties.value)
-  // );
 };
 
-//Connectivity logic
+//
+// Connectivity logic
+//
 const processConnectivityFeatureSelect = (id) => {
   console.log("Select Item Connectivity", id, mapStore.connectivityType);
   if (mapStore.connectivitySelectMode == "one") {
@@ -1794,7 +1815,9 @@ const getConnectivityStatistics = () => {
   }
 };
 
+//
 // Layers Clear
+//
 const clearAdminAreasSelected = () => {
   map.setFilter(mapStore.layers[layersIdxs.adminAreasSelected].name, [
     "in",

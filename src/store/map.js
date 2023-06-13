@@ -38,6 +38,7 @@ export const useMapStore = defineStore("mapStore", () => {
     sitesCentroids: 14,
     stopsPoints: 15,
     sitesSelected: 16,
+    sitesAnalytics: 17,
   };
   const layers = ref([
     { idx: 0, name: "admin-areas-border", shown: false },
@@ -57,6 +58,7 @@ export const useMapStore = defineStore("mapStore", () => {
     { idx: 14, name: "sites-centroids", shown: false },
     { idx: 15, name: "stops-point", shown: false },
     { idx: 16, name: "sites-selected", shown: false },
+    { idx: 17, name: "sites-analytics", shown: false },
   ]);
 
   const turnOnLayer = (idx) => {
@@ -284,6 +286,12 @@ export const useMapStore = defineStore("mapStore", () => {
   const useCurrentSiteGroup = ref(false);
 
   const savedSitesGroups = ref([]);
+  const updatedSaveSitesGroup = (idx, groupData) => {
+    savedSitesGroups.value[idx] = groupData;
+  };
+  const siteSizeMode = ref(null);
+  const siteColorMode = ref(null);
+  const siteSizeStep = ref(2);
 
   //
   // Connectivity data
@@ -308,6 +316,13 @@ export const useMapStore = defineStore("mapStore", () => {
     connectivityIdsFromType.value = null;
     connectivityItemsForProcessing.value = [];
   };
+
+  //
+  // Accessability Data
+  //
+  const populationAbove = ref(0);
+  const accessabilityBelow = ref(5);
+  // const accessGapColor = ref("#ff0000");
 
   return {
     userSettingsShown,
@@ -352,6 +367,10 @@ export const useMapStore = defineStore("mapStore", () => {
     currentSitesGroup,
     useCurrentSiteGroup,
     savedSitesGroups,
+    updatedSaveSitesGroup,
+    siteSizeMode,
+    siteColorMode,
+    siteSizeStep,
     // demandVectors, // FIXME: Access by getters
     loadDemandVectors,
     getDemandFrom,
@@ -377,5 +396,8 @@ export const useMapStore = defineStore("mapStore", () => {
     connectivityItemsForProcessing,
     connectivityProcessItems,
     connectivityResetData,
+    populationAbove,
+    accessabilityBelow,
+    // accessGapColor,
   };
 });

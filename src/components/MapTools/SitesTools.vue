@@ -2,7 +2,7 @@
   <div>
     <tools-component :title="props.title">
       <template #actions>
-        <search-bar v-model="searchString"></search-bar>
+        <search-bar v-model="searchGroupsString"></search-bar>
       </template>
 
       <template #tools>
@@ -25,7 +25,7 @@
             variant="outlined"
             color="grey-darken-3"
             class="mr-3"
-            @click="showDistribution = true"
+            @click="openDistributionDialog"
             >{{ $t("general.distribution") }}</v-btn
           >
           <v-btn
@@ -200,14 +200,14 @@
             :value="item"
             density="compact"
           >
-            {{ item }} ({{ getSavedNumber(item) }})
+            {{ getSavedName(item) }} ({{ getSavedNumber(item) }})
           </v-tab>
         </v-tabs>
         <v-window v-model="tabSelected">
-          <v-window-item value="LADs">
+          <v-window-item value="lads">
             <v-list density="compact">
               <v-list-item
-                v-for="(ladGroup, idx) in savedLadsMock"
+                v-for="(ladGroup, idx) in ladGroupsFiltered"
                 :key="ladGroup.name"
                 @click="selectLadGroup(ladGroup)"
               >
@@ -227,10 +227,10 @@
               </v-list-item>
             </v-list>
           </v-window-item>
-          <v-window-item value="Sites">
+          <v-window-item value="sites">
             <v-list density="compact">
               <v-list-item
-                v-for="(siteGroup, idx) in mapStore.savedSitesGroups"
+                v-for="(siteGroup, idx) in siteGroupsFiltered"
                 :key="siteGroup.name"
                 @click="selectSitesGroup(siteGroup)"
               >
@@ -286,13 +286,14 @@
               <v-label class="mb-1 text-subtitle-2">
                 {{ $t("general.displayOptions") }}:
               </v-label>
-              <apply-button></apply-button>
+              <apply-button @click="applyAnalyticsDisplay"></apply-button>
             </v-col>
           </v-row>
 
           <v-row no-gutters class="mb-3">
             <v-col cols="9">
               <v-select
+                v-model="mapStore.siteColorMode"
                 clearable
                 density="compact"
                 variant="underlined"
@@ -310,6 +311,7 @@
           <v-row no-gutters class="mb-3">
             <v-col cols="9">
               <v-select
+                v-model="mapStore.siteSizeMode"
                 clearable
                 density="compact"
                 variant="underlined"
@@ -322,15 +324,16 @@
             </v-col>
             <v-col cols="3" align-self="end">
               <v-text-field
+                v-model="mapStore.siteSizeStep"
                 density="compact"
                 hide-details
                 variant="underlined"
-                :label="$t('general.max')"
+                :label="$t('general.step')"
                 type="number"
               ></v-text-field>
             </v-col>
           </v-row>
-          <v-row no-gutters class="mb-3">
+          <!-- <v-row no-gutters class="mb-3">
             <v-col cols="9">
               <v-select
                 clearable
@@ -346,7 +349,7 @@
             <v-col cols="3" align-self="end">
               <config-button></config-button>
             </v-col>
-          </v-row>
+          </v-row> -->
         </div>
       </template>
       <v-container class="data-sites-group">
@@ -388,6 +391,16 @@
     <distribution-dialog
       v-model="showDistribution"
       :title="$t('tools.sitesDistributionTitle')"
+      :categories="sitesCategories"
+      :field-length="fieldLength"
+      :items="sitesDataForDistribution"
+      :field-items="distributedItems"
+      :selected="categoriesSelected"
+      :any-selected="isAnyFieldSelected"
+      @select-field-group="processFieldSelect"
+      @select-item="processItemSelect"
+      @distributed="processDistributedItems"
+      @done="processDistributionSelected"
     ></distribution-dialog>
     <search-dialog
       v-model="showSearch"
@@ -400,6 +413,9 @@
 </template>
 
 <script setup>
+import _ from "lodash";
+import axios from "axios";
+
 import ToolsComponent from "../ToolsComponent.vue";
 // import CancelButton from "../elements/CancelButton.vue";
 import ApplyButton from "../elements/ApplyButton.vue";
@@ -409,7 +425,7 @@ import SearchBar from "../elements/SearchBar.vue";
 import DistributionDialog from "../DistributionDialog.vue";
 import SearchDialog from "../SearchDialog.vue";
 
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, watch } from "vue";
 
 import { useI18n } from "vue-i18n";
 const { t } = useI18n();
@@ -419,11 +435,58 @@ const mapStore = useMapStore();
 
 const props = defineProps(["title"]);
 
+let sitesStats = null;
+let sitesCategories = null;
+console.log("🟢🟢 Re-executes Site Tools");
+
 onMounted(async () => {
   await mapStore.loadSitesData();
+
+  // FIXME: Data loading with backend
+  if (sitesStats == null) {
+    console.log("Load Sites Stats");
+    await axios
+      .get("Almaty_sites_stats.json")
+      .then((result) => (sitesStats = result.data))
+      .catch((err) => console.warn("Error loading Sites stats", err));
+  }
+  if (sitesCategories == null) {
+    console.log("Load Sites Categories");
+    await axios
+      .get("Almaty_sites_categories.json")
+      .then((result) => (sitesCategories = result.data))
+      .catch((err) => console.warn("Error loading Sites categories", err));
+  }
 });
 
-const searchString = ref("");
+const fieldLength = 6; // FIXME: Should be calculated from Categories data
+
+// const sitesDataDistribution = computed(() => {
+//   return mapStore.sitesData.map((site) => ({
+//     ...site,
+//     // ...sitesStats[i],
+//   }));
+// });
+
+const searchGroupsString = ref("");
+const siteGroupsFiltered = computed(() => {
+  return tabSelected.value == "sites"
+    ? mapStore.savedSitesGroups.filter((group) =>
+        group.name
+          .toLowerCase()
+          .includes(searchGroupsString.value.toLowerCase())
+      )
+    : mapStore.savedSitesGroups;
+});
+const ladGroupsFiltered = computed(() => {
+  return tabSelected.value == "lads"
+    ? savedLadsMock.value.filter((group) =>
+        group.name
+          .toLowerCase()
+          .includes(searchGroupsString.value.toLowerCase())
+      )
+    : savedLadsMock.value;
+});
 
 const selectModes = [
   {
@@ -471,6 +534,89 @@ const processSearchResults = (ids) => {
   ids.forEach((id) => mapStore.selectedSiteIds.add(id));
 };
 
+//
+// Distribution logic
+let sitesDataForDistribution = [];
+let categoriesSelected = ref({});
+let distributedItems = ref({});
+const openDistributionDialog = () => {
+  sitesDataForDistribution =
+    mapStore.currentSitesGroup == null || mapStore.useCurrentSiteGroup == false
+      ? mapStore.sitesData.map((site, i) => ({
+          ...site,
+          ...sitesStats[i],
+        }))
+      : mapStore.currentSitesGroup.sites.map((site) => ({
+          ...site,
+          ...sitesStats.find((item) => item.id == site.id),
+        }));
+  sitesCategories.forEach((item) => {
+    categoriesSelected.value[item.fieldGroup] = new Array(fieldLength).fill(
+      false
+    );
+    distributedItems.value[item.fieldGroup] = new Array(fieldLength).fill(null);
+  });
+  Object.keys(distributedItems.value).forEach((fieldGroup) => {
+    for (let i = 0; i < fieldLength; i++) {
+      distributedItems.value[fieldGroup][i] = new Array();
+    }
+  });
+  console.log("Selected Array", categoriesSelected);
+  console.log("Distributed Items", distributedItems.value);
+
+  showDistribution.value = true;
+};
+const isAnyFieldSelected = ref(false);
+watch(
+  () => categoriesSelected,
+  () => {
+    isAnyFieldSelected.value = false;
+    Object.keys(categoriesSelected.value).forEach((fieldGroup) => {
+      // console.log(
+      //   "Watch field",
+      //   fieldGroup,
+      //   categoriesSelected.value[fieldGroup]
+      // );
+      const fieldSelected = categoriesSelected.value[fieldGroup].reduce(
+        (result, current) => result || current,
+        false
+      );
+      // console.log("Field result", fieldGroup, fieldSelected);
+      isAnyFieldSelected.value = isAnyFieldSelected.value || fieldSelected;
+    });
+    // console.log("Any Selected Watched", isAnyFieldSelected.value);
+  },
+  { deep: true }
+);
+
+const processFieldSelect = (data) => {
+  console.log("SITES: Field selected", data);
+  categoriesSelected.value[data.fieldGroup][data.idx] =
+    !categoriesSelected.value[data.fieldGroup][data.idx];
+};
+
+const processItemSelect = (data) => {
+  console.log("SITES: Item selected", data);
+  distributedItems.value[data.fieldGroup][data.position][data.idx].selected =
+    !distributedItems.value[data.fieldGroup][data.position][data.idx].selected;
+  console.log("Items processed", distributedItems.value);
+};
+
+const processDistributedItems = (data) => {
+  distributedItems.value = _.cloneDeep(data);
+  console.log("SITES Distributed Data", distributedItems.value);
+};
+
+const processDistributionSelected = (selectedIds) => {
+  console.log("🤖 Distribution Done", ...selectedIds);
+
+  selectedIds.forEach((id) => mapStore.selectedSiteIds.add(id));
+  // console.log("Categories", categoriesSelected.value);
+  // console.log("Items", distributedItems.value);
+};
+
+//
+// Sites select logic
 const clearSelectedSites = () => {
   console.log("Clear selected");
   mapStore.selectedSiteIds.clear();
@@ -536,21 +682,26 @@ const savedLadsMock = ref([
     count: 15,
   },
 ]);
-const savedSitesMock = [
-  {
-    name: "Stops around Hospital",
-    count: 9,
-  },
-  {
-    name: "Central stops",
-    count: 57,
-  },
-];
+// const savedSitesMock = [
+//   {
+//     name: "Stops around Hospital",
+//     count: 9,
+//   },
+//   {
+//     name: "Central stops",
+//     count: 57,
+//   },
+// ];
 
-const groupTabs = ["LADs", "Sites"];
-const tabSelected = ref("Sites");
-const getSavedNumber = (name) => {
-  return name == "LADs" ? savedLadsMock.value.length : savedSitesMock.length;
+const groupTabs = ["lads", "sites"];
+const tabSelected = ref("sites");
+const getSavedName = (tab) => {
+  return tab == "lads" ? t("tools.routesLads") : t("tools.sitesSites");
+};
+const getSavedNumber = (tab) => {
+  return tab == "lads"
+    ? savedLadsMock.value.length
+    : mapStore.savedSitesGroups.length;
 };
 
 const selectLadGroup = (ladGroup) => {
@@ -563,29 +714,36 @@ const deleteLadGroup = (ladGroup) => {
 };
 const selectSitesGroup = (item) => {
   console.log("Select sites group", item);
+  sitesGroupName.value = item.name;
+  mapStore.currentSitesGroup = _.cloneDeep(item);
+  mapStore.useCurrentSiteGroup = true;
 };
-const deleteSitesGroup = (item) => {
-  console.log("Delete sites group", item);
-  // TODO: if deleted group open as current - set current to null
+const deleteSitesGroup = (idx) => {
+  console.log("Delete sites group", idx);
+  mapStore.savedSitesGroups.splice(idx, 1);
 };
 
 // Sites Group
 const siteDisplayOptions = [
   {
-    title: t("tools.sitesTripsNumber"),
-    value: "trips",
+    title: t("tools.sitesLadsNumber"),
+    value: "lads_group",
   },
   {
-    title: t("tools.sitesLadsNumber"),
-    value: "lads",
+    title: t("tools.sitesTripsNumber"),
+    value: "trips_group",
+  },
+  {
+    title: t("tools.sitesCapacity"),
+    value: "cap_group",
   },
   {
     title: t("tools.sitesBoarding"),
-    value: "in",
+    value: "board_group",
   },
   {
     title: t("tools.sitesAlighting"),
-    value: "out",
+    value: "alight_group",
   },
 ];
 
@@ -593,6 +751,12 @@ const processCloseGroup = () => {
   console.log("Close Group panel");
   mapStore.currentSitesGroup = null;
   mapStore.useCurrentSiteGroup = false;
+  sitesGroupName.value = null;
+  mapStore.siteSizeStep = defaultSizeStep;
+  mapStore.siteColorMode = null;
+  mapStore.siteSizeMode = null;
+  mapStore.turnOffLayer(mapStore.layersIdxs.sitesAnalytics);
+  mapStore.turnOnLayer(mapStore.layersIdxs.sitesCentroids);
 };
 
 const searchSitesGroupString = ref("");
@@ -610,21 +774,31 @@ const readyToSave = computed(() => {
   return sitesGroupName.value?.length > 0;
 });
 const saveSitesGroup = () => {
-  console.log("Save Sites Group", sitesGroupName.value);
-  console.log(("Current:", mapStore.currentSitesGroup));
-  // TODO: Check exist - yes update | no add
-  const savedGroupIdx = mapStore.savedSitesGroups.indexOf(
+  // console.log("Save Sites Group", sitesGroupName.value);
+  // console.log("Current:", mapStore.currentSitesGroup);
+  // console.log("Saved Groups:", mapStore.savedSitesGroups);
+  // Check exist - yes update | no add
+  const savedGroupIdx = mapStore.savedSitesGroups.findIndex(
     (group) => group.name == sitesGroupName.value
   );
+  // console.log("Found Index", savedGroupIdx);
   if (savedGroupIdx != -1) {
-    mapStore.currentSitesGroup[savedGroupIdx] = {
-      ...mapStore.currentSitesGroup,
-    };
+    console.log("Update");
+    mapStore.updatedSaveSitesGroup(
+      savedGroupIdx,
+      _.cloneDeep({
+        ...mapStore.currentSitesGroup,
+        name: sitesGroupName.value,
+      })
+    );
   } else {
-    mapStore.savedSitesGroups.push({
-      ...mapStore.currentSitesGroup,
-      name: sitesGroupName.value,
-    });
+    console.log("Save new");
+    mapStore.savedSitesGroups.push(
+      _.cloneDeep({
+        ...mapStore.currentSitesGroup,
+        name: sitesGroupName.value,
+      })
+    );
   }
 };
 
@@ -662,12 +836,67 @@ const deleteSiteFromGroup = (idx) => {
     mapStore.currentSitesGroup.sites.splice(idx, 1);
   }
 };
-// const ladColorSelect = (ladName) => {
-//   console.log("Select Color for LAD:", ladName);
-// };
-// const ladColorUpdate = (color) => {
-//   console.log("Set New color to:", color);
-// };
+
+//
+// Analytics Logic
+//
+const defaultSizeStep = 2;
+const defaultSiteColor = mapStore.centroidsColor;
+
+// const siteSizeStep = ref(defaultSizeStep);
+// const siteColorMode = ref(null);
+// const siteSizeMode = ref(null);
+
+const applyAnalyticsDisplay = () => {
+  // console.log(
+  //   "Analytics params",
+  //   siteColorMode.value,
+  //   siteSizeMode.value,
+  //   siteSizeStep.value
+  // );
+  if (mapStore.siteColorMode == null && mapStore.siteSizeMode == null) {
+    return;
+  }
+  const paintProps = {};
+  if (mapStore.siteSizeMode != null) {
+    const sizeStep = mapStore.siteSizeStep
+      ? Math.abs(mapStore.siteSizeStep)
+      : defaultSizeStep;
+    paintProps["circle-radius"] = [
+      "*",
+      ["+", ["get", mapStore.siteSizeMode], 1],
+      sizeStep,
+    ];
+    if (mapStore.siteColorMode == null) {
+      paintProps["circle-color"] = defaultSiteColor;
+    }
+  }
+  if (mapStore.siteColorMode != null) {
+    paintProps["circle-color"] = {
+      property: mapStore.siteColorMode,
+      stops: [
+        [0, "#ffff00"],
+        [1, "#ffcc00"],
+        [2, "#ff9900"],
+        [3, "#ff6600"],
+        [4, "#ff3300"],
+        [5, "#ff0000"],
+      ],
+    };
+    if (mapStore.siteSizeMode == null) {
+      paintProps["circle-radius"] = defaultSizeStep * 3;
+    }
+  }
+
+  console.log("Props to apply", paintProps);
+  mapStore.newLayerPaint = {
+    layerIdx: mapStore.layersIdxs.sitesAnalytics,
+    paintProps: paintProps,
+  };
+
+  mapStore.turnOnLayer(mapStore.layersIdxs.sitesAnalytics);
+  mapStore.turnOffLayer(mapStore.layersIdxs.sitesCentroids);
+};
 </script>
 
 <style scoped>

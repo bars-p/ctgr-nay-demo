@@ -15,19 +15,17 @@
       <v-card-text class="overflow-auto">
         <v-table density="compact" class="distribution-table">
           <tbody
-            v-for="item in Categories"
-            :key="item.name"
+            v-for="item in categories"
+            :key="item.field"
             class="text-body-2"
           >
             <tr>
-              <template v-for="(range, i) in item.criterias" :key="range.name">
+              <template v-for="(range, i) in item.levels" :key="range.name">
                 <td v-if="!i" rowspan="2" class="classification-header">
                   {{ item.name }}
                 </td>
                 <td class="classification-header">
-                  <strong>{{ range.name }}</strong> ({{ range.from }}-{{
-                    range.to
-                  }})
+                  <strong>{{ range.name }}</strong> {{ range.details }}
                 </td>
               </template>
             </tr>
@@ -36,10 +34,25 @@
                 class="data-block"
                 v-for="i in 6"
                 :key="i"
-                @click="selectRangeItem(item.name, i)"
+                @click="selectRangeItem(item.field, i - 1)"
+                :style="`background: rgba(0, 0, 0, ${
+                  distribution[item.field][i - 1].percent / 100
+                }); color: ${
+                  distribution[item.field][i - 1].percent / 100 > 0.4
+                    ? '#fff'
+                    : 'rgba(0,0,0,0.87)'
+                }; border: ${
+                  distribution[item.field][i - 1].selected
+                    ? '3px solid #4da6ff'
+                    : ''
+                }`"
               >
                 <v-row dense no-gutters>
-                  <v-col cols="10" class="mt-1"> 19% (7) </v-col>
+                  <v-col cols="10" class="mt-1">
+                    {{ distribution[item.field][i - 1].percent }}% ({{
+                      distribution[item.field][i - 1].number
+                    }})
+                  </v-col>
                   <v-col cols="2" class="text-right">
                     <v-menu location="start">
                       <template v-slot:activator="{ props }">
@@ -49,22 +62,29 @@
                           flat
                           size="small"
                           density="comfortable"
-                          @click.stop="showItems(item.field, i)"
+                          @click.stop="showItems(item.field, i - 1)"
+                          :color="
+                            distribution[item.field][i - 1].percent / 100 > 0.2
+                              ? 'grey-darken-1'
+                              : 'grey-lighten-3'
+                          "
                         >
                         </v-btn>
                       </template>
                       <v-list density="compact" max-height="300px">
                         <v-list-item
-                          v-for="(lad, i) in mockLads"
-                          :key="lad.name"
-                          :value="lad.name"
+                          v-for="(obj, j) in props.fieldItems[item.field][
+                            i - 1
+                          ]"
+                          :key="obj.id"
+                          :value="obj.id"
                           class="my-0 py-0"
                           min-width="120px"
-                          @click.stop="toggleSelectLad(lad.name, i)"
+                          @click.stop="toggleSelectItem(item.field, i - 1, j)"
                         >
                           <v-list-item-title class="text-body-2">
                             <v-icon
-                              v-if="lad.selected"
+                              v-if="obj.selected"
                               size="x-small"
                               color="green"
                               >mdi-check-bold</v-icon
@@ -72,7 +92,7 @@
                             <v-icon v-else size="x-small" color="grey-lighten-1"
                               >mdi-check</v-icon
                             >
-                            {{ lad.name }}
+                            ({{ obj.id }}) {{ obj.name }} [{{ obj.value }}]
                           </v-list-item-title>
                         </v-list-item>
                       </v-list>
@@ -88,8 +108,8 @@
         <v-spacer></v-spacer>
         <v-btn
           color="primary"
-          @click="dialogOpened = false"
-          :disabled="false"
+          @click="selectDistributionResult"
+          :disabled="!props.anySelected"
           min-width="200px"
           >{{ $t("tools.routesDialogSelect") }}</v-btn
         >
@@ -106,14 +126,27 @@
 </template>
 
 <script setup>
-import Categories from "./Distributions";
-
 import CloseButton from "./elements/CloseButton.vue";
 
-import { ref, computed } from "vue";
+import { computed } from "vue";
 
-const props = defineProps(["modelValue", "title"]);
-const emit = defineEmits(["update:modelValue"]);
+const props = defineProps([
+  "modelValue",
+  "title",
+  "categories",
+  "fieldLength",
+  "selected",
+  "anySelected",
+  "items",
+  "fieldItems",
+]);
+const emit = defineEmits([
+  "update:modelValue",
+  "selectFieldGroup",
+  "distributed",
+  "selectItem",
+  "done",
+]);
 
 const dialogOpened = computed({
   get() {
@@ -124,40 +157,91 @@ const dialogOpened = computed({
   },
 });
 
-const selectRangeItem = (name, idx) => {
-  console.log("Selected:", name, idx);
+const distribution = computed(() => {
+  console.log("😡😡😡 Distribution Calculation");
+  const dataObject = {};
+  const distributedItems = {};
+  props.categories.forEach((item) => {
+    dataObject[item.fieldGroup] = new Array(props.fieldLength).fill(null);
+    distributedItems[item.fieldGroup] = new Array(props.fieldLength).fill(null);
+  });
+  Object.keys(dataObject).forEach((group) => {
+    for (let i = 0; i < dataObject[group].length; i++) {
+      dataObject[group][i] = new Object({
+        number: 0,
+        percent: 0,
+        selected: props.selected[group][i],
+      });
+      distributedItems[group][i] = new Array();
+    }
+  });
+  props.items.forEach((item) => {
+    Object.keys(dataObject).forEach((group) => {
+      dataObject[group][item[group]].number++;
+      distributedItems[group][item[group]].push({
+        id: item.id,
+        name: item.name,
+        value: Math.round(item[getFieldName(group)]),
+        selected: true,
+      });
+    });
+  });
+  Object.keys(dataObject).forEach((group) => {
+    for (let i = 0; i < dataObject[group].length; i++) {
+      dataObject[group][i].percent =
+        Math.round(
+          (100 * 100 * dataObject[group][i].number) / props.items.length
+        ) / 100;
+    }
+  });
+  console.log("TABLE: Distributed Items", distributedItems);
+  emit("distributed", distributedItems);
+  return dataObject;
+});
+
+const selectRangeItem = (fieldGroup, idx) => {
+  console.log("Selected:", fieldGroup, idx);
+
+  emit("selectFieldGroup", { fieldGroup: fieldGroup, idx: idx });
+
+  console.log("Distribution", distribution.value);
 };
 
 const showItems = (name, idx) => {
   console.log("Show Items for:", name, idx);
 };
 
-const mockLads = ref([
-  {
-    name: "11-0-1",
-    selected: true,
-  },
-  {
-    name: "11-0-2",
-    selected: true,
-  },
-  {
-    name: "27-0-3",
-    selected: false,
-  },
-  {
-    name: "32-0-1",
-    selected: false,
-  },
-  {
-    name: "32-0-2",
-    selected: true,
-  },
-]);
+const toggleSelectItem = (fieldGroup, position, idx) => {
+  console.log("Item", fieldGroup, position, idx);
+  emit("selectItem", { fieldGroup, position, idx });
+  // mockLads.value[idx].selected = !mockLads.value[idx].selected;
+};
 
-const toggleSelectLad = (name, idx) => {
-  console.log("LAD", name);
-  mockLads.value[idx].selected = !mockLads.value[idx].selected;
+const selectDistributionResult = () => {
+  const selectedItemsIds = new Set();
+  Object.keys(props.selected).forEach((fieldGroup) => {
+    for (let i = 0; i < props.fieldLength; i++) {
+      if (props.selected[fieldGroup][i]) {
+        // TODO: If true - process all items in group
+        console.log("🟢 Group selected", fieldGroup);
+        console.log("🟢 Group items", props.fieldItems[fieldGroup][i]);
+        props.fieldItems[fieldGroup][i].forEach((item) => {
+          if (item.selected) {
+            selectedItemsIds.add(item.id);
+          }
+        });
+      }
+    }
+  });
+
+  console.log("DISTRIBUTION RESULT", props.fieldItems);
+  emit("done", selectedItemsIds);
+  dialogOpened.value = false;
+};
+
+// FIXME: A bit weird way to get field name
+const getFieldName = (groupName) => {
+  return groupName.split("_")[0];
 };
 </script>
 
@@ -181,6 +265,6 @@ const toggleSelectLad = (name, idx) => {
   cursor: pointer;
 }
 .data-block:hover {
-  box-shadow: 0px 0px 8px #8d8d8d;
+  box-shadow: 0px 0px 12px #8d8d8d;
 }
 </style>
