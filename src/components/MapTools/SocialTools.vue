@@ -415,22 +415,35 @@ const processColorChange = (val) => {
     //   processBarsChange(val);
     // }
   } else {
-    if (selectItemsColor[val].paintProps !== null) {
-      mapStore.newLayerPaint = {
-        layerIdx: selectItemsColor[val].layerIdx,
-        paintProps: selectItemsColor[val].paintProps,
-      };
-    }
-    if (selectItemsColor[val].filterProps !== null) {
-      mapStore.newLayerFilter = {
-        layerIdx: selectItemsColor[val].layerIdx,
-        filterProps: selectItemsColor[val].filterProps,
-      };
-    }
-    if (mapStore.layers[selectItemsColor[val].layerIdx].shown == false) {
-      mapStore.layers[selectItemsColor[val].layerIdx].shown = true;
-      mapStore.layers[mapStore.layersIdxs.cellsSelected].shown = true;
-    }
+    mapStore.newLayerPaint = {
+      layerIdx: selectItemsColor[val].layerIdx,
+      paintProps: selectItemsColor[val].paintProps,
+    };
+
+    mapStore.newLayerFilter = {
+      layerIdx: selectItemsColor[val].layerIdx,
+      filterProps: selectItemsColor[val].filterProps,
+    };
+
+    mapStore.turnOnLayer(selectItemsColor[val].layerIdx);
+    mapStore.turnOnLayer(mapStore.layersIdxs.cellsSelected);
+
+    // if (selectItemsColor[val].paintProps !== null) {
+    //   mapStore.newLayerPaint = {
+    //     layerIdx: selectItemsColor[val].layerIdx,
+    //     paintProps: selectItemsColor[val].paintProps,
+    //   };
+    // }
+    // if (selectItemsColor[val].filterProps !== null) {
+    //   mapStore.newLayerFilter = {
+    //     layerIdx: selectItemsColor[val].layerIdx,
+    //     filterProps: selectItemsColor[val].filterProps,
+    //   };
+    // }
+    // if (mapStore.layers[selectItemsColor[val].layerIdx].shown == false) {
+    //   mapStore.layers[selectItemsColor[val].layerIdx].shown = true;
+    //   mapStore.layers[mapStore.layersIdxs.cellsSelected].shown = true;
+    // }
   }
   colorSelected = val;
 };

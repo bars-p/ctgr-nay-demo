@@ -170,6 +170,9 @@ export default {
     connectivityType: "Type of connectivity",
     connectivitySpeed: "LAD speed",
     connectivityRoute: "Routes change level",
+    connectivityGaps: "Demand level filter",
+    connectivityDemand: "Demand above",
+    connectivityBelow: "Connectivity below",
 
     //Accessability
     accessToolsTitle: "Walking Accessability",

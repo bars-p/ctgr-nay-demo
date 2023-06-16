@@ -56,6 +56,12 @@ watch(
       if (mapStore.demandLevel == "area" && mapStore.savedAreas.length == 0) {
         mapStore.demandLevel = null;
       }
+      mapStore.turnOnLayer(layersIdxs.zoneSelect);
+      mapStore.turnOnLayer(layersIdxs.zonesSelected);
+    }
+    if (to == "connectivity") {
+      mapStore.turnOnLayer(layersIdxs.zoneSelect);
+      mapStore.turnOnLayer(layersIdxs.zonesSelected);
     }
     if (to == "sites") {
       // TODO: Display SitesFill Layer
@@ -67,6 +73,9 @@ watch(
     }
     if (from == "sites") {
       mapStore.turnOffLayer(layersIdxs.sitesSelected);
+    }
+    if (to == "routes") {
+      mapStore.turnOnLayer(layersIdxs.ladsTraces);
     }
 
     // if (to == "social") {
@@ -112,6 +121,14 @@ watch(
     updateLayerFilter(mapStore.newLayerFilter);
   }
 );
+watch(
+  () => mapStore.clearLayerFilter,
+  () => {
+    console.log("Clear Filter:", mapStore.newLayerFilter);
+    map.setFilter(mapStore.layers[mapStore.clearLayerFilter].name, null);
+  }
+);
+
 watch(
   () => mapStore.centerItem,
   () => {
@@ -169,15 +186,18 @@ watch(
   }
 );
 watch(
-  () => mapStore.connectivityItemsForProcessing,
-  () => {
-    getConnectivityStatistics();
-  }
-);
-watch(
   () => mapStore.demandSplit,
   () => {
     processDemandSplit();
+  }
+);
+
+//
+// Connectivity
+watch(
+  () => mapStore.connectivityItemsForProcessing,
+  () => {
+    getConnectivityStatistics();
   }
 );
 
@@ -246,6 +266,7 @@ let sourceSitesCentroids = null;
 let sourceStops = null;
 let zonesStats = null; // FIXME: Needed because of incorrect GeoJSON 1000x1000 pop and emp data
 let accessStats = null;
+let sourceLadsTraces = null;
 
 const loadData = async () => {
   await axios
@@ -333,6 +354,12 @@ const loadData = async () => {
     }
   });
 
+  await axios
+    .get("Almaty_traces.geojson")
+    .then((result) => (sourceLadsTraces = result.data))
+    .catch((err) => console.log("ERROR load", err));
+  console.log("Lads Traces Loaded:", sourceLadsTraces.features.length);
+
   // console.log("🙆🏻🙆🏻🙆🏻 TEST", sourceBaseCells.features[101].properties);
 
   // FIXME: Temp - total population data check
@@ -386,13 +413,14 @@ const connectivityLayersIdxs = [
   layersIdxs.adminBorder,
   // layersIdxs.adminFill,
   layersIdxs.zonesBorder,
-  layersIdxs.adminAreaSelect,
+  // layersIdxs.adminAreaSelect,
   layersIdxs.zoneSelect,
 ];
 const routesLayersIdxs = [
   layersIdxs.adminBorder,
   layersIdxs.adminFill,
   layersIdxs.zonesBorder,
+  layersIdxs.ladsTraces,
 ];
 // const stopsLayersIdxs = [layersIdxs.adminBorder, layersIdxs.cellsFill];
 const sitesLayersIdxs = [
@@ -467,8 +495,29 @@ const buildLayers = () => {
       type: "geojson",
       data: sourceStops,
     });
+    map.addSource("lads-source", {
+      type: "geojson",
+      data: sourceLadsTraces,
+    });
 
     map.addSource("saved-areas-source", selectedSource);
+
+    map.addLayer(
+      {
+        id: mapStore.layers[layersIdxs.ladsTraces].name,
+        type: "line",
+        source: "lads-source",
+        layout: {
+          visibility: "none",
+        },
+        paint: {
+          "line-width": 2,
+          "line-color": "#4d4d33",
+          "line-opacity": 0.8,
+        },
+      },
+      "road-label"
+    );
 
     map.addLayer(
       {
@@ -1466,7 +1515,7 @@ const getDemandStatistics = () => {
     mapStore.demandItemsSelectedIds
   );
   if (mapStore.demandItemsSelectedIds.size == 0) {
-    // TODO: For empty request - clear all
+    // For empty request - clear all
     clearAdminAreasSelected();
     clearZonesSelected();
     clearSavedAreasSelected();
@@ -1475,7 +1524,7 @@ const getDemandStatistics = () => {
     demandSplitDone = false;
     return;
   } else {
-    // TODO: If any item selected - clear others
+    // If any item selected - clear others
     switch (mapStore.demandLevel) {
       case "district":
         clearZonesSelected();
@@ -1505,9 +1554,9 @@ const getDemandStatistics = () => {
 const displayDemandZones = () => {
   //Calculate Demand statistics
   const zonesData = getDemandZonesStatistics();
-  console.log("Data:", zonesData);
+  // console.log("Data:", zonesData);
 
-  // TODO: Reference level adjustment
+  // Reference level adjustment
   let maxValue = mapStore.demandCityMax;
   if (mapStore.demandReference == "selection") {
     maxValue = Math.max(...zonesData.map((item) => +item.value));
@@ -1515,7 +1564,7 @@ const displayDemandZones = () => {
   }
   // zonesData.forEach(item => item.value = item.value/maxValue);
 
-  // TODO: Set new Source values and setSource
+  // Set new Source values and setSource
   zonesData.forEach((item, i) => {
     if (item.zoneId != sourceAnalyticalZones.features[i].properties.id) {
       console.error("Demand data incorrect order.");
@@ -1568,13 +1617,11 @@ const displayDemandZones = () => {
   }
 
   map.getSource("analytical-zones-source").setData(sourceAnalyticalZones);
-
+  map.setFilter(mapStore.layers[layersIdxs.zonesFill].name, null);
   updateLayerPaint(layerPaintData);
 
   // TODO: Turn ON layer if it's OFF
-  if (!mapStore.layers[layersIdxs.zonesFill].shown) {
-    mapStore.layers[layersIdxs.zonesFill].shown = true;
-  }
+  mapStore.turnOnLayer(layersIdxs.zonesFill);
 };
 
 const getDemandZonesStatistics = () => {
@@ -1603,6 +1650,8 @@ const getDemandZonesStatistics = () => {
 
 const processDemandSplit = () => {
   console.log("Split:", mapStore.demandSplit);
+  mapStore.clearSelectedColorMode();
+  updateLayerFilter({ layerIdx: layersIdxs.cellsFill, filterProps: null });
   if (mapStore.demandSplit) {
     // Process split
     if (!demandSplitDone) {
@@ -1761,21 +1810,6 @@ const processConnectivityFeatureSelect = (id) => {
 const setConnectivitySelectFilter = () => {
   // let idName = "id";
   const layerIdx = mapStore.layersIdxs.zonesSelected;
-  // switch (mapStore.demandLevel) {
-  //   case "district":
-  //     layerIdx = mapStore.layersIdxs.adminAreasSelected;
-  //     break;
-  //   case "zone":
-  //     layerIdx = mapStore.layersIdxs.zonesSelected;
-  //     break;
-  //   case "area":
-  //     layerIdx = mapStore.layersIdxs.savedAreasSelected;
-  //     idName = "name";
-  //     break;
-
-  //   default:
-  //     return;
-  // }
   map.setFilter(mapStore.layers[layerIdx].name, [
     "in",
     "id",
@@ -1788,31 +1822,122 @@ const getConnectivityStatistics = () => {
     mapStore.connectivityItemsSelectedIds
   );
   if (mapStore.connectivityItemsSelectedIds.size == 0) {
-    // TODO: For empty request - clear all
+    // For empty request - clear all
     console.log("Clear All 🧹");
     clearAdminAreasSelected();
     clearZonesSelected();
     clearSavedAreasSelected();
+    mapStore.connectivityProcessed = false;
   } else {
-    // // TODO: If any item selected - clear others
-    // switch (mapStore.demandLevel) {
-    //   case "district":
-    //     clearZonesSelected();
-    //     clearSavedAreasSelected();
-    //     break;
-    //   case "zone":
-    //     clearAdminAreasSelected();
-    //     clearSavedAreasSelected();
-    //     break;
-    //   case "area":
-    //     clearAdminAreasSelected();
-    //     clearZonesSelected();
-    //     break;
-    //   default:
-    //     console.warn("Not implemented level");
-    //     break;
-    // }
+    // TODO: Get data for selection
+    // TODO: Display data
+    displayConnectivityZones();
+    mapStore.connectivityProcessed = true;
   }
+};
+
+const displayConnectivityZones = () => {
+  //Calculate Demand statistics
+  const zonesData = getConnectivityZonesStatistics();
+  // console.log("Data:", zonesData);
+
+  // Reference level adjustment
+  // let maxValue = mapStore.demandCityMax;
+  // if (mapStore.demandReference == "selection") {
+  //   maxValue = Math.max(...zonesData.map((item) => +item.value));
+  //   console.log("Max Value found:", maxValue);
+  // }
+  // zonesData.forEach(item => item.value = item.value/maxValue);
+
+  // Set new Source values and setSource
+  zonesData.forEach((item, i) => {
+    if (item.zoneId != sourceAnalyticalZones.features[i].properties.id) {
+      console.error("Connectivity data incorrect order.");
+      return;
+    }
+    sourceAnalyticalZones.features[i].properties.value = item.value;
+    sourceAnalyticalZones.features[i].properties.dm = item.dm;
+  });
+  console.log("🚜 Source data:", sourceAnalyticalZones);
+
+  let layerPaintData = null;
+  if (mapStore.connectivityType == "speed") {
+    layerPaintData = {
+      layerIdx: layersIdxs.zonesFill,
+      paintProps: {
+        "fill-color": {
+          property: "value",
+          stops: [
+            [0, "#C00000"],
+            [1, "#ff8566"],
+            [2, "#806000"],
+            [3, "#375623"],
+            [4, "#00B050"],
+            [5, "#2F75B5"],
+          ],
+        },
+        "fill-opacity": 0.7,
+      },
+    };
+  } else if (mapStore.connectivityType == "change") {
+    layerPaintData = {
+      layerIdx: layersIdxs.zonesFill,
+      paintProps: {
+        "fill-color": {
+          property: "value",
+          stops: [
+            [0, "#00B050"],
+            [1, "#375623"],
+            [2, "#806000"],
+            [10, "#C00000"],
+          ],
+        },
+        "fill-opacity": 0.7,
+      },
+    };
+  } else {
+    layerPaintData = {
+      layerIdx: layersIdxs.zonesFill,
+      paintProps: {
+        "fill-color": "#00ff00",
+        "fill-opacity": 0.7,
+      },
+    };
+  }
+
+  map.getSource("analytical-zones-source").setData(sourceAnalyticalZones);
+
+  updateLayerPaint(layerPaintData);
+  mapStore.turnOnLayer(layersIdxs.zonesFill);
+};
+
+const getConnectivityZonesStatistics = () => {
+  const vectors = [];
+  mapStore.connectivityItemsSelectedIds.forEach((id) => {
+    const vector =
+      mapStore.connectivityDirection == "from"
+        ? mapStore.getConnectivityFrom(id)
+        : mapStore.getConnectivityTo(id);
+    console.log("🍄 Connectivity for:", id);
+    console.log(mapStore.connectivityDirection, vector.length);
+    vectors.push(vector);
+  });
+  console.log("Size:", vectors.length);
+  const result = vectors[0];
+  if (vectors.length > 1 && mapStore.connectivityType == "speed") {
+    // TODO: Aggregate data and normalize if Speed type
+    result.forEach((item, i) => {
+      let sp_total = 0;
+      let dm_total = 0;
+      for (let j = 0; j < vectors.length; j++) {
+        sp_total += vectors[j][i].value * vectors[j][i].dm;
+        dm_total += vectors[j][i].dm;
+      }
+      item.value = Math.round(sp_total / dm_total);
+    });
+  }
+  console.log("🚜🚜 Connectivity Result", result);
+  return result;
 };
 
 //

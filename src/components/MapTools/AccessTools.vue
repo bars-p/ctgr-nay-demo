@@ -86,28 +86,32 @@ onMounted(async () => {
 
 const levels = [
   {
-    title: "1",
+    title: "0",
     value: 0,
   },
   {
-    title: "2",
+    title: "1",
     value: 1,
   },
   {
-    title: "3",
+    title: "2",
     value: 2,
   },
   {
-    title: "4",
+    title: "3",
     value: 3,
   },
   {
-    title: "5",
+    title: "4",
     value: 4,
   },
   {
-    title: "6",
+    title: "5",
     value: 5,
+  },
+  {
+    title: "6",
+    value: 6,
   },
 ];
 
@@ -120,12 +124,13 @@ const processHighlight = () => {
       "fill-color": {
         property: "acc_lvl",
         stops: [
-          [0, "#C00000"],
-          [1, "#A66BD3"],
-          [2, "#806000"],
-          [3, "#375623"],
-          [4, "#00B050"],
-          [5, "#2F75B5"],
+          [0, "#660000"],
+          [1, "#C00000"],
+          [2, "#A66BD3"],
+          [3, "#806000"],
+          [4, "#375623"],
+          [5, "#00B050"],
+          [6, "#2F75B5"],
         ],
       },
       "fill-opacity": 0.7,
@@ -140,7 +145,10 @@ const processHighlight = () => {
     ],
   };
 
+  mapStore.clearSelectedColorMode();
+
   mapStore.newLayerPaint = paintData;
+
   mapStore.newLayerFilter = filterData;
 
   mapStore.turnOnLayer(mapStore.layersIdxs.cellsFill);

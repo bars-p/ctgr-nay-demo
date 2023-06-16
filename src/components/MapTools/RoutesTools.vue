@@ -49,7 +49,7 @@
               hide-details
               density="compact"
               :label="$t('tools.routesSkeleton')"
-              v-model="showSkeleton"
+              v-model="mapStore.layers[mapStore.layersIdxs.ladsTraces].shown"
             ></v-checkbox>
           </v-col>
           <v-col cols="2" align-self="center">
@@ -328,8 +328,8 @@ import { useI18n } from "vue-i18n";
 import CloseButton from "../elements/CloseButton.vue";
 const { t } = useI18n();
 
-// import { useMapStore } from "@/store/map";
-// const mapStore = useMapStore();
+import { useMapStore } from "@/store/map";
+const mapStore = useMapStore();
 
 const props = defineProps(["title"]);
 
@@ -357,7 +357,7 @@ const changeSelectMode = () => {
 const showDistribution = ref(false);
 const showSearch = ref(false);
 
-const showSkeleton = ref(true);
+// const showSkeleton = ref(true);
 const showStops = ref(false);
 
 const skeletonColor = ref("#757575");

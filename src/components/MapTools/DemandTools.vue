@@ -158,7 +158,8 @@ const props = defineProps(["title"]);
 
 onMounted(async () => {
   console.log("🫣 Demand Mounted");
-  await mapStore.loadDemandVectors();
+  await mapStore.loadDemandConnectData();
+  // mapStore.turnOnLayer(mapStore.layersIdxs.zoneSelect);
 });
 
 const selectItemsLevel = [

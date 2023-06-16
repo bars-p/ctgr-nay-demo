@@ -39,6 +39,7 @@ export const useMapStore = defineStore("mapStore", () => {
     stopsPoints: 15,
     sitesSelected: 16,
     sitesAnalytics: 17,
+    ladsTraces: 18,
   };
   const layers = ref([
     { idx: 0, name: "admin-areas-border", shown: false },
@@ -59,6 +60,7 @@ export const useMapStore = defineStore("mapStore", () => {
     { idx: 15, name: "stops-point", shown: false },
     { idx: 16, name: "sites-selected", shown: false },
     { idx: 17, name: "sites-analytics", shown: false },
+    { idx: 18, name: "lads-traces", shown: false },
   ]);
 
   const turnOnLayer = (idx) => {
@@ -205,9 +207,15 @@ export const useMapStore = defineStore("mapStore", () => {
     // console.log("Features found", [...areaFeatures]);
     selectedCellsFeatures.value = [...areaFeatures];
   };
+  const clearSelectedColorMode = () => {
+    if (socialColor.value != null) {
+      socialColor.value = null;
+    }
+  };
 
   //
   // Demand data
+  //
   const demandProcessing = ref(false);
   const demandLevel = ref(null);
   const demandReference = ref("selection");
@@ -219,6 +227,7 @@ export const useMapStore = defineStore("mapStore", () => {
   const demandItemsSelectedIds = new Set();
   const demandIdsFromLevel = ref(null);
   const demandItemsForProcessing = ref([]);
+
   const demandProcessItems = () => {
     console.log("Map Store - Demand processed", demandProcessing.value);
     // demandProcessing.value = true;
@@ -232,31 +241,32 @@ export const useMapStore = defineStore("mapStore", () => {
     demandIdsFromLevel.value = null;
     demandItemsForProcessing.value = [];
   };
-  let demandVectors = [];
+  let demandConnectData = [];
   // FIXME: Data loading with BackEnd
-  const loadDemandVectors = async () => {
-    if (demandVectors.length == 0) {
-      console.log("😡 Demand loading...");
+  const loadDemandConnectData = async () => {
+    if (demandConnectData.length == 0) {
+      console.log("😡 Demand Connect data loading...");
       await axios
-        .get("Almaty_Demand.json")
-        .then((result) => (demandVectors = result.data))
-        .catch((err) => console.warn("Error loading Demand vectors", err));
-      console.log("😲 Loading finished", demandVectors.length);
+        .get("Almaty_demand_connect.json")
+        .then((result) => (demandConnectData = result.data))
+        .catch((err) => console.warn("Error loading Demand Connect data", err));
+      console.log("😲 Loading finished", demandConnectData.length);
     }
   };
   const getDemandFrom = (id) => {
-    return demandVectors
+    return demandConnectData
       .filter((item) => item.fromId == id)
-      .map((item) => ({ zoneId: item.toId, value: +item.value }));
+      .map((item) => ({ zoneId: item.toId, value: item.val }));
   };
   const getDemandTo = (id) => {
-    return demandVectors
+    return demandConnectData
       .filter((item) => item.toId == id)
-      .map((item) => ({ zoneId: item.fromId, value: +item.value }));
+      .map((item) => ({ zoneId: item.fromId, value: item.val }));
   };
 
   //
   // Sites data
+  //
   const sitesData = ref([]);
   // FIXME: Data loading with BackEnd
   const loadSitesData = async () => {
@@ -295,12 +305,14 @@ export const useMapStore = defineStore("mapStore", () => {
 
   //
   // Connectivity data
+  //
   const connectivityType = ref(null);
   const connectivityDirection = ref("from");
   const connectivitySelectMode = ref("one");
   const connectivityItemsSelectedIds = new Set();
   const connectivityIdsFromType = ref(null);
   const connectivityItemsForProcessing = ref([]);
+  const connectivityProcessed = ref(false);
   const connectivityProcessItems = () => {
     console.log(
       "Map Store - Connectivity processed",
@@ -315,13 +327,40 @@ export const useMapStore = defineStore("mapStore", () => {
     connectivityItemsSelectedIds.clear();
     connectivityIdsFromType.value = null;
     connectivityItemsForProcessing.value = [];
+    connectivityProcessed.value = false;
   };
 
+  const getConnectivityFrom = (id) => {
+    // For Speed add Demand data to aggregate several Zones selected
+    return connectivityType.value == "speed"
+      ? demandConnectData
+          .filter((item) => item.fromId == id)
+          .map((item) => ({ zoneId: item.toId, value: item.sp, dm: item.dm }))
+      : demandConnectData
+          .filter((item) => item.fromId == id)
+          .map((item) => ({ zoneId: item.toId, value: item.ch }));
+  };
+  const getConnectivityTo = (id) => {
+    // For Speed add Demand data to aggregate several Zones selected
+    return connectivityType.value == "speed"
+      ? demandConnectData
+          .filter((item) => item.toId == id)
+          .map((item) => ({ zoneId: item.fromId, value: item.sp, dm: item.dm }))
+      : demandConnectData
+          .filter((item) => item.toId == id)
+          .map((item) => ({
+            zoneId: item.fromId,
+            value: item.ch,
+          }));
+  };
+
+  const connectivityDemandAbove = ref(1);
+  const connectivityBelow = ref(5);
   //
   // Accessability Data
   //
   const populationAbove = ref(0);
-  const accessabilityBelow = ref(5);
+  const accessabilityBelow = ref(6);
   // const accessGapColor = ref("#ff0000");
 
   return {
@@ -355,6 +394,7 @@ export const useMapStore = defineStore("mapStore", () => {
     addCellToSelected,
     removeCellFromSelected,
     clearSelectedCells,
+    clearSelectedColorMode,
     sitesData,
     loadSitesData,
     getSiteName,
@@ -371,8 +411,8 @@ export const useMapStore = defineStore("mapStore", () => {
     siteSizeMode,
     siteColorMode,
     siteSizeStep,
-    // demandVectors, // FIXME: Access by getters
-    loadDemandVectors,
+    // demandConnectData, // FIXME: Access by getters
+    loadDemandConnectData,
     getDemandFrom,
     getDemandTo,
     demandProcessing,
@@ -396,6 +436,11 @@ export const useMapStore = defineStore("mapStore", () => {
     connectivityItemsForProcessing,
     connectivityProcessItems,
     connectivityResetData,
+    getConnectivityFrom,
+    getConnectivityTo,
+    connectivityProcessed,
+    connectivityDemandAbove,
+    connectivityBelow,
     populationAbove,
     accessabilityBelow,
     // accessGapColor,

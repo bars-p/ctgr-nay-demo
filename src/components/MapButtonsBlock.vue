@@ -94,6 +94,10 @@ const layers = ref([
     title: "Stops",
     ...getLayerData(mapStore.layersIdxs.stopsPoints),
   },
+  {
+    title: "Routes",
+    ...getLayerData(mapStore.layersIdxs.ladsTraces),
+  },
 ]);
 </script>
 
