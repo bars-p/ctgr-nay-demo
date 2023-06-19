@@ -68,6 +68,7 @@
                   v-bind="props"
                   icon="mdi-checkbox-multiple-blank"
                   value="many"
+                  :disabled="mapStore.demandLevel == 'district'"
                 ></v-btn>
               </template>
             </v-tooltip>
@@ -206,21 +207,11 @@ const processLevelSelect = (val) => {
   console.log("Value", val);
   switch (val) {
     case "district":
-      if (!mapStore.layers[mapStore.layersIdxs.adminAreaSelect].shown) {
-        mapStore.layers[mapStore.layersIdxs.adminAreaSelect].shown = true;
-      }
-      if (!mapStore.layers[mapStore.layersIdxs.adminBorder].shown) {
-        mapStore.layers[mapStore.layersIdxs.adminBorder].shown = true;
-      }
-      if (!mapStore.layers[mapStore.layersIdxs.adminAreasSelected].shown) {
-        mapStore.layers[mapStore.layersIdxs.adminAreasSelected].shown = true;
-      }
-      if (mapStore.layers[mapStore.layersIdxs.zonesSelected].shown) {
-        mapStore.layers[mapStore.layersIdxs.zonesSelected].shown = false;
-      }
-      if (mapStore.layers[mapStore.layersIdxs.savedAreasSelected].shown) {
-        mapStore.layers[mapStore.layersIdxs.savedAreasSelected].shown = false;
-      }
+      mapStore.turnOnLayer(mapStore.layersIdxs.adminAreaSelect);
+      mapStore.turnOnLayer(mapStore.layersIdxs.adminBorder);
+      mapStore.turnOnLayer(mapStore.layersIdxs.adminAreasSelected);
+      mapStore.turnOffLayer(mapStore.layersIdxs.zonesSelected);
+      mapStore.turnOffLayer(mapStore.layersIdxs.savedAreasSelected);
       break;
 
     case "zone":
@@ -277,6 +268,7 @@ const processLevelSelect = (val) => {
 const clearSelection = () => {
   console.log("Clear Selection");
   mapStore.demandItemsSelectedIds.clear();
+  mapStore.demandDistrictId = null;
   mapStore.demandProcessItems();
 };
 
@@ -291,6 +283,10 @@ const processReferenceSelect = () => {
 
 const processDirectionChange = () => {
   console.log("Direction", mapStore.demandDirection);
+  if (mapStore.demandLevel == "district" && mapStore.demandDistrictId != null) {
+    mapStore.demandItemsSelectedIds.clear();
+    mapStore.demandItemsSelectedIds.add(mapStore.demandDistrictId);
+  }
   mapStore.demandProcessItems();
 };
 </script>

@@ -51,6 +51,9 @@ import { ref, computed } from "vue";
 import { useMapStore } from "@/store/map";
 const mapStore = useMapStore();
 
+import { useI18n } from "vue-i18n";
+const { t } = useI18n();
+
 const getLayerData = (idx) => {
   return {
     idx: idx,
@@ -67,35 +70,35 @@ const getLayerData = (idx) => {
 
 const layers = ref([
   {
-    title: "Borders",
+    title: t("map.layerBorders"),
     ...getLayerData(mapStore.layersIdxs.adminBorder),
   },
   {
-    title: "Districts",
+    title: t("map.layerDistricts"),
     ...getLayerData(mapStore.layersIdxs.adminFill),
   },
   {
-    title: "Zones",
+    title: t("map.layerZones"),
     ...getLayerData(mapStore.layersIdxs.zonesBorder),
   },
   {
-    title: "Cells",
+    title: t("map.layerCells"),
     ...getLayerData(mapStore.layersIdxs.cellsFill),
   },
   {
-    title: "Sites",
+    title: t("map.layerSites"),
     ...getLayerData(mapStore.layersIdxs.sitesFill),
   },
   {
-    title: "Centroids",
+    title: t("map.layerCentroids"),
     ...getLayerData(mapStore.layersIdxs.sitesCentroids),
   },
   {
-    title: "Stops",
+    title: t("map.layerStops"),
     ...getLayerData(mapStore.layersIdxs.stopsPoints),
   },
   {
-    title: "Routes",
+    title: t("map.layerRoutes"),
     ...getLayerData(mapStore.layersIdxs.ladsTraces),
   },
 ]);

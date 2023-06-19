@@ -69,6 +69,18 @@ export default {
     menuItemEditCells: "Cells",
   },
 
+  // Map Items
+  map: {
+    layerBorders: "Borders",
+    layerDistricts: "Districts",
+    layerZones: "Zones",
+    layerCells: "Cells",
+    layerSites: "Sites",
+    layerCentroids: "Centroids",
+    layerStops: "Stops",
+    layerRoutes: "Routes",
+  },
+
   // Tools Items
   tools: {
     //Social Data

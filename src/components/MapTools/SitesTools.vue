@@ -372,7 +372,7 @@
                 size="small"
                 flat
                 :icon="site.shown ? 'mdi-eye-outline' : 'mdi-eye-off-outline'"
-                @click.stop="toggleSiteShown(idx)"
+                @click.stop="site.shown = !site.shown"
               >
               </v-btn>
               <v-btn
@@ -380,7 +380,7 @@
                 size="small"
                 flat
                 icon="mdi-trash-can-outline"
-                @click.stop="deleteSiteFromGroup(idx)"
+                @click.stop="deleteSiteFromGroup(site.id)"
               >
               </v-btn>
             </template>
@@ -495,7 +495,7 @@ const selectModes = [
   },
   {
     title: t("tools.demandAdminAreas"),
-    value: "zones",
+    value: "district",
   },
   mapStore.savedAreas.length > 0 && {
     title: t("tools.socialSavedDisplay"),
@@ -504,13 +504,28 @@ const selectModes = [
 ].filter(Boolean);
 
 const changeSelectMode = () => {
-  if (mapStore.sitesSelectionMode == "areas") {
-    mapStore.turnOnLayer(mapStore.layersIdxs.cellsSaved);
-  } else {
-    mapStore.turnOffLayer(mapStore.layersIdxs.cellsSaved);
-  }
-  if (mapStore.sitesSelectionMode == "sites") {
-    mapStore.turnOnLayer(mapStore.layersIdxs.sitesFill);
+  switch (mapStore.sitesSelectionMode) {
+    case "sites":
+      mapStore.turnOnLayer(mapStore.layersIdxs.sitesFill);
+      mapStore.turnOffLayer(mapStore.layersIdxs.adminAreaSelect);
+      mapStore.turnOffLayer(mapStore.layersIdxs.cellsSaved);
+      break;
+
+    case "district":
+      mapStore.turnOnLayer(mapStore.layersIdxs.adminAreaSelect);
+      mapStore.turnOnLayer(mapStore.layersIdxs.adminBorder);
+      mapStore.turnOffLayer(mapStore.layersIdxs.cellsSaved);
+      break;
+
+    case "area":
+      mapStore.turnOnLayer(mapStore.layersIdxs.cellsSaved);
+      mapStore.turnOffLayer(mapStore.layersIdxs.adminAreaSelect);
+      break;
+
+    default:
+      mapStore.turnOffLayer(mapStore.layersIdxs.adminAreaSelect);
+      mapStore.turnOffLayer(mapStore.layersIdxs.cellsSaved);
+      break;
   }
 };
 
@@ -811,17 +826,17 @@ const selectSiteInGroup = (site) => {
   };
   // console.log("Stops:", mapStore.getSiteStopIds(site.id));
 };
-const toggleSiteShown = (siteIdx) => {
-  mapStore.currentSitesGroup.sites[siteIdx].shown =
-    !mapStore.currentSitesGroup.sites[siteIdx].shown;
-  if (mapStore.useCurrentSiteGroup == false) {
-    mapStore.useCurrentSiteGroup = true;
-  }
-};
-const deleteSiteFromGroup = (idx) => {
-  console.log("Delete Site", mapStore.currentSitesGroup.sites[idx]);
-  if (mapStore.selectedSiteIds.has(mapStore.currentSitesGroup.sites[idx].id)) {
-    mapStore.selectedSiteIds.delete(mapStore.currentSitesGroup.sites[idx].id);
+// const toggleSiteShown = (siteIdx) => {
+//   mapStore.currentSitesGroup.sites[siteIdx].shown =
+//     !mapStore.currentSitesGroup.sites[siteIdx].shown;
+//   if (mapStore.useCurrentSiteGroup == false) {
+//     mapStore.useCurrentSiteGroup = true;
+//   }
+// };
+const deleteSiteFromGroup = (id) => {
+  console.log("Delete Site", id);
+  if (mapStore.selectedSiteIds.has(id)) {
+    mapStore.selectedSiteIds.delete(id);
   }
   if (mapStore.currentSitesGroup.ids.size == 1) {
     mapStore.currentSitesGroup = null;
@@ -830,8 +845,9 @@ const deleteSiteFromGroup = (idx) => {
     if (mapStore.useCurrentSiteGroup == false) {
       mapStore.useCurrentSiteGroup = true;
     }
-    mapStore.currentSitesGroup.ids.delete(
-      mapStore.currentSitesGroup.sites[idx].id
+    mapStore.currentSitesGroup.ids.delete(id);
+    const idx = mapStore.currentSitesGroup.sites.findIndex(
+      (item) => item.id == id
     );
     mapStore.currentSitesGroup.sites.splice(idx, 1);
   }

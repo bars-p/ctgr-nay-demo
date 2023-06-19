@@ -225,6 +225,7 @@ export const useMapStore = defineStore("mapStore", () => {
   const demandDirection = ref("from");
   const demandSelectMode = ref("one");
   const demandItemsSelectedIds = new Set();
+  const demandDistrictId = null;
   const demandIdsFromLevel = ref(null);
   const demandItemsForProcessing = ref([]);
 
@@ -251,6 +252,7 @@ export const useMapStore = defineStore("mapStore", () => {
         .then((result) => (demandConnectData = result.data))
         .catch((err) => console.warn("Error loading Demand Connect data", err));
       console.log("😲 Loading finished", demandConnectData.length);
+      await loadZonesByDistricts();
     }
   };
   const getDemandFrom = (id) => {
@@ -263,27 +265,56 @@ export const useMapStore = defineStore("mapStore", () => {
       .filter((item) => item.toId == id)
       .map((item) => ({ zoneId: item.fromId, value: item.val }));
   };
+  let zonesByDistricts = [];
+  const loadZonesByDistricts = async () => {
+    if (zonesByDistricts.length == 0) {
+      await axios
+        .get("Almaty_zone_id_district_id.json")
+        .then((result) => (zonesByDistricts = result.data))
+        .catch((err) =>
+          console.warn("Error loading Zones by Districts data", err)
+        );
+    }
+  };
+  const getZoneIdsByDistrict = (id) => {
+    console.log("Zones By Districts", zonesByDistricts.length);
+    return zonesByDistricts
+      .filter((item) => item.districtId == id)
+      .map((item) => item.zoneId);
+  };
 
   //
   // Sites data
   //
-  const sitesData = ref([]);
+  let sitesData = [];
+  let sitesByDistricts = [];
   // FIXME: Data loading with BackEnd
   const loadSitesData = async () => {
-    if (sitesData.value.length == 0) {
+    if (sitesData.length == 0) {
       await axios
         .get("Almaty_sites_data.json")
-        .then((result) => (sitesData.value = result.data))
+        .then((result) => (sitesData = result.data))
         .catch((err) => console.warn("Error loading Sites data", err));
+    }
+    if (sitesByDistricts.length == 0) {
+      await axios
+        .get("Almaty_site_id_district_id.json")
+        .then((result) => (sitesByDistricts = result.data))
+        .catch((err) =>
+          console.warn("Error loading Sites by Districts data", err)
+        );
     }
   };
   const getSiteName = (id) => {
-    return (
-      sitesData.value.find((site) => site.id == id).name || "Name not found"
-    );
+    return sitesData.find((site) => site.id == id).name || "Name not found";
   };
   const getSiteStopIds = (id) => {
-    return sitesData.value.find((site) => site.id == id).stop_ids || [];
+    return sitesData.find((site) => site.id == id).stop_ids || [];
+  };
+  const getSitesByDistrict = (districtId) => {
+    return sitesByDistricts
+      .filter((item) => item.districtId == districtId)
+      .map((item) => item.siteId);
   };
 
   const sitesColor = ref("#FFB74D");
@@ -399,6 +430,7 @@ export const useMapStore = defineStore("mapStore", () => {
     loadSitesData,
     getSiteName,
     getSiteStopIds,
+    getSitesByDistrict,
     sitesColor,
     centroidsColor,
     stopsColor,
@@ -424,10 +456,12 @@ export const useMapStore = defineStore("mapStore", () => {
     demandDirection,
     demandSelectMode,
     demandItemsSelectedIds,
+    demandDistrictId,
     demandIdsFromLevel,
     demandItemsForProcessing,
     demandProcessItems,
     demandResetData,
+    getZoneIdsByDistrict,
     connectivityType,
     connectivityDirection,
     connectivitySelectMode,

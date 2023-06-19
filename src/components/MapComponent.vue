@@ -1065,6 +1065,7 @@ const buildLayers = () => {
 
     //
     // Sites processing
+    //
     map.on("click", mapStore.layers[layersIdxs.sitesFill].name, (item) => {
       if (props.mode == "sites" && mapStore.sitesSelectionMode == "sites") {
         const feature = Object.assign(item.features[0]);
@@ -1091,20 +1092,27 @@ const buildLayers = () => {
     });
 
     //
-    // Demand processing
+    // Demand processing (not all)
+
+    //
+    // Admin Area - District - Highlight on Hover Processing - DEMAND, SITES
+    //
     map.on(
       "mousemove",
       mapStore.layers[layersIdxs.adminAreaSelect].name,
       (e) => {
-        if (props.mode == "demand") {
-          if (mapStore.demandLevel == "district") {
-            map.getCanvas().style.cursor = "pointer";
-            // console.log("Hovered:", e.features[0]);
-            const cellData = e.features[0].properties;
-            const description = `${cellData.name}`;
+        if (
+          (props.mode == "demand" && mapStore.demandLevel == "district") ||
+          (props.mode == "sites" &&
+            mapStore.sitesSelectionMode == "district" &&
+            !mapStore.useCurrentSiteGroup)
+        ) {
+          map.getCanvas().style.cursor = "pointer";
+          // console.log("Hovered:", e.features[0]);
+          const cellData = e.features[0].properties;
+          const description = `${cellData.name}`;
 
-            mapPopup.setLngLat(e.lngLat).setHTML(description).addTo(map);
-          }
+          mapPopup.setLngLat(e.lngLat).setHTML(description).addTo(map);
         }
       }
     );
@@ -1112,14 +1120,18 @@ const buildLayers = () => {
       "mouseleave",
       mapStore.layers[layersIdxs.adminAreaSelect].name,
       () => {
-        if (props.mode == "demand") {
-          if (mapStore.demandLevel == "district") {
-            map.getCanvas().style.cursor = "";
-            mapPopup.remove();
-          }
+        if (
+          (props.mode == "demand" && mapStore.demandLevel == "district") ||
+          (props.mode == "sites" &&
+            mapStore.sitesSelectionMode == "district" &&
+            !mapStore.useCurrentSiteGroup)
+        ) {
+          map.getCanvas().style.cursor = "";
+          mapPopup.remove();
         }
       }
     );
+
     map.on("mousemove", mapStore.layers[layersIdxs.zoneSelect].name, () => {
       if (props.mode == "demand") {
         if (mapStore.demandLevel == "zone") {
@@ -1140,6 +1152,7 @@ const buildLayers = () => {
         map.getCanvas().style.cursor = "";
       }
     });
+
     map.on("mousemove", "cells-saved", (e) => {
       if (props.mode == "demand") {
         if (mapStore.demandLevel == "area") {
@@ -1160,6 +1173,10 @@ const buildLayers = () => {
         }
       }
     });
+
+    //
+    // Admin Area - District - Select Processing - DEMAND, SITES
+    //
     map.on(
       "click",
       mapStore.layers[layersIdxs.adminAreaSelect].name,
@@ -1168,8 +1185,17 @@ const buildLayers = () => {
           const feature = Object.assign(item.features[0]);
           processDemandFeatureSelect(feature.properties.id);
         }
+        if (
+          props.mode == "sites" &&
+          mapStore.sitesSelectionMode == "district" &&
+          !mapStore.useCurrentSiteGroup
+        ) {
+          const feature = Object.assign(item.features[0]);
+          processSitesByDistrict(feature.properties.id);
+        }
       }
     );
+
     map.on("click", mapStore.layers[layersIdxs.zoneSelect].name, (item) => {
       if (props.mode == "demand" && mapStore.demandLevel == "zone") {
         const feature = Object.assign(item.features[0]);
@@ -1368,6 +1394,11 @@ const setStopsColor = (color) => {
   updateLayerPaint(layerPaintData);
 };
 
+const processSitesByDistrict = (districtId) => {
+  console.log("District", districtId);
+  processSitesSelected(mapStore.getSitesByDistrict(districtId));
+};
+
 const processSitesSelected = (sitesIds) => {
   sitesIds.forEach((id) => {
     if (mapStore.selectedSiteIds.has(id)) {
@@ -1426,45 +1457,15 @@ const centerToSite = () => {
   map.flyTo({ center: siteCentroid.geometry.coordinates });
 };
 
-// const clearSitesSelected = () => {
-//   map.setFilter(mapStore.layers[layersIdxs.sitesSelected].name, [
-//     "in",
-//     "id",
-//     "",
-//   ]);
-// };
-
-// FIXME:
-// FIXME:
-// FIXME:
-// FIXME:
-// FIXME:
-// FIXME:
-// FIXME:
-// FIXME:
-// FIXME:
-// FIXME:
-// FIXME:
-// FIXME:
-// FIXME:
-// FIXME:
-// FIXME:
-// FIXME:
-// FIXME:
-// FIXME:
-// FIXME:
-// FIXME:
-// FIXME:
-// FIXME:
-// FIXME:
-// FIXME:
-
 //
 // Demand Logic
 //
 let demandSplitDone = false;
 const processDemandFeatureSelect = (id) => {
   console.log("Select Item", id, mapStore.demandLevel);
+  if (mapStore.demandLevel == "district") {
+    mapStore.demandDistrictId = id;
+  }
   if (mapStore.demandSelectMode == "one") {
     mapStore.demandItemsSelectedIds.clear();
     mapStore.demandItemsSelectedIds.add(id);
@@ -1522,13 +1523,27 @@ const getDemandStatistics = () => {
     mapStore.demandReady = false;
     // mapStore.demandSplit = false;
     demandSplitDone = false;
+    mapStore.demandDistrictParsed = false;
     return;
   } else {
     // If any item selected - clear others
+    const zoneIds = new Set(); // FIXME:L Remove later
     switch (mapStore.demandLevel) {
       case "district":
         clearZonesSelected();
         clearSavedAreasSelected();
+        mapStore.demandItemsSelectedIds.forEach((id) => {
+          const ids = mapStore.getZoneIdsByDistrict(id);
+          console.log("IDs", ids);
+          ids.forEach((zoneId) => zoneIds.add(zoneId));
+        });
+        console.log("Zones Collected", zoneIds);
+        mapStore.demandItemsSelectedIds = zoneIds;
+        mapStore.demandDistrictParsed = true;
+        displayDemandZones();
+        mapStore.demandReady = true;
+        mapStore.demandSplit = false;
+        demandSplitDone = false;
         break;
 
       case "zone":

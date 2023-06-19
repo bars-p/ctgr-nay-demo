@@ -1,0 +1,2514 @@
+[
+  {
+    "siteId": 1,
+    "districtId": 6
+  },
+  {
+    "siteId": 2,
+    "districtId": 6
+  },
+  {
+    "siteId": 3,
+    "districtId": 6
+  },
+  {
+    "siteId": 4,
+    "districtId": 6
+  },
+  {
+    "siteId": 5,
+    "districtId": 6
+  },
+  {
+    "siteId": 6,
+    "districtId": 6
+  },
+  {
+    "siteId": 7,
+    "districtId": 6
+  },
+  {
+    "siteId": 8,
+    "districtId": 6
+  },
+  {
+    "siteId": 9,
+    "districtId": 6
+  },
+  {
+    "siteId": 10,
+    "districtId": 6
+  },
+  {
+    "siteId": 11,
+    "districtId": 6
+  },
+  {
+    "siteId": 12,
+    "districtId": 6
+  },
+  {
+    "siteId": 13,
+    "districtId": 6
+  },
+  {
+    "siteId": 14,
+    "districtId": 6
+  },
+  {
+    "siteId": 15,
+    "districtId": 6
+  },
+  {
+    "siteId": 16,
+    "districtId": 6
+  },
+  {
+    "siteId": 17,
+    "districtId": 6
+  },
+  {
+    "siteId": 18,
+    "districtId": 6
+  },
+  {
+    "siteId": 19,
+    "districtId": 6
+  },
+  {
+    "siteId": 20,
+    "districtId": 6
+  },
+  {
+    "siteId": 21,
+    "districtId": 6
+  },
+  {
+    "siteId": 22,
+    "districtId": 6
+  },
+  {
+    "siteId": 23,
+    "districtId": 6
+  },
+  {
+    "siteId": 24,
+    "districtId": 6
+  },
+  {
+    "siteId": 25,
+    "districtId": 6
+  },
+  {
+    "siteId": 26,
+    "districtId": 6
+  },
+  {
+    "siteId": 27,
+    "districtId": 6
+  },
+  {
+    "siteId": 28,
+    "districtId": 6
+  },
+  {
+    "siteId": 29,
+    "districtId": 6
+  },
+  {
+    "siteId": 30,
+    "districtId": 6
+  },
+  {
+    "siteId": 31,
+    "districtId": 6
+  },
+  {
+    "siteId": 32,
+    "districtId": 6
+  },
+  {
+    "siteId": 33,
+    "districtId": 6
+  },
+  {
+    "siteId": 34,
+    "districtId": 6
+  },
+  {
+    "siteId": 35,
+    "districtId": 6
+  },
+  {
+    "siteId": 36,
+    "districtId": 6
+  },
+  {
+    "siteId": 37,
+    "districtId": 8
+  },
+  {
+    "siteId": 38,
+    "districtId": 8
+  },
+  {
+    "siteId": 39,
+    "districtId": 8
+  },
+  {
+    "siteId": 40,
+    "districtId": 8
+  },
+  {
+    "siteId": 41,
+    "districtId": 8
+  },
+  {
+    "siteId": 42,
+    "districtId": 8
+  },
+  {
+    "siteId": 43,
+    "districtId": 8
+  },
+  {
+    "siteId": 44,
+    "districtId": 8
+  },
+  {
+    "siteId": 45,
+    "districtId": 8
+  },
+  {
+    "siteId": 46,
+    "districtId": 8
+  },
+  {
+    "siteId": 47,
+    "districtId": 5
+  },
+  {
+    "siteId": 48,
+    "districtId": 5
+  },
+  {
+    "siteId": 49,
+    "districtId": 5
+  },
+  {
+    "siteId": 50,
+    "districtId": 2
+  },
+  {
+    "siteId": 51,
+    "districtId": 5
+  },
+  {
+    "siteId": 52,
+    "districtId": 6
+  },
+  {
+    "siteId": 53,
+    "districtId": 6
+  },
+  {
+    "siteId": 54,
+    "districtId": 6
+  },
+  {
+    "siteId": 55,
+    "districtId": 6
+  },
+  {
+    "siteId": 56,
+    "districtId": 6
+  },
+  {
+    "siteId": 57,
+    "districtId": 6
+  },
+  {
+    "siteId": 58,
+    "districtId": 6
+  },
+  {
+    "siteId": 59,
+    "districtId": 6
+  },
+  {
+    "siteId": 60,
+    "districtId": 6
+  },
+  {
+    "siteId": 61,
+    "districtId": 6
+  },
+  {
+    "siteId": 62,
+    "districtId": 6
+  },
+  {
+    "siteId": 63,
+    "districtId": 8
+  },
+  {
+    "siteId": 64,
+    "districtId": 8
+  },
+  {
+    "siteId": 65,
+    "districtId": 8
+  },
+  {
+    "siteId": 66,
+    "districtId": 8
+  },
+  {
+    "siteId": 67,
+    "districtId": 8
+  },
+  {
+    "siteId": 68,
+    "districtId": 8
+  },
+  {
+    "siteId": 69,
+    "districtId": 5
+  },
+  {
+    "siteId": 70,
+    "districtId": 5
+  },
+  {
+    "siteId": 71,
+    "districtId": 5
+  },
+  {
+    "siteId": 72,
+    "districtId": 2
+  },
+  {
+    "siteId": 73,
+    "districtId": 2
+  },
+  {
+    "siteId": 74,
+    "districtId": 5
+  },
+  {
+    "siteId": 75,
+    "districtId": 5
+  },
+  {
+    "siteId": 77,
+    "districtId": 1
+  },
+  {
+    "siteId": 78,
+    "districtId": 1
+  },
+  {
+    "siteId": 79,
+    "districtId": 1
+  },
+  {
+    "siteId": 80,
+    "districtId": 3
+  },
+  {
+    "siteId": 81,
+    "districtId": 3
+  },
+  {
+    "siteId": 82,
+    "districtId": 3
+  },
+  {
+    "siteId": 83,
+    "districtId": 3
+  },
+  {
+    "siteId": 84,
+    "districtId": 3
+  },
+  {
+    "siteId": 85,
+    "districtId": 3
+  },
+  {
+    "siteId": 86,
+    "districtId": 3
+  },
+  {
+    "siteId": 87,
+    "districtId": 2
+  },
+  {
+    "siteId": 88,
+    "districtId": 2
+  },
+  {
+    "siteId": 89,
+    "districtId": 2
+  },
+  {
+    "siteId": 90,
+    "districtId": 2
+  },
+  {
+    "siteId": 91,
+    "districtId": 2
+  },
+  {
+    "siteId": 92,
+    "districtId": 2
+  },
+  {
+    "siteId": 93,
+    "districtId": 2
+  },
+  {
+    "siteId": 94,
+    "districtId": 2
+  },
+  {
+    "siteId": 95,
+    "districtId": 2
+  },
+  {
+    "siteId": 96,
+    "districtId": 4
+  },
+  {
+    "siteId": 97,
+    "districtId": 4
+  },
+  {
+    "siteId": 98,
+    "districtId": 4
+  },
+  {
+    "siteId": 99,
+    "districtId": 4
+  },
+  {
+    "siteId": 100,
+    "districtId": 4
+  },
+  {
+    "siteId": 101,
+    "districtId": 3
+  },
+  {
+    "siteId": 102,
+    "districtId": 3
+  },
+  {
+    "siteId": 103,
+    "districtId": 3
+  },
+  {
+    "siteId": 104,
+    "districtId": 3
+  },
+  {
+    "siteId": 105,
+    "districtId": 3
+  },
+  {
+    "siteId": 106,
+    "districtId": 3
+  },
+  {
+    "siteId": 107,
+    "districtId": 4
+  },
+  {
+    "siteId": 108,
+    "districtId": 4
+  },
+  {
+    "siteId": 109,
+    "districtId": 4
+  },
+  {
+    "siteId": 110,
+    "districtId": 4
+  },
+  {
+    "siteId": 111,
+    "districtId": 2
+  },
+  {
+    "siteId": 112,
+    "districtId": 2
+  },
+  {
+    "siteId": 113,
+    "districtId": 2
+  },
+  {
+    "siteId": 114,
+    "districtId": 2
+  },
+  {
+    "siteId": 115,
+    "districtId": 4
+  },
+  {
+    "siteId": 116,
+    "districtId": 2
+  },
+  {
+    "siteId": 117,
+    "districtId": 4
+  },
+  {
+    "siteId": 118,
+    "districtId": 4
+  },
+  {
+    "siteId": 119,
+    "districtId": 4
+  },
+  {
+    "siteId": 120,
+    "districtId": 4
+  },
+  {
+    "siteId": 121,
+    "districtId": 2
+  },
+  {
+    "siteId": 122,
+    "districtId": 3
+  },
+  {
+    "siteId": 123,
+    "districtId": 3
+  },
+  {
+    "siteId": 124,
+    "districtId": 8
+  },
+  {
+    "siteId": 125,
+    "districtId": 5
+  },
+  {
+    "siteId": 126,
+    "districtId": 8
+  },
+  {
+    "siteId": 127,
+    "districtId": 8
+  },
+  {
+    "siteId": 128,
+    "districtId": 8
+  },
+  {
+    "siteId": 129,
+    "districtId": 8
+  },
+  {
+    "siteId": 130,
+    "districtId": 8
+  },
+  {
+    "siteId": 131,
+    "districtId": 8
+  },
+  {
+    "siteId": 132,
+    "districtId": 8
+  },
+  {
+    "siteId": 133,
+    "districtId": 8
+  },
+  {
+    "siteId": 134,
+    "districtId": 8
+  },
+  {
+    "siteId": 135,
+    "districtId": 8
+  },
+  {
+    "siteId": 136,
+    "districtId": 8
+  },
+  {
+    "siteId": 137,
+    "districtId": 8
+  },
+  {
+    "siteId": 138,
+    "districtId": 8
+  },
+  {
+    "siteId": 139,
+    "districtId": 8
+  },
+  {
+    "siteId": 140,
+    "districtId": 5
+  },
+  {
+    "siteId": 141,
+    "districtId": 5
+  },
+  {
+    "siteId": 142,
+    "districtId": 5
+  },
+  {
+    "siteId": 143,
+    "districtId": 2
+  },
+  {
+    "siteId": 144,
+    "districtId": 2
+  },
+  {
+    "siteId": 145,
+    "districtId": 2
+  },
+  {
+    "siteId": 146,
+    "districtId": 2
+  },
+  {
+    "siteId": 147,
+    "districtId": 2
+  },
+  {
+    "siteId": 148,
+    "districtId": 3
+  },
+  {
+    "siteId": 149,
+    "districtId": 3
+  },
+  {
+    "siteId": 150,
+    "districtId": 8
+  },
+  {
+    "siteId": 151,
+    "districtId": 6
+  },
+  {
+    "siteId": 152,
+    "districtId": 6
+  },
+  {
+    "siteId": 153,
+    "districtId": 4
+  },
+  {
+    "siteId": 153,
+    "districtId": 6
+  },
+  {
+    "siteId": 154,
+    "districtId": 6
+  },
+  {
+    "siteId": 155,
+    "districtId": 4
+  },
+  {
+    "siteId": 156,
+    "districtId": 4
+  },
+  {
+    "siteId": 157,
+    "districtId": 4
+  },
+  {
+    "siteId": 158,
+    "districtId": 4
+  },
+  {
+    "siteId": 159,
+    "districtId": 4
+  },
+  {
+    "siteId": 160,
+    "districtId": 4
+  },
+  {
+    "siteId": 161,
+    "districtId": 4
+  },
+  {
+    "siteId": 162,
+    "districtId": 4
+  },
+  {
+    "siteId": 163,
+    "districtId": 4
+  },
+  {
+    "siteId": 164,
+    "districtId": 4
+  },
+  {
+    "siteId": 165,
+    "districtId": 6
+  },
+  {
+    "siteId": 166,
+    "districtId": 6
+  },
+  {
+    "siteId": 167,
+    "districtId": 6
+  },
+  {
+    "siteId": 168,
+    "districtId": 6
+  },
+  {
+    "siteId": 169,
+    "districtId": 6
+  },
+  {
+    "siteId": 170,
+    "districtId": 6
+  },
+  {
+    "siteId": 171,
+    "districtId": 5
+  },
+  {
+    "siteId": 172,
+    "districtId": 5
+  },
+  {
+    "siteId": 173,
+    "districtId": 6
+  },
+  {
+    "siteId": 174,
+    "districtId": 6
+  },
+  {
+    "siteId": 175,
+    "districtId": 3
+  },
+  {
+    "siteId": 176,
+    "districtId": 3
+  },
+  {
+    "siteId": 177,
+    "districtId": 3
+  },
+  {
+    "siteId": 178,
+    "districtId": 8
+  },
+  {
+    "siteId": 179,
+    "districtId": 8
+  },
+  {
+    "siteId": 180,
+    "districtId": 8
+  },
+  {
+    "siteId": 181,
+    "districtId": 5
+  },
+  {
+    "siteId": 182,
+    "districtId": 5
+  },
+  {
+    "siteId": 183,
+    "districtId": 5
+  },
+  {
+    "siteId": 184,
+    "districtId": 5
+  },
+  {
+    "siteId": 185,
+    "districtId": 5
+  },
+  {
+    "siteId": 186,
+    "districtId": 5
+  },
+  {
+    "siteId": 187,
+    "districtId": 5
+  },
+  {
+    "siteId": 188,
+    "districtId": 5
+  },
+  {
+    "siteId": 189,
+    "districtId": 5
+  },
+  {
+    "siteId": 190,
+    "districtId": 5
+  },
+  {
+    "siteId": 191,
+    "districtId": 5
+  },
+  {
+    "siteId": 192,
+    "districtId": 1
+  },
+  {
+    "siteId": 193,
+    "districtId": 1
+  },
+  {
+    "siteId": 194,
+    "districtId": 1
+  },
+  {
+    "siteId": 195,
+    "districtId": 1
+  },
+  {
+    "siteId": 196,
+    "districtId": 1
+  },
+  {
+    "siteId": 197,
+    "districtId": 1
+  },
+  {
+    "siteId": 198,
+    "districtId": 1
+  },
+  {
+    "siteId": 199,
+    "districtId": 3
+  },
+  {
+    "siteId": 200,
+    "districtId": 3
+  },
+  {
+    "siteId": 201,
+    "districtId": 3
+  },
+  {
+    "siteId": 202,
+    "districtId": 4
+  },
+  {
+    "siteId": 203,
+    "districtId": 4
+  },
+  {
+    "siteId": 204,
+    "districtId": 4
+  },
+  {
+    "siteId": 205,
+    "districtId": 4
+  },
+  {
+    "siteId": 206,
+    "districtId": 6
+  },
+  {
+    "siteId": 207,
+    "districtId": 6
+  },
+  {
+    "siteId": 208,
+    "districtId": 6
+  },
+  {
+    "siteId": 209,
+    "districtId": 6
+  },
+  {
+    "siteId": 210,
+    "districtId": 6
+  },
+  {
+    "siteId": 211,
+    "districtId": 6
+  },
+  {
+    "siteId": 212,
+    "districtId": 6
+  },
+  {
+    "siteId": 213,
+    "districtId": 4
+  },
+  {
+    "siteId": 214,
+    "districtId": 4
+  },
+  {
+    "siteId": 215,
+    "districtId": 2
+  },
+  {
+    "siteId": 216,
+    "districtId": 2
+  },
+  {
+    "siteId": 217,
+    "districtId": 2
+  },
+  {
+    "siteId": 218,
+    "districtId": 2
+  },
+  {
+    "siteId": 219,
+    "districtId": 2
+  },
+  {
+    "siteId": 220,
+    "districtId": 1
+  },
+  {
+    "siteId": 221,
+    "districtId": 5
+  },
+  {
+    "siteId": 222,
+    "districtId": 5
+  },
+  {
+    "siteId": 223,
+    "districtId": 5
+  },
+  {
+    "siteId": 224,
+    "districtId": 5
+  },
+  {
+    "siteId": 225,
+    "districtId": 5
+  },
+  {
+    "siteId": 226,
+    "districtId": 5
+  },
+  {
+    "siteId": 227,
+    "districtId": 5
+  },
+  {
+    "siteId": 228,
+    "districtId": 5
+  },
+  {
+    "siteId": 229,
+    "districtId": 3
+  },
+  {
+    "siteId": 230,
+    "districtId": 3
+  },
+  {
+    "siteId": 231,
+    "districtId": 3
+  },
+  {
+    "siteId": 232,
+    "districtId": 3
+  },
+  {
+    "siteId": 233,
+    "districtId": 3
+  },
+  {
+    "siteId": 234,
+    "districtId": 3
+  },
+  {
+    "siteId": 235,
+    "districtId": 8
+  },
+  {
+    "siteId": 236,
+    "districtId": 8
+  },
+  {
+    "siteId": 237,
+    "districtId": 8
+  },
+  {
+    "siteId": 238,
+    "districtId": 8
+  },
+  {
+    "siteId": 239,
+    "districtId": 8
+  },
+  {
+    "siteId": 240,
+    "districtId": 5
+  },
+  {
+    "siteId": 241,
+    "districtId": 2
+  },
+  {
+    "siteId": 242,
+    "districtId": 3
+  },
+  {
+    "siteId": 243,
+    "districtId": 3
+  },
+  {
+    "siteId": 244,
+    "districtId": 3
+  },
+  {
+    "siteId": 245,
+    "districtId": 7
+  },
+  {
+    "siteId": 246,
+    "districtId": 7
+  },
+  {
+    "siteId": 247,
+    "districtId": 3
+  },
+  {
+    "siteId": 248,
+    "districtId": 2
+  },
+  {
+    "siteId": 249,
+    "districtId": 2
+  },
+  {
+    "siteId": 250,
+    "districtId": 2
+  },
+  {
+    "siteId": 251,
+    "districtId": 2
+  },
+  {
+    "siteId": 252,
+    "districtId": 4
+  },
+  {
+    "siteId": 253,
+    "districtId": 4
+  },
+  {
+    "siteId": 254,
+    "districtId": 4
+  },
+  {
+    "siteId": 255,
+    "districtId": 4
+  },
+  {
+    "siteId": 256,
+    "districtId": 5
+  },
+  {
+    "siteId": 257,
+    "districtId": 5
+  },
+  {
+    "siteId": 258,
+    "districtId": 5
+  },
+  {
+    "siteId": 259,
+    "districtId": 5
+  },
+  {
+    "siteId": 260,
+    "districtId": 5
+  },
+  {
+    "siteId": 261,
+    "districtId": 5
+  },
+  {
+    "siteId": 262,
+    "districtId": 5
+  },
+  {
+    "siteId": 263,
+    "districtId": 2
+  },
+  {
+    "siteId": 264,
+    "districtId": 2
+  },
+  {
+    "siteId": 265,
+    "districtId": 4
+  },
+  {
+    "siteId": 266,
+    "districtId": 4
+  },
+  {
+    "siteId": 267,
+    "districtId": 8
+  },
+  {
+    "siteId": 268,
+    "districtId": 8
+  },
+  {
+    "siteId": 269,
+    "districtId": 8
+  },
+  {
+    "siteId": 270,
+    "districtId": 8
+  },
+  {
+    "siteId": 271,
+    "districtId": 8
+  },
+  {
+    "siteId": 272,
+    "districtId": 8
+  },
+  {
+    "siteId": 273,
+    "districtId": 8
+  },
+  {
+    "siteId": 274,
+    "districtId": 8
+  },
+  {
+    "siteId": 275,
+    "districtId": 8
+  },
+  {
+    "siteId": 276,
+    "districtId": 8
+  },
+  {
+    "siteId": 277,
+    "districtId": 4
+  },
+  {
+    "siteId": 278,
+    "districtId": 4
+  },
+  {
+    "siteId": 279,
+    "districtId": 4
+  },
+  {
+    "siteId": 280,
+    "districtId": 1
+  },
+  {
+    "siteId": 282,
+    "districtId": 1
+  },
+  {
+    "siteId": 283,
+    "districtId": 1
+  },
+  {
+    "siteId": 284,
+    "districtId": 7
+  },
+  {
+    "siteId": 285,
+    "districtId": 7
+  },
+  {
+    "siteId": 287,
+    "districtId": 7
+  },
+  {
+    "siteId": 295,
+    "districtId": 8
+  },
+  {
+    "siteId": 296,
+    "districtId": 8
+  },
+  {
+    "siteId": 297,
+    "districtId": 8
+  },
+  {
+    "siteId": 298,
+    "districtId": 8
+  },
+  {
+    "siteId": 299,
+    "districtId": 8
+  },
+  {
+    "siteId": 300,
+    "districtId": 8
+  },
+  {
+    "siteId": 301,
+    "districtId": 8
+  },
+  {
+    "siteId": 302,
+    "districtId": 8
+  },
+  {
+    "siteId": 303,
+    "districtId": 8
+  },
+  {
+    "siteId": 304,
+    "districtId": 8
+  },
+  {
+    "siteId": 305,
+    "districtId": 8
+  },
+  {
+    "siteId": 306,
+    "districtId": 5
+  },
+  {
+    "siteId": 307,
+    "districtId": 5
+  },
+  {
+    "siteId": 308,
+    "districtId": 5
+  },
+  {
+    "siteId": 309,
+    "districtId": 5
+  },
+  {
+    "siteId": 310,
+    "districtId": 5
+  },
+  {
+    "siteId": 311,
+    "districtId": 5
+  },
+  {
+    "siteId": 312,
+    "districtId": 1
+  },
+  {
+    "siteId": 313,
+    "districtId": 1
+  },
+  {
+    "siteId": 314,
+    "districtId": 5
+  },
+  {
+    "siteId": 315,
+    "districtId": 1
+  },
+  {
+    "siteId": 316,
+    "districtId": 1
+  },
+  {
+    "siteId": 317,
+    "districtId": 1
+  },
+  {
+    "siteId": 318,
+    "districtId": 1
+  },
+  {
+    "siteId": 319,
+    "districtId": 1
+  },
+  {
+    "siteId": 320,
+    "districtId": 1
+  },
+  {
+    "siteId": 321,
+    "districtId": 5
+  },
+  {
+    "siteId": 322,
+    "districtId": 5
+  },
+  {
+    "siteId": 323,
+    "districtId": 5
+  },
+  {
+    "siteId": 324,
+    "districtId": 5
+  },
+  {
+    "siteId": 325,
+    "districtId": 7
+  },
+  {
+    "siteId": 326,
+    "districtId": 7
+  },
+  {
+    "siteId": 327,
+    "districtId": 7
+  },
+  {
+    "siteId": 328,
+    "districtId": 7
+  },
+  {
+    "siteId": 329,
+    "districtId": 7
+  },
+  {
+    "siteId": 330,
+    "districtId": 6
+  },
+  {
+    "siteId": 331,
+    "districtId": 6
+  },
+  {
+    "siteId": 332,
+    "districtId": 6
+  },
+  {
+    "siteId": 333,
+    "districtId": 7
+  },
+  {
+    "siteId": 334,
+    "districtId": 7
+  },
+  {
+    "siteId": 335,
+    "districtId": 7
+  },
+  {
+    "siteId": 336,
+    "districtId": 7
+  },
+  {
+    "siteId": 337,
+    "districtId": 7
+  },
+  {
+    "siteId": 338,
+    "districtId": 3
+  },
+  {
+    "siteId": 339,
+    "districtId": 3
+  },
+  {
+    "siteId": 340,
+    "districtId": 3
+  },
+  {
+    "siteId": 341,
+    "districtId": 3
+  },
+  {
+    "siteId": 342,
+    "districtId": 5
+  },
+  {
+    "siteId": 343,
+    "districtId": 8
+  },
+  {
+    "siteId": 344,
+    "districtId": 5
+  },
+  {
+    "siteId": 345,
+    "districtId": 6
+  },
+  {
+    "siteId": 346,
+    "districtId": 8
+  },
+  {
+    "siteId": 347,
+    "districtId": 8
+  },
+  {
+    "siteId": 348,
+    "districtId": 8
+  },
+  {
+    "siteId": 349,
+    "districtId": 8
+  },
+  {
+    "siteId": 350,
+    "districtId": 8
+  },
+  {
+    "siteId": 351,
+    "districtId": 8
+  },
+  {
+    "siteId": 352,
+    "districtId": 8
+  },
+  {
+    "siteId": 353,
+    "districtId": 4
+  },
+  {
+    "siteId": 354,
+    "districtId": 4
+  },
+  {
+    "siteId": 355,
+    "districtId": 4
+  },
+  {
+    "siteId": 356,
+    "districtId": 4
+  },
+  {
+    "siteId": 357,
+    "districtId": 4
+  },
+  {
+    "siteId": 358,
+    "districtId": 4
+  },
+  {
+    "siteId": 359,
+    "districtId": 8
+  },
+  {
+    "siteId": 360,
+    "districtId": 8
+  },
+  {
+    "siteId": 361,
+    "districtId": 1
+  },
+  {
+    "siteId": 362,
+    "districtId": 1
+  },
+  {
+    "siteId": 363,
+    "districtId": 1
+  },
+  {
+    "siteId": 364,
+    "districtId": 1
+  },
+  {
+    "siteId": 365,
+    "districtId": 1
+  },
+  {
+    "siteId": 366,
+    "districtId": 1
+  },
+  {
+    "siteId": 367,
+    "districtId": 1
+  },
+  {
+    "siteId": 368,
+    "districtId": 4
+  },
+  {
+    "siteId": 369,
+    "districtId": 4
+  },
+  {
+    "siteId": 370,
+    "districtId": 4
+  },
+  {
+    "siteId": 371,
+    "districtId": 4
+  },
+  {
+    "siteId": 372,
+    "districtId": 8
+  },
+  {
+    "siteId": 373,
+    "districtId": 5
+  },
+  {
+    "siteId": 374,
+    "districtId": 6
+  },
+  {
+    "siteId": 375,
+    "districtId": 6
+  },
+  {
+    "siteId": 376,
+    "districtId": 8
+  },
+  {
+    "siteId": 377,
+    "districtId": 6
+  },
+  {
+    "siteId": 378,
+    "districtId": 8
+  },
+  {
+    "siteId": 379,
+    "districtId": 8
+  },
+  {
+    "siteId": 380,
+    "districtId": 8
+  },
+  {
+    "siteId": 381,
+    "districtId": 8
+  },
+  {
+    "siteId": 382,
+    "districtId": 2
+  },
+  {
+    "siteId": 383,
+    "districtId": 3
+  },
+  {
+    "siteId": 388,
+    "districtId": 7
+  },
+  {
+    "siteId": 389,
+    "districtId": 7
+  },
+  {
+    "siteId": 390,
+    "districtId": 3
+  },
+  {
+    "siteId": 391,
+    "districtId": 3
+  },
+  {
+    "siteId": 392,
+    "districtId": 3
+  },
+  {
+    "siteId": 393,
+    "districtId": 5
+  },
+  {
+    "siteId": 394,
+    "districtId": 5
+  },
+  {
+    "siteId": 395,
+    "districtId": 7
+  },
+  {
+    "siteId": 399,
+    "districtId": 1
+  },
+  {
+    "siteId": 400,
+    "districtId": 1
+  },
+  {
+    "siteId": 401,
+    "districtId": 1
+  },
+  {
+    "siteId": 402,
+    "districtId": 1
+  },
+  {
+    "siteId": 403,
+    "districtId": 1
+  },
+  {
+    "siteId": 404,
+    "districtId": 1
+  },
+  {
+    "siteId": 405,
+    "districtId": 1
+  },
+  {
+    "siteId": 406,
+    "districtId": 1
+  },
+  {
+    "siteId": 407,
+    "districtId": 2
+  },
+  {
+    "siteId": 408,
+    "districtId": 1
+  },
+  {
+    "siteId": 409,
+    "districtId": 1
+  },
+  {
+    "siteId": 410,
+    "districtId": 1
+  },
+  {
+    "siteId": 411,
+    "districtId": 1
+  },
+  {
+    "siteId": 412,
+    "districtId": 1
+  },
+  {
+    "siteId": 413,
+    "districtId": 1
+  },
+  {
+    "siteId": 414,
+    "districtId": 1
+  },
+  {
+    "siteId": 415,
+    "districtId": 1
+  },
+  {
+    "siteId": 416,
+    "districtId": 1
+  },
+  {
+    "siteId": 417,
+    "districtId": 1
+  },
+  {
+    "siteId": 418,
+    "districtId": 1
+  },
+  {
+    "siteId": 419,
+    "districtId": 1
+  },
+  {
+    "siteId": 420,
+    "districtId": 1
+  },
+  {
+    "siteId": 421,
+    "districtId": 1
+  },
+  {
+    "siteId": 428,
+    "districtId": 8
+  },
+  {
+    "siteId": 429,
+    "districtId": 4
+  },
+  {
+    "siteId": 430,
+    "districtId": 4
+  },
+  {
+    "siteId": 431,
+    "districtId": 4
+  },
+  {
+    "siteId": 432,
+    "districtId": 5
+  },
+  {
+    "siteId": 433,
+    "districtId": 4
+  },
+  {
+    "siteId": 434,
+    "districtId": 4
+  },
+  {
+    "siteId": 435,
+    "districtId": 5
+  },
+  {
+    "siteId": 436,
+    "districtId": 4
+  },
+  {
+    "siteId": 437,
+    "districtId": 4
+  },
+  {
+    "siteId": 438,
+    "districtId": 4
+  },
+  {
+    "siteId": 439,
+    "districtId": 4
+  },
+  {
+    "siteId": 440,
+    "districtId": 2
+  },
+  {
+    "siteId": 441,
+    "districtId": 2
+  },
+  {
+    "siteId": 442,
+    "districtId": 1
+  },
+  {
+    "siteId": 443,
+    "districtId": 6
+  },
+  {
+    "siteId": 444,
+    "districtId": 6
+  },
+  {
+    "siteId": 445,
+    "districtId": 6
+  },
+  {
+    "siteId": 446,
+    "districtId": 6
+  },
+  {
+    "siteId": 447,
+    "districtId": 6
+  },
+  {
+    "siteId": 448,
+    "districtId": 1
+  },
+  {
+    "siteId": 449,
+    "districtId": 6
+  },
+  {
+    "siteId": 450,
+    "districtId": 4
+  },
+  {
+    "siteId": 451,
+    "districtId": 4
+  },
+  {
+    "siteId": 452,
+    "districtId": 2
+  },
+  {
+    "siteId": 453,
+    "districtId": 3
+  },
+  {
+    "siteId": 454,
+    "districtId": 4
+  },
+  {
+    "siteId": 455,
+    "districtId": 4
+  },
+  {
+    "siteId": 456,
+    "districtId": 4
+  },
+  {
+    "siteId": 457,
+    "districtId": 4
+  },
+  {
+    "siteId": 458,
+    "districtId": 4
+  },
+  {
+    "siteId": 459,
+    "districtId": 4
+  },
+  {
+    "siteId": 460,
+    "districtId": 5
+  },
+  {
+    "siteId": 461,
+    "districtId": 5
+  },
+  {
+    "siteId": 462,
+    "districtId": 5
+  },
+  {
+    "siteId": 463,
+    "districtId": 5
+  },
+  {
+    "siteId": 464,
+    "districtId": 8
+  },
+  {
+    "siteId": 465,
+    "districtId": 8
+  },
+  {
+    "siteId": 472,
+    "districtId": 6
+  },
+  {
+    "siteId": 473,
+    "districtId": 6
+  },
+  {
+    "siteId": 474,
+    "districtId": 5
+  },
+  {
+    "siteId": 475,
+    "districtId": 6
+  },
+  {
+    "siteId": 476,
+    "districtId": 7
+  },
+  {
+    "siteId": 477,
+    "districtId": 7
+  },
+  {
+    "siteId": 478,
+    "districtId": 4
+  },
+  {
+    "siteId": 479,
+    "districtId": 7
+  },
+  {
+    "siteId": 480,
+    "districtId": 4
+  },
+  {
+    "siteId": 481,
+    "districtId": 4
+  },
+  {
+    "siteId": 482,
+    "districtId": 3
+  },
+  {
+    "siteId": 483,
+    "districtId": 1
+  },
+  {
+    "siteId": 484,
+    "districtId": 1
+  },
+  {
+    "siteId": 485,
+    "districtId": 1
+  },
+  {
+    "siteId": 486,
+    "districtId": 1
+  },
+  {
+    "siteId": 487,
+    "districtId": 1
+  },
+  {
+    "siteId": 488,
+    "districtId": 1
+  },
+  {
+    "siteId": 489,
+    "districtId": 1
+  },
+  {
+    "siteId": 490,
+    "districtId": 8
+  },
+  {
+    "siteId": 491,
+    "districtId": 3
+  },
+  {
+    "siteId": 492,
+    "districtId": 6
+  },
+  {
+    "siteId": 493,
+    "districtId": 1
+  },
+  {
+    "siteId": 494,
+    "districtId": 3
+  },
+  {
+    "siteId": 495,
+    "districtId": 3
+  },
+  {
+    "siteId": 496,
+    "districtId": 7
+  },
+  {
+    "siteId": 497,
+    "districtId": 6
+  },
+  {
+    "siteId": 498,
+    "districtId": 6
+  },
+  {
+    "siteId": 499,
+    "districtId": 6
+  },
+  {
+    "siteId": 500,
+    "districtId": 4
+  },
+  {
+    "siteId": 501,
+    "districtId": 1
+  },
+  {
+    "siteId": 502,
+    "districtId": 6
+  },
+  {
+    "siteId": 503,
+    "districtId": 5
+  },
+  {
+    "siteId": 504,
+    "districtId": 1
+  },
+  {
+    "siteId": 505,
+    "districtId": 6
+  },
+  {
+    "siteId": 506,
+    "districtId": 6
+  },
+  {
+    "siteId": 507,
+    "districtId": 7
+  },
+  {
+    "siteId": 508,
+    "districtId": 1
+  },
+  {
+    "siteId": 509,
+    "districtId": 5
+  },
+  {
+    "siteId": 510,
+    "districtId": 6
+  },
+  {
+    "siteId": 512,
+    "districtId": 3
+  },
+  {
+    "siteId": 513,
+    "districtId": 6
+  },
+  {
+    "siteId": 514,
+    "districtId": 7
+  },
+  {
+    "siteId": 515,
+    "districtId": 8
+  },
+  {
+    "siteId": 517,
+    "districtId": 1
+  },
+  {
+    "siteId": 518,
+    "districtId": 1
+  },
+  {
+    "siteId": 519,
+    "districtId": 1
+  },
+  {
+    "siteId": 520,
+    "districtId": 1
+  },
+  {
+    "siteId": 521,
+    "districtId": 1
+  },
+  {
+    "siteId": 522,
+    "districtId": 6
+  },
+  {
+    "siteId": 523,
+    "districtId": 1
+  },
+  {
+    "siteId": 524,
+    "districtId": 1
+  },
+  {
+    "siteId": 525,
+    "districtId": 1
+  },
+  {
+    "siteId": 526,
+    "districtId": 1
+  },
+  {
+    "siteId": 527,
+    "districtId": 1
+  },
+  {
+    "siteId": 529,
+    "districtId": 8
+  },
+  {
+    "siteId": 530,
+    "districtId": 1
+  },
+  {
+    "siteId": 531,
+    "districtId": 6
+  },
+  {
+    "siteId": 532,
+    "districtId": 4
+  },
+  {
+    "siteId": 539,
+    "districtId": 6
+  },
+  {
+    "siteId": 540,
+    "districtId": 1
+  },
+  {
+    "siteId": 542,
+    "districtId": 1
+  },
+  {
+    "siteId": 544,
+    "districtId": 8
+  },
+  {
+    "siteId": 545,
+    "districtId": 1
+  },
+  {
+    "siteId": 546,
+    "districtId": 3
+  },
+  {
+    "siteId": 548,
+    "districtId": 1
+  },
+  {
+    "siteId": 549,
+    "districtId": 1
+  },
+  {
+    "siteId": 550,
+    "districtId": 1
+  },
+  {
+    "siteId": 551,
+    "districtId": 1
+  },
+  {
+    "siteId": 552,
+    "districtId": 1
+  },
+  {
+    "siteId": 553,
+    "districtId": 1
+  },
+  {
+    "siteId": 554,
+    "districtId": 1
+  },
+  {
+    "siteId": 555,
+    "districtId": 2
+  },
+  {
+    "siteId": 556,
+    "districtId": 5
+  },
+  {
+    "siteId": 557,
+    "districtId": 7
+  },
+  {
+    "siteId": 559,
+    "districtId": 1
+  },
+  {
+    "siteId": 560,
+    "districtId": 5
+  },
+  {
+    "siteId": 561,
+    "districtId": 1
+  },
+  {
+    "siteId": 562,
+    "districtId": 1
+  },
+  {
+    "siteId": 563,
+    "districtId": 1
+  },
+  {
+    "siteId": 564,
+    "districtId": 1
+  },
+  {
+    "siteId": 565,
+    "districtId": 1
+  },
+  {
+    "siteId": 566,
+    "districtId": 1
+  },
+  {
+    "siteId": 567,
+    "districtId": 7
+  },
+  {
+    "siteId": 568,
+    "districtId": 7
+  },
+  {
+    "siteId": 569,
+    "districtId": 7
+  },
+  {
+    "siteId": 570,
+    "districtId": 7
+  },
+  {
+    "siteId": 571,
+    "districtId": 7
+  },
+  {
+    "siteId": 572,
+    "districtId": 5
+  },
+  {
+    "siteId": 573,
+    "districtId": 8
+  },
+  {
+    "siteId": 574,
+    "districtId": 5
+  },
+  {
+    "siteId": 575,
+    "districtId": 1
+  },
+  {
+    "siteId": 577,
+    "districtId": 4
+  },
+  {
+    "siteId": 578,
+    "districtId": 7
+  },
+  {
+    "siteId": 579,
+    "districtId": 7
+  },
+  {
+    "siteId": 580,
+    "districtId": 2
+  },
+  {
+    "siteId": 581,
+    "districtId": 4
+  },
+  {
+    "siteId": 582,
+    "districtId": 6
+  },
+  {
+    "siteId": 583,
+    "districtId": 7
+  },
+  {
+    "siteId": 584,
+    "districtId": 7
+  },
+  {
+    "siteId": 585,
+    "districtId": 7
+  },
+  {
+    "siteId": 586,
+    "districtId": 4
+  },
+  {
+    "siteId": 587,
+    "districtId": 3
+  },
+  {
+    "siteId": 590,
+    "districtId": 1
+  },
+  {
+    "siteId": 591,
+    "districtId": 1
+  },
+  {
+    "siteId": 593,
+    "districtId": 8
+  },
+  {
+    "siteId": 594,
+    "districtId": 8
+  },
+  {
+    "siteId": 595,
+    "districtId": 7
+  },
+  {
+    "siteId": 596,
+    "districtId": 5
+  },
+  {
+    "siteId": 597,
+    "districtId": 4
+  },
+  {
+    "siteId": 598,
+    "districtId": 4
+  },
+  {
+    "siteId": 599,
+    "districtId": 1
+  },
+  {
+    "siteId": 600,
+    "districtId": 8
+  },
+  {
+    "siteId": 601,
+    "districtId": 4
+  },
+  {
+    "siteId": 602,
+    "districtId": 8
+  },
+  {
+    "siteId": 603,
+    "districtId": 7
+  },
+  {
+    "siteId": 604,
+    "districtId": 3
+  },
+  {
+    "siteId": 605,
+    "districtId": 7
+  },
+  {
+    "siteId": 606,
+    "districtId": 7
+  },
+  {
+    "siteId": 607,
+    "districtId": 7
+  },
+  {
+    "siteId": 608,
+    "districtId": 7
+  },
+  {
+    "siteId": 609,
+    "districtId": 7
+  },
+  {
+    "siteId": 610,
+    "districtId": 7
+  },
+  {
+    "siteId": 611,
+    "districtId": 5
+  },
+  {
+    "siteId": 612,
+    "districtId": 1
+  },
+  {
+    "siteId": 613,
+    "districtId": 1
+  },
+  {
+    "siteId": 614,
+    "districtId": 8
+  },
+  {
+    "siteId": 615,
+    "districtId": 4
+  },
+  {
+    "siteId": 616,
+    "districtId": 6
+  },
+  {
+    "siteId": 617,
+    "districtId": 5
+  },
+  {
+    "siteId": 618,
+    "districtId": 5
+  },
+  {
+    "siteId": 621,
+    "districtId": 7
+  },
+  {
+    "siteId": 622,
+    "districtId": 7
+  },
+  {
+    "siteId": 623,
+    "districtId": 5
+  },
+  {
+    "siteId": 624,
+    "districtId": 4
+  },
+  {
+    "siteId": 625,
+    "districtId": 1
+  },
+  {
+    "siteId": 626,
+    "districtId": 1
+  },
+  {
+    "siteId": 627,
+    "districtId": 1
+  },
+  {
+    "siteId": 628,
+    "districtId": 7
+  },
+  {
+    "siteId": 629,
+    "districtId": 7
+  },
+  {
+    "siteId": 630,
+    "districtId": 7
+  },
+  {
+    "siteId": 631,
+    "districtId": 7
+  },
+  {
+    "siteId": 632,
+    "districtId": 7
+  },
+  {
+    "siteId": 633,
+    "districtId": 7
+  },
+  {
+    "siteId": 634,
+    "districtId": 7
+  },
+  {
+    "siteId": 635,
+    "districtId": 1
+  },
+  {
+    "siteId": 638,
+    "districtId": 8
+  },
+  {
+    "siteId": 639,
+    "districtId": 6
+  },
+  {
+    "siteId": 640,
+    "districtId": 4
+  },
+  {
+    "siteId": 641,
+    "districtId": 7
+  },
+  {
+    "siteId": 642,
+    "districtId": 3
+  },
+  {
+    "siteId": 647,
+    "districtId": 1
+  },
+  {
+    "siteId": 648,
+    "districtId": 1
+  },
+  {
+    "siteId": 649,
+    "districtId": 1
+  },
+  {
+    "siteId": 650,
+    "districtId": 1
+  },
+  {
+    "siteId": 651,
+    "districtId": 1
+  },
+  {
+    "siteId": 652,
+    "districtId": 1
+  },
+  {
+    "siteId": 653,
+    "districtId": 7
+  },
+  {
+    "siteId": 654,
+    "districtId": 8
+  },
+  {
+    "siteId": 655,
+    "districtId": 8
+  },
+  {
+    "siteId": 656,
+    "districtId": 8
+  },
+  {
+    "siteId": 657,
+    "districtId": 8
+  },
+  {
+    "siteId": 658,
+    "districtId": 6
+  },
+  {
+    "siteId": 659,
+    "districtId": 1
+  },
+  {
+    "siteId": 660,
+    "districtId": 8
+  },
+  {
+    "siteId": 662,
+    "districtId": 6
+  },
+  {
+    "siteId": 667,
+    "districtId": 1
+  },
+  {
+    "siteId": 668,
+    "districtId": 4
+  },
+  {
+    "siteId": 669,
+    "districtId": 4
+  },
+  {
+    "siteId": 670,
+    "districtId": 8
+  },
+  {
+    "siteId": 671,
+    "districtId": 6
+  },
+  {
+    "siteId": 672,
+    "districtId": 5
+  },
+  {
+    "siteId": 673,
+    "districtId": 8
+  },
+  {
+    "siteId": 674,
+    "districtId": 8
+  },
+  {
+    "siteId": 675,
+    "districtId": 6
+  },
+  {
+    "siteId": 676,
+    "districtId": 6
+  },
+  {
+    "siteId": 677,
+    "districtId": 1
+  },
+  {
+    "siteId": 678,
+    "districtId": 1
+  },
+  {
+    "siteId": 679,
+    "districtId": 7
+  },
+  {
+    "siteId": 680,
+    "districtId": 6
+  },
+  {
+    "siteId": 681,
+    "districtId": 4
+  },
+  {
+    "siteId": 682,
+    "districtId": 3
+  },
+  {
+    "siteId": 702,
+    "districtId": 7
+  },
+  {
+    "siteId": 704,
+    "districtId": 5
+  },
+  {
+    "siteId": 705,
+    "districtId": 4
+  },
+  {
+    "siteId": 706,
+    "districtId": 1
+  }
+]
