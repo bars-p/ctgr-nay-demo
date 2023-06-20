@@ -17,6 +17,9 @@ import { useI18n } from "vue-i18n";
 import mapboxgl from "mapbox-gl";
 import axios from "axios";
 
+import union from "@turf/union";
+import booleanPointInPolygon from "@turf/boolean-point-in-polygon";
+
 import { useMapStore } from "@/store/map";
 const { t } = useI18n();
 
@@ -1418,10 +1421,34 @@ const processSitesByDistrict = (districtId) => {
 
 const processSitesBySavedArea = (name) => {
   console.log("Area:", name);
-  console.log(
-    mapStore.savedCellsData.filter((item) => item.properties.name == name)
-      .length
+  const areaCells = mapStore.savedCellsData.filter(
+    (item) => item.properties.name == name
   );
+  let areaUnion = null;
+  if (areaCells.length == 0) {
+    return;
+  } else {
+    areaUnion = areaCells[0];
+    for (let i = 1; i < areaCells.length; i++) {
+      areaUnion = union(areaUnion.geometry, areaCells[i].geometry);
+    }
+    // areaUnion.properties.name = areaCells[0].properties.name;
+    // areaUnion.properties.color = areaCells[0].properties.color;
+  }
+  // selectedSource.data.features = [areaUnion];
+  // map.getSource("saved-areas-source").setData(selectedSource.data);
+
+  const siteIds = [];
+
+  sourceSitesCentroids.features.forEach((site) => {
+    if (booleanPointInPolygon(site.geometry.coordinates, areaUnion)) {
+      siteIds.push(site.properties.id);
+    }
+  });
+
+  siteIds.forEach((id) => {
+    mapStore.selectedSiteIds.add(id);
+  });
 };
 
 const processSitesSelected = (sitesIds) => {
