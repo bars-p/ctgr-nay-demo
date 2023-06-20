@@ -359,7 +359,7 @@
 
         <v-list density="compact">
           <v-list-item
-            v-for="(site, idx) in sitesGroupFiltered"
+            v-for="site in sitesGroupFiltered"
             :key="site.id"
             @click="selectSiteInGroup(site)"
           >

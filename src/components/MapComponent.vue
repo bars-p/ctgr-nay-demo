@@ -1153,24 +1153,33 @@ const buildLayers = () => {
       }
     });
 
+    //
+    // Saved Cells Groups - District - Highlight on Hover Processing - DEMAND, SITES
+    //
     map.on("mousemove", "cells-saved", (e) => {
-      if (props.mode == "demand") {
-        if (mapStore.demandLevel == "area") {
-          map.getCanvas().style.cursor = "pointer";
-          // console.log("Hovered:", e.features[0]);
-          const cellData = e.features[0].properties;
-          const description = `${cellData.name}`;
+      if (
+        (props.mode == "demand" && mapStore.demandLevel == "area") ||
+        (props.mode == "sites" &&
+          mapStore.sitesSelectionMode == "area" &&
+          !mapStore.useCurrentSiteGroup)
+      ) {
+        map.getCanvas().style.cursor = "pointer";
+        // console.log("Hovered:", e.features[0]);
+        const cellData = e.features[0].properties;
+        const description = `${cellData.name}`;
 
-          mapPopup.setLngLat(e.lngLat).setHTML(description).addTo(map);
-        }
+        mapPopup.setLngLat(e.lngLat).setHTML(description).addTo(map);
       }
     });
     map.on("mouseleave", "cells-saved", () => {
-      if (props.mode == "demand") {
-        if (mapStore.demandLevel == "area") {
-          map.getCanvas().style.cursor = "";
-          mapPopup.remove();
-        }
+      if (
+        (props.mode == "demand" && mapStore.demandLevel == "area") ||
+        (props.mode == "sites" &&
+          mapStore.sitesSelectionMode == "area" &&
+          !mapStore.useCurrentSiteGroup)
+      ) {
+        map.getCanvas().style.cursor = "";
+        mapPopup.remove();
       }
     });
 
@@ -1205,10 +1214,18 @@ const buildLayers = () => {
         processConnectivityFeatureSelect(feature.properties.id);
       }
     });
+
+    //
+    // Saved Cells Groups - District - Select Processing - DEMAND, SITES
+    //
     map.on("click", mapStore.layers[layersIdxs.cellsSaved].name, (item) => {
       if (props.mode == "demand" && mapStore.demandLevel == "area") {
         const feature = Object.assign(item.features[0]);
         processDemandFeatureSelect(feature.properties.name);
+      }
+      if (props.mode == "sites" && mapStore.sitesSelectionMode == "area") {
+        const feature = Object.assign(item.features[0]);
+        processSitesBySavedArea(feature.properties.name);
       }
     });
 
@@ -1397,6 +1414,14 @@ const setStopsColor = (color) => {
 const processSitesByDistrict = (districtId) => {
   console.log("District", districtId);
   processSitesSelected(mapStore.getSitesByDistrict(districtId));
+};
+
+const processSitesBySavedArea = (name) => {
+  console.log("Area:", name);
+  console.log(
+    mapStore.savedCellsData.filter((item) => item.properties.name == name)
+      .length
+  );
 };
 
 const processSitesSelected = (sitesIds) => {
