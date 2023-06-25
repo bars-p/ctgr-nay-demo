@@ -5,6 +5,7 @@
     class="buttons-block"
     @compass="processCompassClicked"
     @rotate="processRotateClicked"
+    @ruler="toggleRuler"
   ></map-buttons-block>
 </template>
 
@@ -19,6 +20,7 @@ import axios from "axios";
 
 import union from "@turf/union";
 import booleanPointInPolygon from "@turf/boolean-point-in-polygon";
+import length from "@turf/length";
 
 import { useMapStore } from "@/store/map";
 const { t } = useI18n();
@@ -452,6 +454,19 @@ const selectedSource = {
   },
 };
 
+const measureData = {
+  type: "FeatureCollection",
+  features: [],
+};
+
+const measureLine = {
+  type: "Feature",
+  geometry: {
+    type: "LineString",
+    coordinates: [],
+  },
+};
+
 const createMap = async () => {
   console.log("In createMap");
   try {
@@ -502,8 +517,12 @@ const buildLayers = () => {
       type: "geojson",
       data: sourceLadsTraces,
     });
-
     map.addSource("saved-areas-source", selectedSource);
+
+    map.addSource("measure-source", {
+      type: "geojson",
+      data: measureData,
+    });
 
     map.addLayer(
       {
@@ -866,6 +885,46 @@ const buildLayers = () => {
       },
     });
 
+    map.addLayer({
+      id: "measure-points",
+      type: "circle",
+      source: "measure-source",
+      layout: {
+        visibility: "none",
+      },
+      paint: {
+        "circle-radius": 5,
+        "circle-color": "#000",
+      },
+      filter: ["in", "$type", "Point"],
+    });
+    map.addLayer({
+      id: "measure-lines",
+      type: "line",
+      source: "measure-source",
+      layout: {
+        "line-cap": "round",
+        "line-join": "round",
+        visibility: "none",
+      },
+      paint: {
+        "line-color": "#000",
+        "line-width": 2.5,
+      },
+      filter: ["in", "$type", "LineString"],
+    });
+    map.addLayer({
+      id: "measure-labels",
+      type: "symbol",
+      source: "measure-source",
+      layout: {
+        "text-field": ["get", "distance"],
+        "text-variable-anchor": ["left", "right"],
+        "text-radial-offset": 0.5,
+        "text-justify": "auto",
+      },
+    });
+
     map.on("style.load", () => {
       console.warn("MAP STYLE CHANGED!");
       // TODO: Restore Layers
@@ -1035,6 +1094,95 @@ const buildLayers = () => {
     // TODO:
 
     //
+    // Measure Processing
+    //
+    map.on("mousemove", (e) => {
+      if (!mapStore.measureActive) {
+        return;
+      }
+      const features = map.queryRenderedFeatures(e.point, {
+        layers: ["measure-points"],
+      });
+      // Change the cursor to a pointer when hovering over a point on the map.
+      // Otherwise cursor is a crosshair.
+      map.getCanvas().style.cursor = features.length ? "pointer" : "crosshair";
+    });
+    map.on("click", (e) => {
+      if (!mapStore.measureActive) {
+        return;
+      }
+
+      const features = map.queryRenderedFeatures(e.point, {
+        layers: ["measure-points"],
+      });
+
+      // Remove the linestring from the group
+      // so we can redraw it based on the points collection.
+      if (measureData.features.length > 1) measureData.features.pop();
+
+      // Clear the distance container to populate it with a new value.
+      // distanceContainer.innerHTML = "";
+
+      // If a feature was clicked, remove it from the map.
+      if (features.length) {
+        const id = features[0].properties.id;
+        measureData.features = measureData.features.filter(
+          (point) => point.properties.id !== id
+        );
+        // TODO: Rebuild distances!
+        if (measureData.features.length > 0) {
+          measureData.features[0].properties.distance = 0;
+          measureLine.geometry.coordinates = [
+            measureData.features[0].geometry.coordinates,
+          ];
+          for (let i = 1; i < measureData.features.length; i++) {
+            measureLine.geometry.coordinates.push(
+              measureData.features[i].geometry.coordinates
+            );
+            const segmentDistance = length(measureLine);
+            measureData.features[i].properties.distance =
+              segmentDistance.toFixed(2);
+          }
+        }
+      } else {
+        const point = {
+          type: "Feature",
+          geometry: {
+            type: "Point",
+            coordinates: [e.lngLat.lng, e.lngLat.lat],
+          },
+          properties: {
+            id: String(new Date().getTime()),
+            distance: 0,
+          },
+        };
+
+        measureData.features.push(point);
+      }
+
+      if (measureData.features.length > 1) {
+        measureLine.geometry.coordinates = measureData.features.map(
+          (point) => point.geometry.coordinates
+        );
+
+        // Populate the distanceContainer with total distance
+        // const value = document.createElement("pre");
+
+        const distance = length(measureLine);
+
+        // value.textContent = `Total distance: ${distance.toLocaleString()}km`;
+        // distanceContainer.appendChild(value);
+        measureData.features.at(-1).properties.distance = distance.toFixed(2);
+
+        console.log("Distance", distance);
+
+        measureData.features.push(measureLine);
+      }
+
+      map.getSource("measure-source").setData(measureData);
+    });
+
+    //
     // Social processing
     map.on("mousemove", "cells-fill", (e) => {
       if (props.mode == "social") {
@@ -1056,6 +1204,9 @@ const buildLayers = () => {
       }
     });
     map.on("click", "cells-fill", (item) => {
+      if (mapStore.measureActive) {
+        return;
+      }
       if (props.mode == "social") {
         // const clickedId = item.features[0].properties.id;
         const feature = Object.assign(item.features[0]);
@@ -1070,6 +1221,10 @@ const buildLayers = () => {
     // Sites processing
     //
     map.on("click", mapStore.layers[layersIdxs.sitesFill].name, (item) => {
+      if (mapStore.measureActive) {
+        return;
+      }
+
       if (props.mode == "sites" && mapStore.sitesSelectionMode == "sites") {
         const feature = Object.assign(item.features[0]);
         processSitesSelected([feature.properties.id]);
@@ -1209,6 +1364,10 @@ const buildLayers = () => {
     );
 
     map.on("click", mapStore.layers[layersIdxs.zoneSelect].name, (item) => {
+      if (mapStore.measureActive) {
+        return;
+      }
+
       if (props.mode == "demand" && mapStore.demandLevel == "zone") {
         const feature = Object.assign(item.features[0]);
         processDemandFeatureSelect(feature.properties.id);
@@ -1222,6 +1381,10 @@ const buildLayers = () => {
     // Saved Cells Groups - District - Select Processing - DEMAND, SITES
     //
     map.on("click", mapStore.layers[layersIdxs.cellsSaved].name, (item) => {
+      if (mapStore.measureActive) {
+        return;
+      }
+
       if (props.mode == "demand" && mapStore.demandLevel == "area") {
         const feature = Object.assign(item.features[0]);
         processDemandFeatureSelect(feature.properties.name);
@@ -1735,7 +1898,7 @@ const processDemandSplit = () => {
   }
 };
 
-const displaySplitDemand = () => {
+const displaySplitDemand = async () => {
   let layerPaintData = null;
   if (mapStore.demandDirection == "from") {
     layerPaintData = {
@@ -1779,7 +1942,7 @@ const displaySplitDemand = () => {
     };
   }
 
-  calculateSplitDemand();
+  await calculateSplitDemand();
 
   map.getSource("cells-source").setData(sourceBaseCells);
 
@@ -1793,7 +1956,117 @@ const displaySplitDemand = () => {
   }
 };
 
-const calculateSplitDemand = () => {
+const calculateSplitDemand = async () => {
+  console.log("1️⃣");
+
+  const maxValue = await prepareDataAndGetMax();
+  console.log("Max Value", maxValue);
+
+  // const zonesData = sourceAnalyticalZones.features.map((item, i) => ({
+  //   zoneId: item.properties.id,
+  //   value: item.properties.value,
+  //   pop: +zonesStats[i].pop,
+  //   emp: +zonesStats[i].emp,
+  // }));
+  // // console.log("Zones:", zonesData);
+
+  // let maxValue = 0;
+  // console.log("2️⃣");
+
+  // // await zonesData.forEach(
+  // //   async (zone) =>
+  // for (const zone of zonesData) {
+  //   await setTimeout(() => {
+  //     const cellsSelected = sourceBaseCells.features.filter(
+  //       (cell) => cell.properties.cell_id == zone.zoneId
+  //     );
+
+  //     if (zone.value == 0) {
+  //       cellsSelected.forEach((cell) => {
+  //         cell.properties.value = 0;
+  //       });
+  //     } else {
+  //       if (mapStore.demandDirection == "from") {
+  //         const zoneTotal = 0.1 * zone.pop + zone.emp;
+  //         // if (zone.zoneId == 408) {
+  //         //   console.log("Zone total", zoneTotal);
+  //         // }
+  //         cellsSelected.forEach((cell) => {
+  //           const cellTotal = 0.1 * cell.properties.pop + cell.properties.emp;
+  //           const cellValue = (zone.value * cellTotal) / zoneTotal;
+  //           cell.properties.value = cellValue;
+  //           if (cellValue > maxValue) {
+  //             maxValue = cellValue;
+  //           }
+  //         });
+  //       } else {
+  //         const zoneTotal = zone.pop + 0.1 * zone.emp;
+  //         // if (zone.zoneId == 408) {
+  //         //   console.log("Zone total", zoneTotal);
+  //         // }
+  //         cellsSelected.forEach((cell) => {
+  //           const cellTotal = cell.properties.pop + 0.1 * cell.properties.emp;
+  //           const cellValue = (zone.value * cellTotal) / zoneTotal;
+  //           cell.properties.value = cellValue;
+  //           if (cellValue > maxValue) {
+  //             maxValue = cellValue;
+  //           }
+  //         });
+  //       }
+  //     }
+  //   }, 0);
+  // }
+  // zonesData.forEach((zone) => {
+  //   const cellsSelected = sourceBaseCells.features.filter(
+  //     (cell) => cell.properties.cell_id == zone.zoneId
+  //   );
+
+  //   if (zone.value == 0) {
+  //     cellsSelected.forEach((cell) => {
+  //       cell.properties.value = 0;
+  //     });
+  //   } else {
+  //     if (mapStore.demandDirection == "from") {
+  //       const zoneTotal = 0.1 * zone.pop + zone.emp;
+  //       // if (zone.zoneId == 408) {
+  //       //   console.log("Zone total", zoneTotal);
+  //       // }
+  //       cellsSelected.forEach((cell) => {
+  //         const cellTotal = 0.1 * cell.properties.pop + cell.properties.emp;
+  //         const cellValue = (zone.value * cellTotal) / zoneTotal;
+  //         cell.properties.value = cellValue;
+  //         if (cellValue > maxValue) {
+  //           maxValue = cellValue;
+  //         }
+  //       });
+  //     } else {
+  //       const zoneTotal = zone.pop + 0.1 * zone.emp;
+  //       // if (zone.zoneId == 408) {
+  //       //   console.log("Zone total", zoneTotal);
+  //       // }
+  //       cellsSelected.forEach((cell) => {
+  //         const cellTotal = cell.properties.pop + 0.1 * cell.properties.emp;
+  //         const cellValue = (zone.value * cellTotal) / zoneTotal;
+  //         cell.properties.value = cellValue;
+  //         if (cellValue > maxValue) {
+  //           maxValue = cellValue;
+  //         }
+  //       });
+  //     }
+  //   }
+  // });
+  // sourceBaseCells.features.forEach((cell) => {
+  //   cell.properties.value = (100 * cell.properties.value) / (maxValue || 1);
+  // });
+
+  console.log("3️⃣");
+
+  calculateCellDemand(maxValue);
+
+  console.log("4️⃣");
+};
+
+const prepareDataAndGetMax = async () => {
   const zonesData = sourceAnalyticalZones.features.map((item, i) => ({
     zoneId: item.properties.id,
     value: item.properties.value,
@@ -1802,50 +2075,112 @@ const calculateSplitDemand = () => {
   }));
   // console.log("Zones:", zonesData);
 
+  console.log("2️⃣");
+
+  // await zonesData.forEach(
+  //   async (zone) =>
+
   let maxValue = 0;
 
-  zonesData.forEach((zone) => {
-    const cellsSelected = sourceBaseCells.features.filter(
-      (cell) => cell.properties.cell_id == zone.zoneId
-    );
+  for (const zone of zonesData) {
+    const zoneMax = await splitZone(zone);
+    if (zoneMax > maxValue) {
+      maxValue = zoneMax;
+    }
+  }
 
-    if (zone.value == 0) {
+  // for (const zone of zonesData) {
+  //   await setTimeout(() => {
+  //     const cellsSelected = sourceBaseCells.features.filter(
+  //       (cell) => cell.properties.cell_id == zone.zoneId
+  //     );
+
+  //     if (zone.value == 0) {
+  //       cellsSelected.forEach((cell) => {
+  //         cell.properties.value = 0;
+  //       });
+  //     } else {
+  //       if (mapStore.demandDirection == "from") {
+  //         const zoneTotal = 0.1 * zone.pop + zone.emp;
+  //         // if (zone.zoneId == 408) {
+  //         //   console.log("Zone total", zoneTotal);
+  //         // }
+  //         cellsSelected.forEach((cell) => {
+  //           const cellTotal = 0.1 * cell.properties.pop + cell.properties.emp;
+  //           const cellValue = (zone.value * cellTotal) / zoneTotal;
+  //           cell.properties.value = cellValue;
+  //           if (cellValue > maxValue) {
+  //             maxValue = cellValue;
+  //           }
+  //         });
+  //       } else {
+  //         const zoneTotal = zone.pop + 0.1 * zone.emp;
+  //         // if (zone.zoneId == 408) {
+  //         //   console.log("Zone total", zoneTotal);
+  //         // }
+  //         cellsSelected.forEach((cell) => {
+  //           const cellTotal = cell.properties.pop + 0.1 * cell.properties.emp;
+  //           const cellValue = (zone.value * cellTotal) / zoneTotal;
+  //           cell.properties.value = cellValue;
+  //           if (cellValue > maxValue) {
+  //             maxValue = cellValue;
+  //           }
+  //         });
+  //       }
+  //     }
+  //   }, 0);
+  // }
+  console.log("2️⃣😡", maxValue);
+  return maxValue;
+};
+
+const splitZone = async (zone) => {
+  let maxValue = 0;
+
+  const cellsSelected = sourceBaseCells.features.filter(
+    (cell) => cell.properties.cell_id == zone.zoneId
+  );
+
+  if (zone.value == 0) {
+    cellsSelected.forEach((cell) => {
+      cell.properties.value = 0;
+    });
+  } else {
+    if (mapStore.demandDirection == "from") {
+      const zoneTotal = 0.1 * zone.pop + zone.emp;
+      // if (zone.zoneId == 408) {
+      //   console.log("Zone total", zoneTotal);
+      // }
       cellsSelected.forEach((cell) => {
-        cell.properties.value = 0;
+        const cellTotal = 0.1 * cell.properties.pop + cell.properties.emp;
+        const cellValue = (zone.value * cellTotal) / zoneTotal;
+        cell.properties.value = cellValue;
+        if (cellValue > maxValue) {
+          maxValue = cellValue;
+        }
       });
     } else {
-      if (mapStore.demandDirection == "from") {
-        const zoneTotal = 0.1 * zone.pop + zone.emp;
-        // if (zone.zoneId == 408) {
-        //   console.log("Zone total", zoneTotal);
-        // }
-        cellsSelected.forEach((cell) => {
-          const cellTotal = 0.1 * cell.properties.pop + cell.properties.emp;
-          const cellValue = (zone.value * cellTotal) / zoneTotal;
-          cell.properties.value = cellValue;
-          if (cellValue > maxValue) {
-            maxValue = cellValue;
-          }
-        });
-      } else {
-        const zoneTotal = zone.pop + 0.1 * zone.emp;
-        // if (zone.zoneId == 408) {
-        //   console.log("Zone total", zoneTotal);
-        // }
-        cellsSelected.forEach((cell) => {
-          const cellTotal = cell.properties.pop + 0.1 * cell.properties.emp;
-          const cellValue = (zone.value * cellTotal) / zoneTotal;
-          cell.properties.value = cellValue;
-          if (cellValue > maxValue) {
-            maxValue = cellValue;
-          }
-        });
-      }
+      const zoneTotal = zone.pop + 0.1 * zone.emp;
+      // if (zone.zoneId == 408) {
+      //   console.log("Zone total", zoneTotal);
+      // }
+      cellsSelected.forEach((cell) => {
+        const cellTotal = cell.properties.pop + 0.1 * cell.properties.emp;
+        const cellValue = (zone.value * cellTotal) / zoneTotal;
+        cell.properties.value = cellValue;
+        if (cellValue > maxValue) {
+          maxValue = cellValue;
+        }
+      });
     }
-  });
+  }
 
+  return maxValue;
+};
+
+const calculateCellDemand = (max) => {
   sourceBaseCells.features.forEach((cell) => {
-    cell.properties.value = (100 * cell.properties.value) / (maxValue || 1);
+    cell.properties.value = (100 * cell.properties.value) / (max || 1);
   });
 };
 
@@ -2040,6 +2375,23 @@ const processCompassClicked = () => {
 const processRotateClicked = () => {
   console.log("Rotate");
   map.setPitch(60).setBearing(-30);
+};
+const toggleRuler = () => {
+  if (mapStore.measureActive) {
+    mapStore.measureActive = false;
+    mapStore.turnOffLayer(layersIdxs.measureLines);
+    mapStore.turnOffLayer(layersIdxs.measurePoints);
+    mapStore.turnOffLayer(layersIdxs.measureLabels);
+    map.getCanvas().style.cursor = "";
+    measureData.features = [];
+    measureLine.coordinates = [];
+    map.getSource("measure-source").setData(measureData);
+  } else {
+    mapStore.measureActive = true;
+    mapStore.turnOnLayer(layersIdxs.measureLines);
+    mapStore.turnOnLayer(layersIdxs.measurePoints);
+    mapStore.turnOnLayer(layersIdxs.measureLabels);
+  }
 };
 </script>
 

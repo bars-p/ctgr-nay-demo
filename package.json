@@ -12,6 +12,7 @@
     "@deck.gl/layers": "^8.9.13",
     "@deck.gl/mapbox": "^8.9.13",
     "@turf/boolean-point-in-polygon": "^6.5.0",
+    "@turf/length": "^6.5.0",
     "@turf/union": "^6.5.0",
     "axios": "^1.4.0",
     "lodash": "^4.17.21",

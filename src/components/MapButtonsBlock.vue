@@ -1,5 +1,11 @@
 <template>
   <div>
+    <map-button
+      icon-symbol="mdi-ruler-square"
+      @click="$emit('ruler')"
+      class="button-item mr-5"
+      :color="mapStore.measureActive ? 'primary' : ''"
+    ></map-button>
     <v-menu location="top" :close-on-content-click="false">
       <template v-slot:activator="{ props }">
         <map-button

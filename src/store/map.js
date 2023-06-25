@@ -40,6 +40,9 @@ export const useMapStore = defineStore("mapStore", () => {
     sitesSelected: 16,
     sitesAnalytics: 17,
     ladsTraces: 18,
+    measurePoints: 19,
+    measureLines: 20,
+    measureLabels: 21,
   };
   const layers = ref([
     { idx: 0, name: "admin-areas-border", shown: false },
@@ -61,6 +64,9 @@ export const useMapStore = defineStore("mapStore", () => {
     { idx: 16, name: "sites-selected", shown: false },
     { idx: 17, name: "sites-analytics", shown: false },
     { idx: 18, name: "lads-traces", shown: false },
+    { idx: 19, name: "measure-points", shown: false },
+    { idx: 20, name: "measure-lines", shown: false },
+    { idx: 21, name: "measure-labels", shown: false },
   ]);
 
   const turnOnLayer = (idx) => {
@@ -82,6 +88,8 @@ export const useMapStore = defineStore("mapStore", () => {
   const newLayerFilter = ref(null);
 
   const centerItem = ref(null);
+
+  const measureActive = ref(false);
 
   //
   // Social data
@@ -407,6 +415,7 @@ export const useMapStore = defineStore("mapStore", () => {
     turnOffLayer,
     updateLayers,
     centerItem,
+    measureActive,
     socialColor,
     socialBars,
     selectedCellsFeatures,
