@@ -337,10 +337,21 @@ const loadData = async () => {
     .catch((err) => console.log("ERROR load", err));
   console.log("Stops Loaded:", sourceStops.features.length);
 
+  // Enrich zones data with Access stats
   await axios
     .get("Almaty_zones_1000_1000_stats.json")
     .then((result) => (zonesStats = result.data))
     .catch((err) => console.log("ERROR load", err));
+  sourceAnalyticalZones.features.forEach((zone, i) => {
+    // console.log("Zone", zone);
+    if (zone.properties.id == zonesStats[i].zoneId) {
+      zone.properties.pop = +zonesStats[i].pop;
+      zone.properties.emp = +zonesStats[i].emp;
+    } else {
+      console.error("Failed merge Zones stats");
+      return;
+    }
+  });
 
   // Enrich cells data with Access stats
   await axios
@@ -1755,7 +1766,8 @@ const getDemandStatistics = () => {
         console.log("Zones Collected", zoneIds);
         mapStore.demandItemsSelectedIds = zoneIds;
         mapStore.demandDistrictParsed = true;
-        displayDemandZones();
+        displayDemandZones(getDemandZonesStatistics());
+
         mapStore.demandReady = true;
         mapStore.demandSplit = false;
         demandSplitDone = false;
@@ -1764,7 +1776,9 @@ const getDemandStatistics = () => {
       case "zone":
         clearAdminAreasSelected();
         clearSavedAreasSelected();
-        displayDemandZones();
+
+        displayDemandZones(getDemandZonesStatistics());
+
         mapStore.demandReady = true;
         mapStore.demandSplit = false;
         demandSplitDone = false;
@@ -1773,17 +1787,31 @@ const getDemandStatistics = () => {
       case "area":
         clearAdminAreasSelected();
         clearZonesSelected();
+
+        displayDemandZones(getDemandSavedCellsStatistics());
+
+        mapStore.demandReady = true;
+        mapStore.demandSplit = false;
+        demandSplitDone = false;
         break;
 
       default:
         console.warn("Not implemented level");
+        clearAdminAreasSelected();
+        clearSavedAreasSelected();
+        clearZonesSelected();
+
+        mapStore.demandReady = false;
+        mapStore.demandSplit = false;
+        demandSplitDone = false;
+
         break;
     }
   }
 };
-const displayDemandZones = () => {
+const displayDemandZones = (zonesData) => {
   //Calculate Demand statistics
-  const zonesData = getDemandZonesStatistics();
+  // const zonesData = getDemandZonesStatistics();
   // console.log("Data:", zonesData);
 
   // Reference level adjustment
@@ -1850,7 +1878,7 @@ const displayDemandZones = () => {
   map.setFilter(mapStore.layers[layersIdxs.zonesFill].name, null);
   updateLayerPaint(layerPaintData);
 
-  // TODO: Turn ON layer if it's OFF
+  // Turn ON layer if it's OFF
   mapStore.turnOnLayer(layersIdxs.zonesFill);
 };
 
@@ -1874,7 +1902,100 @@ const getDemandZonesStatistics = () => {
       }
     });
   }
-  // console.log("Result", result);
+  console.log("Result", result);
+  return result;
+};
+
+const getDemandSavedCellsStatistics = () => {
+  // console.log("AREAS", mapStore.demandItemsSelectedIds);
+
+  // Join Cells from all Areas selected
+  const cellIds = new Set();
+  for (const area of mapStore.demandItemsSelectedIds) {
+    // console.log(area);
+    const areaCells = mapStore.savedCellsData.filter(
+      (item) => item.properties.name == area
+    );
+    // console.log("Cells", areaCells);
+    for (const cell of areaCells) {
+      cellIds.add(cell.properties.id);
+    }
+  }
+  // console.log("Cell IDs", cellIds);
+  const cells = [];
+  for (const id of cellIds) {
+    const cell = sourceBaseCells.features.find(
+      (item) => item.properties.id == id
+    );
+    if (cell) {
+      cells.push(cell);
+    }
+  }
+  // console.log("Cells total:", cells);
+
+  // For Cell find Zones and get Zone's Demand
+  const zoneIds = new Set();
+  for (const cell of cells) {
+    zoneIds.add(cell.properties.cell_id);
+  }
+  // console.log("Zones", zoneIds);
+
+  let result = null;
+
+  for (const zoneId of zoneIds) {
+    // Find zone pop/emp
+    const zone = sourceAnalyticalZones.features.find(
+      (item) => item.properties.id == zoneId
+    );
+    // console.log("Zone found:", zone);
+    const zoneCells = cells.filter((cell) => cell.properties.cell_id == zoneId);
+
+    // Find cells pop/emp
+    let vector = null;
+    let zoneValue = 0;
+    let cellsValue = 0;
+
+    if (mapStore.demandDirection == "from") {
+      vector = mapStore.getDemandFrom(zoneId);
+      zoneValue = zone.properties.pop;
+      cellsValue = zoneCells.reduce(
+        (sum, cell) => sum + cell.properties.pop,
+        0
+      );
+    } else {
+      vector = mapStore.getDemandTo(zoneId);
+      zoneValue = zone.properties.emp;
+      cellsValue = zoneCells.reduce(
+        (sum, cell) => sum + cell.properties.emp,
+        0
+      );
+    }
+
+    // console.log("Zone Value", zoneValue);
+    // console.log("Cells Value", cellsValue);
+    // console.log("Vector", vector);
+
+    // Find ratio Cells/Zone
+    const ratio = cellsValue / zoneValue || 1;
+    // console.log("Ratio", ratio);
+
+    // TODO: Get Zone Demand and apply ratio
+    const values = vector.map((item) => item.value * ratio);
+    // console.log("Vector with Ratio Applied", values);
+
+    // TODO: Add values to result array
+    if (result == null) {
+      // Init result array
+      result = vector.map((item) => ({
+        ...item,
+        value: 0,
+      }));
+    }
+    for (let i = 0; i < result.length; i++) {
+      result[i].value = result[i].value + values[i];
+    }
+  }
+
   return result;
 };
 
@@ -2067,11 +2188,11 @@ const calculateSplitDemand = async () => {
 };
 
 const prepareDataAndGetMax = async () => {
-  const zonesData = sourceAnalyticalZones.features.map((item, i) => ({
+  const zonesData = sourceAnalyticalZones.features.map((item) => ({
     zoneId: item.properties.id,
     value: item.properties.value,
-    pop: +zonesStats[i].pop,
-    emp: +zonesStats[i].emp,
+    pop: item.properties.pop,
+    emp: item.properties.emp,
   }));
   // console.log("Zones:", zonesData);
 

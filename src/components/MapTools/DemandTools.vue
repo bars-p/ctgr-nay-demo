@@ -143,7 +143,6 @@
 import ToolsComponent from "../ToolsComponent.vue";
 import ApplyButton from "../elements/ApplyButton.vue";
 
-// import { ref } from "vue";
 import { onMounted } from "vue";
 
 import { useI18n } from "vue-i18n";
@@ -154,13 +153,9 @@ const mapStore = useMapStore();
 
 const props = defineProps(["title"]);
 
-// const demandDirection = ref("from");
-// const selectMode = ref("one");
-
 onMounted(async () => {
   console.log("🫣 Demand Mounted");
   await mapStore.loadDemandConnectData();
-  // mapStore.turnOnLayer(mapStore.layersIdxs.zoneSelect);
 });
 
 const selectItemsLevel = [
@@ -212,54 +207,36 @@ const processLevelSelect = (val) => {
       mapStore.turnOnLayer(mapStore.layersIdxs.adminAreasSelected);
       mapStore.turnOffLayer(mapStore.layersIdxs.zonesSelected);
       mapStore.turnOffLayer(mapStore.layersIdxs.savedAreasSelected);
+      mapStore.turnOffLayer(mapStore.layersIdxs.cellsSaved);
       break;
 
     case "zone":
-      if (!mapStore.layers[mapStore.layersIdxs.zoneSelect].shown) {
-        mapStore.layers[mapStore.layersIdxs.zoneSelect].shown = true;
-      }
-      if (!mapStore.layers[mapStore.layersIdxs.zonesBorder].shown) {
-        mapStore.layers[mapStore.layersIdxs.zonesBorder].shown = true;
-      }
-      if (!mapStore.layers[mapStore.layersIdxs.zonesSelected].shown) {
-        mapStore.layers[mapStore.layersIdxs.zonesSelected].shown = true;
-      }
-      if (mapStore.layers[mapStore.layersIdxs.adminAreasSelected].shown) {
-        mapStore.layers[mapStore.layersIdxs.adminAreasSelected].shown = false;
-      }
-      if (mapStore.layers[mapStore.layersIdxs.savedAreasSelected].shown) {
-        mapStore.layers[mapStore.layersIdxs.savedAreasSelected].shown = false;
-      }
+      mapStore.turnOnLayer(mapStore.layersIdxs.zoneSelect);
+      mapStore.turnOnLayer(mapStore.layersIdxs.zonesBorder);
+      mapStore.turnOnLayer(mapStore.layersIdxs.zonesSelected);
+
+      mapStore.turnOffLayer(mapStore.layersIdxs.adminAreasSelected);
+      mapStore.turnOffLayer(mapStore.layersIdxs.savedAreasSelected);
+      mapStore.turnOffLayer(mapStore.layersIdxs.cellsSaved);
+
       break;
 
     case "area":
-      if (!mapStore.layers[mapStore.layersIdxs.cellsSaved].shown) {
-        mapStore.layers[mapStore.layersIdxs.cellsSaved].shown = true;
-      }
-      if (!mapStore.layers[mapStore.layersIdxs.savedAreasSelected].shown) {
-        mapStore.layers[mapStore.layersIdxs.savedAreasSelected].shown = true;
-      }
-      if (mapStore.layers[mapStore.layersIdxs.zonesSelected].shown) {
-        mapStore.layers[mapStore.layersIdxs.zonesSelected].shown = false;
-      }
-      if (mapStore.layers[mapStore.layersIdxs.adminAreasSelected].shown) {
-        mapStore.layers[mapStore.layersIdxs.adminAreasSelected].shown = false;
-      }
+      mapStore.turnOnLayer(mapStore.layersIdxs.cellsSaved);
+      mapStore.turnOnLayer(mapStore.layersIdxs.savedAreasSelected);
+
+      mapStore.turnOffLayer(mapStore.layersIdxs.zonesSelected);
+      mapStore.turnOffLayer(mapStore.layersIdxs.adminAreasSelected);
+
       break;
 
     default:
-      if (mapStore.layers[mapStore.layersIdxs.adminAreasSelected].shown) {
-        mapStore.layers[mapStore.layersIdxs.adminAreasSelected].shown = false;
-      }
-      if (mapStore.layers[mapStore.layersIdxs.zonesSelected].shown) {
-        mapStore.layers[mapStore.layersIdxs.zonesSelected].shown = false;
-      }
-      if (mapStore.layers[mapStore.layersIdxs.zonesFill].shown) {
-        mapStore.layers[mapStore.layersIdxs.zonesFill].shown = false;
-      }
-      if (mapStore.layers[mapStore.layersIdxs.cellsFill].shown) {
-        mapStore.layers[mapStore.layersIdxs.cellsFill].shown = false;
-      }
+      mapStore.turnOffLayer(mapStore.layersIdxs.adminAreasSelected);
+      mapStore.turnOffLayer(mapStore.layersIdxs.zonesSelected);
+      mapStore.turnOffLayer(mapStore.layersIdxs.zonesFill);
+      // mapStore.turnOffLayer(mapStore.layersIdxs.cellsFill);
+      mapStore.turnOffLayer(mapStore.layersIdxs.cellsSaved);
+
       clearSelection();
       break;
   }

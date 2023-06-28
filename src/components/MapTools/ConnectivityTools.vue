@@ -52,6 +52,7 @@
             variant="outlined"
             density="comfortable"
             mandatory
+            :disabled="mapStore.connectivityType == 'general'"
           >
             <v-tooltip :text="$t('general.one')" location="bottom">
               <template v-slot:activator="{ props }">
@@ -74,7 +75,10 @@
             </v-tooltip>
           </v-btn-toggle>
           <apply-button
-            v-if="mapStore.connectivitySelectMode == 'many'"
+            v-if="
+              mapStore.connectivitySelectMode == 'many' &&
+              mapStore.connectivityType != 'general'
+            "
             density="comfortable"
             @click="mapStore.connectivityProcessItems"
           ></apply-button>
@@ -111,7 +115,9 @@
 
     <v-container
       v-if="
-        mapStore.connectivityType == 'speed' && mapStore.connectivityProcessed
+        (mapStore.connectivityType == 'speed' &&
+          mapStore.connectivityProcessed) ||
+        mapStore.connectivityType == 'general'
       "
     >
       <v-row no-gutters>
@@ -189,6 +195,10 @@ const connectivityTypes = [
     title: t("tools.connectivityRoute"),
     value: "change",
   },
+  {
+    title: t("tools.connectivityGeneral"),
+    value: "general",
+  },
 ];
 
 const levelsConnect = [
@@ -251,8 +261,11 @@ const processTypeChange = (val) => {
     case "speed":
       console.log("Speed statistics");
       mapStore.turnOnLayer(mapStore.layersIdxs.zonesSelected);
-      // TODO: Process Speed Stats for Zones selected
+      mapStore.turnOnLayer(mapStore.layersIdxs.zoneSelect);
       mapStore.connectivityProcessItems();
+
+      mapStore.connectivityBelow = 5;
+      mapStore.connectivityDemandAbove = 1;
 
       break;
 
@@ -264,8 +277,17 @@ const processTypeChange = (val) => {
         filterProps: null,
       };
       mapStore.turnOnLayer(mapStore.layersIdxs.zonesSelected);
-      // TODO: Process Route Stats for Zones selected
+      mapStore.turnOnLayer(mapStore.layersIdxs.zoneSelect);
       mapStore.connectivityProcessItems();
+
+      break;
+
+    case "general":
+      mapStore.turnOffLayer(mapStore.layersIdxs.zonesSelected);
+      mapStore.turnOffLayer(mapStore.layersIdxs.zoneSelect);
+
+      mapStore.connectivityBelow = 0;
+      mapStore.connectivityDemandAbove = 6;
 
       break;
 
@@ -287,19 +309,27 @@ const applyDemandFilter = () => {
     mapStore.connectivityBelow,
     mapStore.connectivityDemandAbove
   );
-  const filterData = {
-    layerIdx: mapStore.layersIdxs.zonesFill,
-    filterProps: [
-      "all",
-      ["<=", ["get", "value"], mapStore.connectivityBelow],
-      [">=", ["get", "dm"], mapStore.connectivityDemandAbove],
-    ],
+  if (mapStore.connectivityType == "speed") {
+    const filterData = {
+      layerIdx: mapStore.layersIdxs.zonesFill,
+      filterProps: [
+        "all",
+        ["<=", ["get", "value"], mapStore.connectivityBelow],
+        [">=", ["get", "dm"], mapStore.connectivityDemandAbove],
+      ],
 
-    // filterProps: ["<=", ["get", "value"], mapStore.connectivityBelow],
-    // filterProps: [">=", ["get", "dm"], mapStore.connectivityDemandAbove],
-  };
+      // filterProps: ["<=", ["get", "value"], mapStore.connectivityBelow],
+      // filterProps: [">=", ["get", "dm"], mapStore.connectivityDemandAbove],
+    };
 
-  mapStore.newLayerFilter = filterData;
+    mapStore.newLayerFilter = filterData;
+  } else if (mapStore.connectivityType == "general") {
+    console.log("Connectivity General Map");
+
+    // TODO: Get all Zone pairs within the Range
+
+    // TODO: Draw Zones Arrows/Arcs/Lines
+  }
 };
 
 const clearSelection = () => {

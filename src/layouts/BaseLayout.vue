@@ -120,6 +120,8 @@ const restoreMain = () => {
   mapStore.clearSavedCellsData();
 
   mapStore.demandResetData();
+  mapStore.connectivityResetData();
+  mapStore.accessabilityResetData();
 };
 </script>
 

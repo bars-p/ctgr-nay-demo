@@ -29,7 +29,9 @@
       :no-data-text="$t('general.noData')"
       :items="mapStore.mapStyles"
     ></v-select>
-    <p class="text-caption text-right mr-3 mb-1 text-grey">v. 0.0.1a</p>
+    <p class="text-caption text-right mr-3 mb-1 text-grey">
+      v. {{ mapStore.version }}
+    </p>
   </v-sheet>
 </template>
 

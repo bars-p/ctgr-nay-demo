@@ -6,6 +6,8 @@ import { ref, computed } from "vue";
 export const useMapStore = defineStore("mapStore", () => {
   const userSettingsShown = ref(false);
 
+  const version = "0.0.1b";
+
   const mapStyles = [
     { value: 0, title: "Streets", uri: "mapbox://styles/mapbox/streets-v12" },
     {
@@ -367,6 +369,7 @@ export const useMapStore = defineStore("mapStore", () => {
     connectivityIdsFromType.value = null;
     connectivityItemsForProcessing.value = [];
     connectivityProcessed.value = false;
+    connectivityType.value = null;
   };
 
   const getConnectivityFrom = (id) => {
@@ -401,9 +404,14 @@ export const useMapStore = defineStore("mapStore", () => {
   const populationAbove = ref(0);
   const accessabilityBelow = ref(6);
   // const accessGapColor = ref("#ff0000");
+  const accessabilityResetData = () => {
+    populationAbove.value = 0;
+    accessabilityBelow.value = 6;
+  };
 
   return {
     userSettingsShown,
+    version,
     mapStyles,
     activeMapStyle,
     isLayersSet,
@@ -486,6 +494,6 @@ export const useMapStore = defineStore("mapStore", () => {
     connectivityBelow,
     populationAbove,
     accessabilityBelow,
-    // accessGapColor,
+    accessabilityResetData,
   };
 });
