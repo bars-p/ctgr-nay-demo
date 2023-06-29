@@ -32,6 +32,7 @@
             density="comfortable"
             mandatory
             @update:model-value="processDirectionChange"
+            :disabled="mapStore.connectivityType == 'general'"
           >
             <v-tooltip :text="$t('general.from')" location="bottom">
               <template v-slot:activator="{ props }">
@@ -317,18 +318,25 @@ const applyDemandFilter = () => {
         ["<=", ["get", "value"], mapStore.connectivityBelow],
         [">=", ["get", "dm"], mapStore.connectivityDemandAbove],
       ],
-
-      // filterProps: ["<=", ["get", "value"], mapStore.connectivityBelow],
-      // filterProps: [">=", ["get", "dm"], mapStore.connectivityDemandAbove],
     };
-
     mapStore.newLayerFilter = filterData;
   } else if (mapStore.connectivityType == "general") {
     console.log("Connectivity General Map");
 
-    // TODO: Get all Zone pairs within the Range
+    // Get all Zone pairs within the Range
+    const connectivityMap = mapStore.getConnectivityMap();
+    console.log("Connectivity Map:", connectivityMap.length, connectivityMap);
+    const connectivityMapDiffer = connectivityMap.filter(
+      (item) => item.fromId != item.toId
+    );
+    console.log(
+      "Connectivity Map Differ:",
+      connectivityMapDiffer.length,
+      connectivityMapDiffer
+    );
 
     // TODO: Draw Zones Arrows/Arcs/Lines
+    mapStore.connectivityMapData = connectivityMapDiffer;
   }
 };
 
@@ -341,6 +349,12 @@ const clearSelection = () => {
   };
   mapStore.connectivityItemsSelectedIds.clear();
   mapStore.connectivityProcessItems();
+
+  clearArcs();
   // mapStore.connectivityProcessed = false;
+};
+
+const clearArcs = () => {
+  mapStore.connectivityMapData = [];
 };
 </script>

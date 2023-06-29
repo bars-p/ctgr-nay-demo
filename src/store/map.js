@@ -6,7 +6,7 @@ import { ref, computed } from "vue";
 export const useMapStore = defineStore("mapStore", () => {
   const userSettingsShown = ref(false);
 
-  const version = "0.0.1b";
+  const version = "0.0.2a";
 
   const mapStyles = [
     { value: 0, title: "Streets", uri: "mapbox://styles/mapbox/streets-v12" },
@@ -92,6 +92,15 @@ export const useMapStore = defineStore("mapStore", () => {
   const centerItem = ref(null);
 
   const measureActive = ref(false);
+
+  const colorLevels = [
+    [192, 0, 0],
+    [166, 107, 211],
+    [128, 96, 0],
+    [55, 86, 35],
+    [0, 176, 80],
+    [47, 117, 181],
+  ];
 
   //
   // Social data
@@ -398,6 +407,17 @@ export const useMapStore = defineStore("mapStore", () => {
 
   const connectivityDemandAbove = ref(1);
   const connectivityBelow = ref(5);
+
+  const getConnectivityMap = () => {
+    return demandConnectData.filter(
+      (item) =>
+        item.dm >= connectivityDemandAbove.value &&
+        item.sp <= connectivityBelow.value
+    );
+  };
+
+  const connectivityMapData = ref(null);
+
   //
   // Accessability Data
   //
@@ -417,6 +437,7 @@ export const useMapStore = defineStore("mapStore", () => {
     isLayersSet,
     layersIdxs,
     layers,
+    colorLevels,
     newLayerPaint,
     newLayerFilter,
     turnOnLayer,
@@ -492,6 +513,8 @@ export const useMapStore = defineStore("mapStore", () => {
     connectivityProcessed,
     connectivityDemandAbove,
     connectivityBelow,
+    getConnectivityMap,
+    connectivityMapData,
     populationAbove,
     accessabilityBelow,
     accessabilityResetData,

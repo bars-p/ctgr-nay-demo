@@ -4,6 +4,7 @@
 
 - VueJS 3
 - Pinia
+- i18n
 - vue-router
 - Vuetify 3
 - MapboxGL

@@ -16,6 +16,10 @@ import { onMounted, watch } from "vue";
 import { useI18n } from "vue-i18n";
 
 import mapboxgl from "mapbox-gl";
+
+import { MapboxLayer } from "@deck.gl/mapbox";
+import { ArcLayer } from "@deck.gl/layers";
+
 import axios from "axios";
 
 import union from "@turf/union";
@@ -69,9 +73,6 @@ watch(
       mapStore.turnOnLayer(layersIdxs.zonesSelected);
     }
     if (to == "sites") {
-      // TODO: Display SitesFill Layer
-      // FIXME:
-      console.log("Sites selected");
       mapStore.turnOnLayer(layersIdxs.sitesFill);
       mapStore.turnOnLayer(layersIdxs.sitesCentroids);
       mapStore.turnOnLayer(layersIdxs.sitesSelected);
@@ -115,21 +116,18 @@ watch(
 watch(
   () => mapStore.newLayerPaint,
   () => {
-    console.log("New paint:", mapStore.newLayerPaint);
     updateLayerPaint(mapStore.newLayerPaint);
   }
 );
 watch(
   () => mapStore.newLayerFilter,
   () => {
-    console.log("New Filter:", mapStore.newLayerFilter);
     updateLayerFilter(mapStore.newLayerFilter);
   }
 );
 watch(
   () => mapStore.clearLayerFilter,
   () => {
-    console.log("Clear Filter:", mapStore.newLayerFilter);
     map.setFilter(mapStore.layers[mapStore.clearLayerFilter].name, null);
   }
 );
@@ -139,7 +137,6 @@ watch(
   () => {
     switch (mapStore.centerItem.type) {
       case "site":
-        console.log("Watch - Site center");
         centerToSite();
         break;
 
@@ -203,6 +200,13 @@ watch(
   () => mapStore.connectivityItemsForProcessing,
   () => {
     getConnectivityStatistics();
+  }
+);
+watch(
+  () => mapStore.connectivityMapData,
+  () => {
+    console.log("Connect Map Watcher");
+    drawConnectivityMap();
   }
 );
 
@@ -402,6 +406,8 @@ const layersIdxs = mapStore.layersIdxs;
 const selectedCellsIds = new Set();
 // const selectedCellsFeatures = ref([]);
 
+let connectArcs = null;
+
 let map = {};
 
 let localLayersState = [];
@@ -533,6 +539,17 @@ const buildLayers = () => {
     map.addSource("measure-source", {
       type: "geojson",
       data: measureData,
+    });
+
+    connectArcs = new MapboxLayer({
+      id: "connect-arcs",
+      type: ArcLayer,
+      data: [],
+      getSourcePosition: (d) => d.fromCoord,
+      getTargetPosition: (d) => d.toCoord,
+      getSourceColor: [160, 160, 160],
+      getTargetColor: (d) => mapStore.colorLevels[d.sp],
+      getWidth: (d) => d.dm * 2,
     });
 
     map.addLayer(
@@ -935,6 +952,8 @@ const buildLayers = () => {
         "text-justify": "auto",
       },
     });
+
+    map.addLayer(connectArcs);
 
     map.on("style.load", () => {
       console.warn("MAP STYLE CHANGED!");
@@ -2448,7 +2467,7 @@ const getConnectivityZonesStatistics = () => {
   console.log("Size:", vectors.length);
   const result = vectors[0];
   if (vectors.length > 1 && mapStore.connectivityType == "speed") {
-    // TODO: Aggregate data and normalize if Speed type
+    // Aggregate data and normalize if Speed type
     result.forEach((item, i) => {
       let sp_total = 0;
       let dm_total = 0;
@@ -2461,6 +2480,55 @@ const getConnectivityZonesStatistics = () => {
   }
   console.log("🚜🚜 Connectivity Result", result);
   return result;
+};
+
+const drawConnectivityMap = () => {
+  // TODO: Build from-to coordinates for data provided
+  const data = mapStore.connectivityMapData.map((item) => {
+    const fromZone = sourceAnalyticalZones.features.find(
+      (zone) => zone.properties.id == item.fromId
+    );
+    const toZone = sourceAnalyticalZones.features.find(
+      (zone) => zone.properties.id == item.toId
+    );
+
+    const fromCoord = [
+      (fromZone.geometry.coordinates[0][0][0][0] +
+        fromZone.geometry.coordinates[0][0][1][0]) /
+        2,
+      (fromZone.geometry.coordinates[0][0][0][1] +
+        fromZone.geometry.coordinates[0][0][2][1]) /
+        2,
+    ];
+    const toCoord = [
+      (toZone.geometry.coordinates[0][0][0][0] +
+        toZone.geometry.coordinates[0][0][1][0]) /
+        2,
+      (toZone.geometry.coordinates[0][0][0][1] +
+        toZone.geometry.coordinates[0][0][2][1]) /
+        2,
+    ];
+
+    const arcData = {
+      fromCoord: fromCoord,
+      toCoord: toCoord,
+      dm: item.dm,
+      sp: item.sp,
+    };
+    return arcData;
+  });
+
+  console.log("Data to Draw Arcs", data);
+
+  // [
+  //   {
+  //     fromCoord: [76.76149956, 43.32946354],
+  //     toCoord: [76.76149956, 43.23981294],
+  //   },
+  // ];
+
+  // TODO: Set Arcs data
+  connectArcs.setProps({ data: data });
 };
 
 //
