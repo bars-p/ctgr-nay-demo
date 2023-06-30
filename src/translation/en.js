@@ -186,6 +186,7 @@ export default {
     connectivityGaps: "Demand level filter",
     connectivityDemand: "Demand above",
     connectivityBelow: "Connectivity below",
+    connectivityConnections: "Connections",
 
     //Accessability
     accessToolsTitle: "Walking Accessability",

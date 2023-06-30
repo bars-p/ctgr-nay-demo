@@ -549,7 +549,7 @@ const buildLayers = () => {
       getTargetPosition: (d) => d.toCoord,
       getSourceColor: [160, 160, 160],
       getTargetColor: (d) => mapStore.colorLevels[d.sp],
-      getWidth: (d) => d.dm * 2,
+      getWidth: (d) => Math.pow(d.dm, 2),
     });
 
     map.addLayer(
@@ -2483,7 +2483,7 @@ const getConnectivityZonesStatistics = () => {
 };
 
 const drawConnectivityMap = () => {
-  // TODO: Build from-to coordinates for data provided
+  // Build from-to coordinates for data provided
   const data = mapStore.connectivityMapData.map((item) => {
     const fromZone = sourceAnalyticalZones.features.find(
       (zone) => zone.properties.id == item.fromId
@@ -2520,14 +2520,6 @@ const drawConnectivityMap = () => {
 
   console.log("Data to Draw Arcs", data);
 
-  // [
-  //   {
-  //     fromCoord: [76.76149956, 43.32946354],
-  //     toCoord: [76.76149956, 43.23981294],
-  //   },
-  // ];
-
-  // TODO: Set Arcs data
   connectArcs.setProps({ data: data });
 };
 
