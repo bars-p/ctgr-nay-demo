@@ -19,7 +19,10 @@
             </v-label>
           </v-col>
           <v-col>
-            <v-label class="text-subtitle-2">
+            <v-label
+              class="text-subtitle-2"
+              v-if="mapStore.connectivityType != 'general'"
+            >
               {{ t("general.mode") }}
             </v-label>
           </v-col>
@@ -27,14 +30,44 @@
         <v-row dense>
           <v-col>
             <v-btn-toggle
+              v-if="mapStore.connectivityType != 'general'"
+              :disabled="mapStore.connectivityType == null"
               v-model="mapStore.connectivityDirection"
               divided
               variant="outlined"
               density="comfortable"
               mandatory
               @update:model-value="processDirectionChange"
-              :disabled="mapStore.connectivityType == 'general'"
             >
+              <v-tooltip :text="$t('general.from')" location="bottom">
+                <template v-slot:activator="{ props }">
+                  <v-btn v-bind="props" icon="mdi-upload" value="from"></v-btn>
+                </template>
+              </v-tooltip>
+              <v-tooltip :text="$t('general.to')" location="bottom">
+                <template v-slot:activator="{ props }">
+                  <v-btn v-bind="props" icon="mdi-download" value="to"></v-btn>
+                </template>
+              </v-tooltip>
+            </v-btn-toggle>
+            <v-btn-toggle
+              v-else
+              :disabled="mapStore.connectivityType == null"
+              v-model="mapStore.connectivityGeneralDirection"
+              divided
+              variant="outlined"
+              density="comfortable"
+              mandatory
+            >
+              <v-tooltip :text="$t('general.between')" location="bottom">
+                <template v-slot:activator="{ props }">
+                  <v-btn
+                    v-bind="props"
+                    icon="mdi-arrow-left-right-bold"
+                    value="between"
+                  ></v-btn>
+                </template>
+              </v-tooltip>
               <v-tooltip :text="$t('general.from')" location="bottom">
                 <template v-slot:activator="{ props }">
                   <v-btn v-bind="props" icon="mdi-upload" value="from"></v-btn>
@@ -49,12 +82,13 @@
           </v-col>
           <v-col>
             <v-btn-toggle
+              v-if="mapStore.connectivityType != 'general'"
+              :disabled="mapStore.connectivityType == null"
               v-model="mapStore.connectivitySelectMode"
               divided
               variant="outlined"
               density="comfortable"
               mandatory
-              :disabled="mapStore.connectivityType == 'general'"
             >
               <v-tooltip :text="$t('general.one')" location="bottom">
                 <template v-slot:activator="{ props }">
@@ -122,7 +156,7 @@
           mapStore.connectivityType == 'general'
         "
       >
-        <v-row no-gutters>
+        <v-row no-gutters class="mb-3">
           <v-col cols="8">
             <v-label class="text-subtitle-2">
               {{ t("tools.connectivityGaps") }}:
@@ -133,23 +167,36 @@
             <apply-button @click="applyDemandFilter"></apply-button>
           </v-col>
         </v-row>
-        <v-row no-gutters class="mt-3">
-          <v-col cols="9" align-self="end">
-            <v-label>{{ t("tools.connectivityDemand") }}</v-label>
-          </v-col>
-          <v-col cols="3" align-self="end">
-            <v-select
-              v-model="mapStore.connectivityDemandAbove"
-              :label="$t('general.level')"
-              density="compact"
-              variant="underlined"
-              hide-details
-              mandatory
-              :items="levelsDemand"
-            ></v-select>
-          </v-col>
-        </v-row>
-        <v-row no-gutters class="mt-3">
+        <div v-if="mapStore.connectivityType == 'general'">
+          <v-row no-gutters class="mt-5">
+            <v-col cols="10">
+              <v-label
+                >{{ t("tools.connectivityZones") }}:
+                <span class="pl-5">
+                  <strong>
+                    {{ mapStore.connectivityItemsSelectedIds.size }}
+                  </strong>
+                </span>
+              </v-label>
+            </v-col>
+            <v-col cols="2">
+              <cancel-button
+                v-if="mapStore.connectivityItemsSelectedIds.size > 0"
+                @click="clearZonesSelected"
+              ></cancel-button>
+            </v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col>
+              <v-switch
+                v-model="mapStore.connectivityUseSpeedValues"
+                :label="$t('tools.connectivityUseSpeed')"
+                hide-details
+              ></v-switch>
+            </v-col>
+          </v-row>
+        </div>
+        <v-row no-gutters v-if="!mapStore.connectivityUseSpeedValues">
           <v-col cols="9" align-self="end">
             <v-label>{{ t("tools.connectivityBelow") }}</v-label>
           </v-col>
@@ -162,6 +209,38 @@
               hide-details
               mandatory
               :items="levelsConnect"
+            ></v-select>
+          </v-col>
+        </v-row>
+        <v-row no-gutters v-else>
+          <v-col cols="9" align-self="end">
+            <v-label>{{ t("tools.connectivitySpeedBelow") }}</v-label>
+          </v-col>
+          <v-col cols="3" align-self="end">
+            <v-text-field
+              v-model="mapStore.connectivitySpeedBelow"
+              :label="$t('general.kmh')"
+              variant="underlined"
+              density="compact"
+              hide-details
+              type="number"
+            >
+            </v-text-field>
+          </v-col>
+        </v-row>
+        <v-row no-gutters class="mt-3 mb-3">
+          <v-col cols="9" align-self="end">
+            <v-label>{{ t("tools.connectivityDemand") }}</v-label>
+          </v-col>
+          <v-col cols="3" align-self="end">
+            <v-select
+              v-model="mapStore.connectivityDemandAbove"
+              :label="$t('general.level')"
+              density="compact"
+              variant="underlined"
+              hide-details
+              mandatory
+              :items="levelsDemand"
             ></v-select>
           </v-col>
         </v-row>
@@ -179,6 +258,116 @@
         <search-bar v-model="searchConnectionsString"></search-bar>
         <close-button @close="clearArcs"></close-button>
       </template>
+      <template #tools>
+        <div class="mt-0">
+          <v-text-field
+            v-model="sitesGroupName"
+            clearable
+            :label="$t('tools.sitesGroupName')"
+            variant="outlined"
+            density="compact"
+            hide-details
+          >
+            <template v-slot:append-inner>
+              <v-icon v-if="readyToSave" @click="saveSitesGroup"
+                >mdi-content-save</v-icon
+              >
+            </template>
+          </v-text-field>
+          <v-row class="mt-2">
+            <v-col>
+              <v-label class="mb-1 text-subtitle-2">
+                {{ $t("general.displayOptions") }}:
+              </v-label>
+              <apply-button @click="applyAnalyticsDisplay"></apply-button>
+            </v-col>
+          </v-row>
+
+          <v-row no-gutters class="mb-3">
+            <v-col cols="9">
+              <v-select
+                v-model="mapStore.siteColorMode"
+                clearable
+                density="compact"
+                variant="underlined"
+                :label="$t('tools.sitesColor')"
+                hide-details
+                class="mr-3 mt-1"
+                :no-data-text="$t('general.noData')"
+                :items="siteDisplayOptions"
+              ></v-select>
+            </v-col>
+            <v-col cols="3" align-self="end">
+              <config-button></config-button>
+            </v-col>
+          </v-row>
+          <v-row no-gutters class="mb-3">
+            <v-col cols="9">
+              <v-select
+                v-model="mapStore.siteSizeMode"
+                clearable
+                density="compact"
+                variant="underlined"
+                :label="$t('tools.sitesSize')"
+                hide-details
+                class="mr-3 mt-1"
+                :no-data-text="$t('general.noData')"
+                :items="siteDisplayOptions"
+              ></v-select>
+            </v-col>
+            <v-col cols="3" align-self="end">
+              <v-text-field
+                v-model="mapStore.siteSizeStep"
+                density="compact"
+                hide-details
+                variant="underlined"
+                :label="$t('general.step')"
+                type="number"
+              ></v-text-field>
+            </v-col>
+          </v-row>
+        </div>
+      </template>
+      <v-container class="data-connections-group">
+        <v-label class="mb-0 text-subtitle-2">
+          {{ $t("tools.connectivityConnections") }} ({{
+            $t("tools.connectivityDetails")
+          }}):
+        </v-label>
+
+        <v-list density="compact">
+          <v-list-item
+            v-for="conn in mapStore.connectivityMapData"
+            :key="conn.id"
+            @click="selectConnectionInGroup(conn)"
+          >
+            <v-list-item-title class="text-body-2">
+              {{ conn.fromId }} -> {{ conn.toId }} ({{
+                conn.kmh.toFixed(2)
+              }}
+              kmh, {{ conn.sp + 1 }}, {{ conn.dm }})
+            </v-list-item-title>
+            <template #append>
+              <!-- <v-btn
+                density="comfortable"
+                size="small"
+                flat
+                :icon="conn.shown ? 'mdi-eye-outline' : 'mdi-eye-off-outline'"
+                @click.stop="conn.shown = !conn.shown"
+              >
+              </v-btn> -->
+              <v-btn
+                density="comfortable"
+                size="small"
+                flat
+                icon="mdi-trash-can-outline"
+                @click.stop="deleteConnectionFromGroup(conn.id)"
+              >
+              </v-btn>
+            </template>
+          </v-list-item>
+        </v-list>
+      </v-container>
     </tools-component>
   </div>
 </template>
@@ -186,6 +375,7 @@
 <script setup>
 import ToolsComponent from "../ToolsComponent.vue";
 import ApplyButton from "../elements/ApplyButton.vue";
+import CancelButton from "../elements/CancelButton.vue";
 import CloseButton from "../elements/CloseButton.vue";
 import SearchBar from "../elements/SearchBar.vue";
 
@@ -274,7 +464,6 @@ const levelsDemand = [
 
 const processTypeChange = (val) => {
   console.log("Selected Type", mapStore.connectivityType);
-  console.log("Value", val);
   switch (val) {
     case "speed":
       console.log("Speed statistics");
@@ -282,8 +471,8 @@ const processTypeChange = (val) => {
       mapStore.turnOnLayer(mapStore.layersIdxs.zoneSelect);
       mapStore.connectivityProcessItems();
 
-      mapStore.connectivityBelow = 5;
-      mapStore.connectivityDemandAbove = 1;
+      // mapStore.connectivityBelow = 5;
+      // mapStore.connectivityDemandAbove = 1;
 
       break;
 
@@ -301,16 +490,19 @@ const processTypeChange = (val) => {
       break;
 
     case "general":
-      mapStore.turnOffLayer(mapStore.layersIdxs.zonesSelected);
-      mapStore.turnOffLayer(mapStore.layersIdxs.zoneSelect);
-
-      mapStore.connectivityBelow = 0;
-      mapStore.connectivityDemandAbove = 6;
+      mapStore.turnOnLayer(mapStore.layersIdxs.zonesSelected);
+      mapStore.turnOnLayer(mapStore.layersIdxs.zoneSelect);
 
       break;
 
     default:
       mapStore.turnOffLayer(mapStore.layersIdxs.zonesSelected);
+      mapStore.connectivitySelectMode = "one";
+      mapStore.connectivityBelow = 0;
+      mapStore.connectivityDemandAbove = 6;
+      mapStore.connectivitySpeedBelow = 0;
+      mapStore.connectivityUseSpeedValues = false;
+
       clearSelection();
       break;
   }
@@ -346,6 +538,12 @@ const applyDemandFilter = () => {
     const connectivityMapDiffer = connectivityMap.filter(
       (item) => item.fromId != item.toId
     );
+
+    connectivityMapDiffer.forEach((item) => {
+      item.id = item.fromId * 1000 + item.toId;
+      item.shown = true;
+    });
+
     console.log(
       "Connectivity Map Differ:",
       connectivityMapDiffer.length,
@@ -355,6 +553,11 @@ const applyDemandFilter = () => {
     // TODO: Draw Zones Arrows/Arcs/Lines
     mapStore.connectivityMapData = connectivityMapDiffer;
   }
+};
+
+const clearZonesSelected = () => {
+  mapStore.connectivityItemsSelectedIds.clear();
+  mapStore.connectivityProcessItems();
 };
 
 const clearSelection = () => {
@@ -376,6 +579,34 @@ const clearArcs = () => {
 };
 
 const searchConnectionsString = ref("");
+
+const selectConnectionInGroup = (connection) => {
+  console.log("Select Connection:", connection);
+  toggleZone(connection.fromId);
+  toggleZone(connection.toId);
+  // mapStore.connectivityProcessItems();
+
+  const filterData = {
+    layerIdx: mapStore.layersIdxs.zonesSelected,
+    filterProps: ["in", "id", ...[...mapStore.connectivityItemsSelectedIds]],
+  };
+
+  mapStore.newLayerFilter = filterData;
+};
+
+const deleteConnectionFromGroup = (id) => {
+  console.log("Delete Connection:", id);
+
+  mapStore.connectivityMapData = mapStore.connectivityMapData.filter(
+    (item) => item.id != id
+  );
+};
+
+const toggleZone = (id) => {
+  mapStore.connectivityItemsSelectedIds.has(id)
+    ? mapStore.connectivityItemsSelectedIds.delete(id)
+    : mapStore.connectivityItemsSelectedIds.add(id);
+};
 </script>
 
 <style scoped>
@@ -383,5 +614,9 @@ const searchConnectionsString = ref("");
   position: absolute;
   top: calc(64px + 20px);
   left: calc(100dvw - 340px);
+}
+.data-connections-group {
+  overflow: auto;
+  max-height: calc(100vh - 540px);
 }
 </style>

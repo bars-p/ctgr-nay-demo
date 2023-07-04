@@ -550,6 +550,7 @@ const buildLayers = () => {
       getSourceColor: [160, 160, 160],
       getTargetColor: (d) => mapStore.colorLevels[d.sp],
       getWidth: (d) => Math.pow(d.dm, 2),
+      getCursor: () => "pointer",
     });
 
     map.addLayer(
@@ -954,6 +955,7 @@ const buildLayers = () => {
     });
 
     map.addLayer(connectArcs);
+    map.__deck.props.getCursor = () => map.getCanvas().style.cursor;
 
     map.on("style.load", () => {
       console.warn("MAP STYLE CHANGED!");
@@ -2329,24 +2331,34 @@ const calculateCellDemand = (max) => {
 //
 const processConnectivityFeatureSelect = (id) => {
   console.log("Select Item Connectivity", id, mapStore.connectivityType);
-  if (mapStore.connectivitySelectMode == "one") {
-    mapStore.connectivityItemsSelectedIds.clear();
-    mapStore.connectivityItemsSelectedIds.add(id);
-    mapStore.connectivityIdsFromType = mapStore.connectivityType;
-  } else if (mapStore.connectivitySelectMode == "many") {
-    if (mapStore.connectivityIdsFromType != mapStore.connectivityType) {
+  if (mapStore.connectivityType != "general") {
+    if (mapStore.connectivitySelectMode == "one") {
       mapStore.connectivityItemsSelectedIds.clear();
+      mapStore.connectivityItemsSelectedIds.add(id);
       mapStore.connectivityIdsFromType = mapStore.connectivityType;
+    } else if (mapStore.connectivitySelectMode == "many") {
+      if (mapStore.connectivityIdsFromType != mapStore.connectivityType) {
+        mapStore.connectivityItemsSelectedIds.clear();
+        mapStore.connectivityIdsFromType = mapStore.connectivityType;
+      }
+      if (mapStore.connectivityItemsSelectedIds.has(id)) {
+        mapStore.connectivityItemsSelectedIds.delete(id);
+      } else {
+        mapStore.connectivityItemsSelectedIds.add(id);
+      }
     }
+    setConnectivitySelectFilter();
+    if (mapStore.connectivitySelectMode == "one") {
+      getConnectivityStatistics();
+    }
+  } else {
+    // Collect Zones Selected
     if (mapStore.connectivityItemsSelectedIds.has(id)) {
       mapStore.connectivityItemsSelectedIds.delete(id);
     } else {
       mapStore.connectivityItemsSelectedIds.add(id);
     }
-  }
-  setConnectivitySelectFilter();
-  if (mapStore.connectivitySelectMode == "one") {
-    getConnectivityStatistics();
+    setConnectivitySelectFilter();
   }
 };
 const setConnectivitySelectFilter = () => {
@@ -2519,7 +2531,6 @@ const drawConnectivityMap = () => {
   });
 
   console.log("Data to Draw Arcs", data);
-
   connectArcs.setProps({ data: data });
 };
 

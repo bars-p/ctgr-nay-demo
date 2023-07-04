@@ -358,7 +358,10 @@ export const useMapStore = defineStore("mapStore", () => {
   //
   const connectivityType = ref(null);
   const connectivityDirection = ref("from");
+  const connectivityGeneralDirection = ref("between");
   const connectivitySelectMode = ref("one");
+  const connectivityUseSpeedValues = ref(false);
+
   const connectivityItemsSelectedIds = new Set();
   const connectivityIdsFromType = ref(null);
   const connectivityItemsForProcessing = ref([]);
@@ -379,6 +382,12 @@ export const useMapStore = defineStore("mapStore", () => {
     connectivityItemsForProcessing.value = [];
     connectivityProcessed.value = false;
     connectivityType.value = null;
+    connectivityMapData.value = [];
+
+    connectivityDemandAbove.value = 1;
+    connectivityBelow.value = 5;
+    connectivitySpeedBelow.value = 0;
+    connectivityUseSpeedValues.value = false;
   };
 
   const getConnectivityFrom = (id) => {
@@ -407,13 +416,31 @@ export const useMapStore = defineStore("mapStore", () => {
 
   const connectivityDemandAbove = ref(1);
   const connectivityBelow = ref(5);
+  const connectivitySpeedBelow = ref(0);
 
   const getConnectivityMap = () => {
-    return demandConnectData.filter(
-      (item) =>
-        item.dm >= connectivityDemandAbove.value &&
-        item.sp <= connectivityBelow.value
-    );
+    let data = null;
+
+    if (connectivityUseSpeedValues.value) {
+      if (connectivitySpeedBelow.value < 0) {
+        connectivitySpeedBelow.value = 0;
+        data = [];
+      } else {
+        data = demandConnectData.filter(
+          (item) =>
+            item.dm >= connectivityDemandAbove.value &&
+            item.kmh <= connectivitySpeedBelow.value
+        );
+      }
+    } else {
+      data = demandConnectData.filter(
+        (item) =>
+          item.dm >= connectivityDemandAbove.value &&
+          item.sp <= connectivityBelow.value
+      );
+    }
+
+    return data;
   };
 
   const connectivityMapData = ref(null);
@@ -502,7 +529,9 @@ export const useMapStore = defineStore("mapStore", () => {
     getZoneIdsByDistrict,
     connectivityType,
     connectivityDirection,
+    connectivityGeneralDirection,
     connectivitySelectMode,
+    connectivityUseSpeedValues,
     connectivityItemsSelectedIds,
     connectivityIdsFromType,
     connectivityItemsForProcessing,
@@ -513,6 +542,7 @@ export const useMapStore = defineStore("mapStore", () => {
     connectivityProcessed,
     connectivityDemandAbove,
     connectivityBelow,
+    connectivitySpeedBelow,
     getConnectivityMap,
     connectivityMapData,
     populationAbove,

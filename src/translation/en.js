@@ -7,6 +7,7 @@ export default {
   general: {
     m: "m",
     km: "km",
+    kmh: "kmh",
     perKm: "per km",
     perCell: "per cell",
     size: "Size",
@@ -33,6 +34,7 @@ export default {
     mode: "Mode",
     from: "From",
     to: "To",
+    between: "Between",
     one: "One",
     many: "Many",
     level: "Level",
@@ -184,9 +186,13 @@ export default {
     connectivityRoute: "Routes change level",
     connectivityGeneral: "General connectivity",
     connectivityGaps: "Demand level filter",
-    connectivityDemand: "Demand above",
-    connectivityBelow: "Connectivity below",
+    connectivityDemand: "Demand level above",
+    connectivityBelow: "Connectivity level below",
     connectivityConnections: "Connections",
+    connectivityUseSpeed: "Use speed values data",
+    connectivitySpeedBelow: "Speed value below",
+    connectivityDetails: "Speed, Level, Demand",
+    connectivityZones: "Zones selected",
 
     //Accessability
     accessToolsTitle: "Walking Accessability",

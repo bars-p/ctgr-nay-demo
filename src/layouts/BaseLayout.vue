@@ -122,8 +122,6 @@ const restoreMain = () => {
   mapStore.demandResetData();
   mapStore.connectivityResetData();
   mapStore.accessabilityResetData();
-
-  mapStore.setConnectivityMapData([]);
 };
 </script>
 
