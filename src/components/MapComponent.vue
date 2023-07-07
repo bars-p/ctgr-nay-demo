@@ -207,7 +207,8 @@ watch(
   () => {
     console.log("Connect Map Watcher");
     drawConnectivityMap();
-  }
+  },
+  { deep: true }
 );
 
 //
@@ -547,8 +548,8 @@ const buildLayers = () => {
       data: [],
       getSourcePosition: (d) => d.fromCoord,
       getTargetPosition: (d) => d.toCoord,
-      getSourceColor: [160, 160, 160],
-      getTargetColor: (d) => mapStore.colorLevels[d.sp],
+      getSourceColor: (d) => (d.selected ? [0, 0, 0] : [160, 160, 160]),
+      getTargetColor: (d) => mapStore.colorLevels[d.sp - 1],
       getWidth: (d) => Math.pow(d.dm, 2),
       getCursor: () => "pointer",
     });
@@ -1092,7 +1093,7 @@ const buildLayers = () => {
         }
 
         if (features.length >= 1000) {
-          return window.alert(t("tools.socialSelectedToMany"));
+          return window.alert(t("tools.socialSelectedTooMany"));
         }
 
         // Run through the selected features and set a filter
@@ -2526,6 +2527,9 @@ const drawConnectivityMap = () => {
       toCoord: toCoord,
       dm: item.dm,
       sp: item.sp,
+      selected: item.selected,
+      // fromId: item.fromId,
+      // toId: item.toId,
     };
     return arcData;
   });

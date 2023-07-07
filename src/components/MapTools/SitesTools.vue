@@ -243,7 +243,7 @@
                     size="small"
                     flat
                     icon="mdi-trash-can-outline"
-                    @click.stop="deleteSitesGroup(idx)"
+                    @click.stop="deleteSitesGroup(siteGroup)"
                   >
                   </v-btn>
                 </template>
@@ -733,9 +733,11 @@ const selectSitesGroup = (item) => {
   mapStore.currentSitesGroup = _.cloneDeep(item);
   mapStore.useCurrentSiteGroup = true;
 };
-const deleteSitesGroup = (idx) => {
-  console.log("Delete sites group", idx);
-  mapStore.savedSitesGroups.splice(idx, 1);
+const deleteSitesGroup = (group) => {
+  console.log("Delete sites group", group);
+  mapStore.savedSitesGroups = mapStore.savedSitesGroups.filter(
+    (item) => item.name != group.name
+  );
 };
 
 // Sites Group

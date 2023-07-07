@@ -102,7 +102,7 @@ export default {
     socialLayerVisitors: "Visitors",
     socialLayerPopulationNext: "Population (+5 years)",
     socialLayerEmploymentNext: "Employment (+5 years)",
-    socialSelectedToMany: "Select a smaller number of features",
+    socialSelectedTooMany: "Select a smaller number of features",
 
     // Travel Demand
     demandLevel: "Area type",
@@ -193,6 +193,16 @@ export default {
     connectivitySpeedBelow: "Speed value below",
     connectivityDetails: "Speed, Level, Demand",
     connectivityZones: "Zones selected",
+    connectivityTooMany: "Too many connection to display",
+    connectionsGroupName: "Connections group name",
+    connectivityOrder: "Order connections by",
+    connectivitySpeedAsc: "Speed, Ascending (kmh)",
+    connectivitySpeedDes: "Speed, Descending (kmh)",
+    connectivityConnAsc: "Connectivity level, Ascending",
+    connectivityConnDes: "Connectivity level, Descending",
+    connectivityDemandAsc: "Demand level, Ascending",
+    connectivityDemandDes: "Demand level, Descending",
+    connectivityNTop: "Get top N  items",
 
     //Accessability
     accessToolsTitle: "Walking Accessability",

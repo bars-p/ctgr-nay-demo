@@ -6,7 +6,7 @@ import { ref, computed } from "vue";
 export const useMapStore = defineStore("mapStore", () => {
   const userSettingsShown = ref(false);
 
-  const version = "0.0.2a";
+  const version = "0.0.3a";
 
   const mapStyles = [
     { value: 0, title: "Streets", uri: "mapbox://styles/mapbox/streets-v12" },
@@ -366,6 +366,16 @@ export const useMapStore = defineStore("mapStore", () => {
   const connectivityIdsFromType = ref(null);
   const connectivityItemsForProcessing = ref([]);
   const connectivityProcessed = ref(false);
+
+  const connectivityMapData = ref(null);
+
+  const connectivityDemandAbove = ref(6);
+  const connectivityBelow = ref(1);
+  const connectivitySpeedBelow = ref(0);
+
+  const currentConnectionsGroup = ref(null);
+  const savedConnectionsGroups = ref([]);
+
   const connectivityProcessItems = () => {
     console.log(
       "Map Store - Connectivity processed",
@@ -384,10 +394,12 @@ export const useMapStore = defineStore("mapStore", () => {
     connectivityType.value = null;
     connectivityMapData.value = [];
 
-    connectivityDemandAbove.value = 1;
-    connectivityBelow.value = 5;
+    connectivityDemandAbove.value = 6;
+    connectivityBelow.value = 1;
     connectivitySpeedBelow.value = 0;
     connectivityUseSpeedValues.value = false;
+
+    currentConnectionsGroup.value = null;
   };
 
   const getConnectivityFrom = (id) => {
@@ -414,10 +426,6 @@ export const useMapStore = defineStore("mapStore", () => {
           }));
   };
 
-  const connectivityDemandAbove = ref(1);
-  const connectivityBelow = ref(5);
-  const connectivitySpeedBelow = ref(0);
-
   const getConnectivityMap = () => {
     let data = null;
 
@@ -443,7 +451,87 @@ export const useMapStore = defineStore("mapStore", () => {
     return data;
   };
 
-  const connectivityMapData = ref(null);
+  const getZonesFilteredConnections = () => {
+    let data = [];
+
+    // Look through selected connection if they exist otherwise process all data
+    const dataSource = connectivityMapData.value?.length
+      ? connectivityMapData.value
+      : demandConnectData;
+
+    console.log(
+      "Filter Zones Direction",
+      connectivityGeneralDirection.value,
+      connectivityItemsSelectedIds
+    );
+
+    if (connectivityUseSpeedValues.value) {
+      if (connectivitySpeedBelow.value < 0) {
+        connectivitySpeedBelow.value = 0;
+      }
+    }
+
+    switch (connectivityGeneralDirection.value) {
+      case "from":
+        connectivityItemsSelectedIds.forEach((id) => {
+          const conns = dataSource
+            .filter((item) => item.fromId == id)
+            .filter(
+              (item) =>
+                item.dm >= connectivityDemandAbove.value &&
+                (connectivityUseSpeedValues.value
+                  ? item.kmh <= connectivitySpeedBelow.value
+                  : item.sp <= connectivityBelow.value)
+            );
+          data = data.concat(conns);
+          // data = [...conns];
+        });
+        break;
+
+      case "to":
+        connectivityItemsSelectedIds.forEach((id) => {
+          const conns = dataSource
+            .filter((item) => item.toId == id)
+            .filter(
+              (item) =>
+                item.dm >= connectivityDemandAbove.value &&
+                (connectivityUseSpeedValues.value
+                  ? item.kmh <= connectivitySpeedBelow.value
+                  : item.sp <= connectivityBelow.value)
+            );
+          data = data.concat(conns);
+        });
+        break;
+
+      case "between":
+        connectivityItemsSelectedIds.forEach((idFrom) => {
+          let conns = [];
+          connectivityItemsSelectedIds.forEach((idTo) => {
+            conns.push(
+              ...dataSource.filter(
+                (item) => item.fromId == idFrom && item.toId == idTo
+              )
+            );
+          });
+          conns = conns.filter(
+            (item) =>
+              item.dm >= connectivityDemandAbove.value &&
+              (connectivityUseSpeedValues.value
+                ? item.kmh <= connectivitySpeedBelow.value
+                : item.sp <= connectivityBelow.value)
+          );
+          data = data.concat(conns);
+        });
+        break;
+
+      default:
+        break;
+    }
+
+    console.log("Data Found", data);
+
+    return data;
+  };
 
   //
   // Accessability Data
@@ -544,7 +632,10 @@ export const useMapStore = defineStore("mapStore", () => {
     connectivityBelow,
     connectivitySpeedBelow,
     getConnectivityMap,
+    getZonesFilteredConnections,
     connectivityMapData,
+    currentConnectionsGroup,
+    savedConnectionsGroups,
     populationAbove,
     accessabilityBelow,
     accessabilityResetData,

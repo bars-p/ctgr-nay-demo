@@ -35,7 +35,7 @@ const toggleHidden = () => (hidden.value = !hidden.value);
   position: relative;
   z-index: 10;
   top: 20px;
-  left: 40px;
+  left: 30px;
   width: 300px;
   max-height: calc(100vh - 64px - 100px);
 }

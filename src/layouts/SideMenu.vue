@@ -102,7 +102,7 @@ const items = [
     value: 8,
     props: {
       nav: "nav",
-      "prepend-icon": "mdi-transit-connection",
+      "prepend-icon": "mdi-arrow-decision",
       to: "/connectivity",
     },
   },
