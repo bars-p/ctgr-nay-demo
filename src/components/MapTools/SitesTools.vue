@@ -363,7 +363,12 @@
             :key="site.id"
             @click="selectSiteInGroup(site)"
           >
-            <v-list-item-title class="text-body-2">
+            <v-list-item-title
+              class="text-body-2"
+              :class="
+                mapStore.selectedSiteIds.has(site.id) ? 'font-weight-bold' : ''
+              "
+            >
               ({{ site.id }}) {{ site.name }}
             </v-list-item-title>
             <template #append>
@@ -821,7 +826,11 @@ const saveSitesGroup = () => {
 
 const selectSiteInGroup = (site) => {
   console.log("Site selected", site);
-  mapStore.selectedSiteIds.add(site.id);
+  if (mapStore.selectedSiteIds.has(site.id)) {
+    mapStore.selectedSiteIds.delete(site.id);
+  } else {
+    mapStore.selectedSiteIds.add(site.id);
+  }
   mapStore.centerItem = {
     type: "site",
     id: site.id,

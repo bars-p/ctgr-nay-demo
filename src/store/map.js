@@ -6,7 +6,7 @@ import { ref, computed } from "vue";
 export const useMapStore = defineStore("mapStore", () => {
   const userSettingsShown = ref(false);
 
-  const version = "0.0.3b";
+  const version = "0.0.3c";
 
   const mapStyles = [
     { value: 0, title: "Streets", uri: "mapbox://styles/mapbox/streets-v12" },
@@ -306,14 +306,14 @@ export const useMapStore = defineStore("mapStore", () => {
   //
   // Sites data
   //
-  let sitesData = [];
+  let sitesData = ref([]);
   let sitesByDistricts = [];
   // FIXME: Data loading with BackEnd
   const loadSitesData = async () => {
-    if (sitesData.length == 0) {
+    if (sitesData.value.length == 0) {
       await axios
         .get("Almaty_sites_data.json")
-        .then((result) => (sitesData = result.data))
+        .then((result) => (sitesData.value = result.data))
         .catch((err) => console.warn("Error loading Sites data", err));
     }
     if (sitesByDistricts.length == 0) {
@@ -326,10 +326,12 @@ export const useMapStore = defineStore("mapStore", () => {
     }
   };
   const getSiteName = (id) => {
-    return sitesData.find((site) => site.id == id).name || "Name not found";
+    return (
+      sitesData.value.find((site) => site.id == id).name || "Name not found"
+    );
   };
   const getSiteStopIds = (id) => {
-    return sitesData.find((site) => site.id == id).stop_ids || [];
+    return sitesData.value.find((site) => site.id == id).stop_ids || [];
   };
   const getSitesByDistrict = (districtId) => {
     return sitesByDistricts
