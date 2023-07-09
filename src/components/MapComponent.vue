@@ -265,6 +265,14 @@ watch(
   }
 );
 
+// Routes
+watch(
+  () => mapStore.skeletonColor,
+  () => {
+    setSkeletonColor(mapStore.skeletonColor);
+  }
+);
+
 //
 // Data processing
 // FIXME: Data loading with BackEnd
@@ -564,7 +572,7 @@ const buildLayers = () => {
         },
         paint: {
           "line-width": 2,
-          "line-color": "#4d4d33",
+          "line-color": mapStore.skeletonColor,
           "line-opacity": 0.8,
         },
       },
@@ -1706,6 +1714,19 @@ const centerToSite = () => {
 };
 
 //
+// Routes Logic
+//
+const setSkeletonColor = (color) => {
+  const layerPaintData = {
+    layerIdx: layersIdxs.ladsTraces,
+    paintProps: {
+      "line-color": color,
+    },
+  };
+  updateLayerPaint(layerPaintData);
+};
+
+//
 // Demand Logic
 //
 let demandSplitDone = false;
@@ -2423,12 +2444,12 @@ const displayConnectivityZones = () => {
         "fill-color": {
           property: "value",
           stops: [
-            [0, "#C00000"],
-            [1, "#ff8566"],
-            [2, "#806000"],
-            [3, "#375623"],
-            [4, "#00B050"],
-            [5, "#2F75B5"],
+            [1, "#C00000"],
+            [2, "#ff8566"],
+            [3, "#806000"],
+            [4, "#375623"],
+            [5, "#00B050"],
+            [6, "#2F75B5"],
           ],
         },
         "fill-opacity": 0.7,

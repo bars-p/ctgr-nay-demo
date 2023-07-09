@@ -118,7 +118,7 @@ export default {
     routesSelect: "Select routes",
     routesDialogSelect: "Select",
     routesDialogClose: "Close",
-    routesLads: "LADs",
+    routesLads: "Routes",
     routesDistributionTitle: "LADs distribution",
     routesSearchTitle: "LADs search",
     routesSkeleton: "Network skeleton",

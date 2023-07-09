@@ -58,7 +58,7 @@
               size="small"
               flat
               icon="mdi-checkbox-blank"
-              class="ml-4"
+              class="ml-4 mt-2"
             >
               <v-icon :color="mapStore.sitesColor"></v-icon>
               <v-menu activator="parent" :close-on-content-click="false">
@@ -87,7 +87,7 @@
               size="small"
               flat
               icon="mdi-checkbox-blank"
-              class="ml-4"
+              class="ml-4 mt-2"
             >
               <v-icon :color="mapStore.centroidsColor"></v-icon>
               <v-menu activator="parent" :close-on-content-click="false">
@@ -114,7 +114,7 @@
               size="small"
               flat
               icon="mdi-checkbox-blank"
-              class="ml-4"
+              class="ml-4 mt-2"
             >
               <v-icon :color="mapStore.stopsColor"></v-icon>
               <v-menu activator="parent" :close-on-content-click="false">

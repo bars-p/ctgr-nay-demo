@@ -153,7 +153,8 @@
         </v-row>
         <div
           v-if="
-            (mapStore.connectivityType == 'speed' &&
+            ((mapStore.connectivityType == 'speed' ||
+              mapStore.connectivityType == 'change') &&
               mapStore.connectivityProcessed) ||
             mapStore.connectivityType == 'general'
           "
@@ -184,38 +185,40 @@
               </v-col>
             </v-row>
           </div>
-          <v-row no-gutters v-if="!mapStore.connectivityUseSpeedValues">
-            <v-col cols="9" align-self="end">
-              <v-label>{{ t("tools.connectivityBelow") }}</v-label>
-            </v-col>
-            <v-col cols="3" align-self="end">
-              <v-select
-                v-model="mapStore.connectivityBelow"
-                :label="$t('general.level')"
-                density="compact"
-                variant="underlined"
-                hide-details
-                mandatory
-                :items="levelsConnect"
-              ></v-select>
-            </v-col>
-          </v-row>
-          <v-row no-gutters v-else>
-            <v-col cols="9" align-self="end">
-              <v-label>{{ t("tools.connectivitySpeedBelow") }}</v-label>
-            </v-col>
-            <v-col cols="3" align-self="end">
-              <v-text-field
-                v-model="mapStore.connectivitySpeedBelow"
-                :label="$t('general.kmh')"
-                variant="underlined"
-                density="compact"
-                hide-details
-                type="number"
-              >
-              </v-text-field>
-            </v-col>
-          </v-row>
+          <div v-if="mapStore.connectivityType != 'change'">
+            <v-row no-gutters v-if="!mapStore.connectivityUseSpeedValues">
+              <v-col cols="9" align-self="end">
+                <v-label>{{ t("tools.connectivityBelow") }}</v-label>
+              </v-col>
+              <v-col cols="3" align-self="end">
+                <v-select
+                  v-model="mapStore.connectivityBelow"
+                  :label="$t('general.level')"
+                  density="compact"
+                  variant="underlined"
+                  hide-details
+                  mandatory
+                  :items="levelsConnect"
+                ></v-select>
+              </v-col>
+            </v-row>
+            <v-row no-gutters v-else>
+              <v-col cols="9" align-self="end">
+                <v-label>{{ t("tools.connectivitySpeedBelow") }}</v-label>
+              </v-col>
+              <v-col cols="3" align-self="end">
+                <v-text-field
+                  v-model="mapStore.connectivitySpeedBelow"
+                  :label="$t('general.kmh')"
+                  variant="underlined"
+                  density="compact"
+                  hide-details
+                  type="number"
+                >
+                </v-text-field>
+              </v-col>
+            </v-row>
+          </div>
           <v-row no-gutters class="mt-3 mb-3">
             <v-col cols="9" align-self="end">
               <v-label>{{ t("tools.connectivityDemand") }}</v-label>
@@ -253,6 +256,10 @@
             </v-row>
           </div>
         </div>
+        <!-- <div v-if="mapStore.connectivityType == 'change' &&
+              mapStore.connectivityProcessed">
+
+        </div> -->
       </template>
 
       <v-container
@@ -569,6 +576,12 @@ const applyDemandFilter = () => {
         ["<=", ["get", "value"], mapStore.connectivityBelow],
         [">=", ["get", "dm"], mapStore.connectivityDemandAbove],
       ],
+    };
+    mapStore.newLayerFilter = filterData;
+  } else if (mapStore.connectivityType == "change") {
+    const filterData = {
+      layerIdx: mapStore.layersIdxs.zonesFill,
+      filterProps: [">=", ["get", "dm"], mapStore.connectivityDemandAbove],
     };
     mapStore.newLayerFilter = filterData;
   } else if (mapStore.connectivityType == "general") {

@@ -43,7 +43,7 @@
           class="mt-2 text-subtitle-2"
           :text="$t('tools.socialLayers')"
         ></v-label>
-        <v-row>
+        <v-row dense no-gutters>
           <v-col cols="10">
             <v-checkbox
               hide-details
@@ -52,30 +52,30 @@
               v-model="mapStore.layers[mapStore.layersIdxs.ladsTraces].shown"
             ></v-checkbox>
           </v-col>
-          <v-col cols="2" align-self="center">
+          <v-col cols="2">
             <v-btn
               density="comfortable"
               size="small"
               flat
               icon="mdi-checkbox-blank"
+              class="ml-4 mt-2"
             >
-              <v-icon :color="skeletonColor"></v-icon>
+              <v-icon :color="mapStore.skeletonColor"></v-icon>
               <v-menu activator="parent" :close-on-content-click="false">
                 <v-color-picker
-                  v-model="skeletonColor"
+                  v-model="mapStore.skeletonColor"
                   show-swatches
-                  @update:model-value="skeletonColorUpdate"
                 ></v-color-picker>
               </v-menu>
             </v-btn>
           </v-col>
         </v-row>
-        <v-checkbox
+        <!-- <v-checkbox
           hide-details
           density="compact"
           :label="$t('tools.routesStops')"
           v-model="showStops"
-        ></v-checkbox>
+        ></v-checkbox> -->
 
         <v-row dense class="mt-2 mb-4">
           <v-col>
@@ -123,11 +123,11 @@
             :value="item"
             density="compact"
           >
-            {{ item }} ({{ getSavedNumber(item) }})
+            {{ getSavedName(item) }} ({{ getSavedNumber(item) }})
           </v-tab>
         </v-tabs>
         <v-window v-model="tabSelected">
-          <v-window-item value="LADs">
+          <v-window-item value="lads">
             <v-list density="compact">
               <v-list-item
                 v-for="(ladGroup, idx) in savedLadsMock"
@@ -150,7 +150,7 @@
               </v-list-item>
             </v-list>
           </v-window-item>
-          <v-window-item value="Stops">
+          <v-window-item value="sites">
             <v-list density="compact">
               <v-list-item
                 v-for="(stopGroup, idx) in savedStopsMock"
@@ -358,15 +358,12 @@ const showDistribution = ref(false);
 const showSearch = ref(false);
 
 // const showSkeleton = ref(true);
-const showStops = ref(false);
+// const showStops = ref(false);
 
-const skeletonColor = ref("#757575");
+// const skeletonColor = ref("#757575");
 // const skeletonColorSelect = () => {
 //   console.log("Skeleton color select");
 // };
-const skeletonColorUpdate = () => {
-  console.log("Skeleton new color", skeletonColor.value);
-};
 
 const clearSelectedLads = () => {
   console.log("Clear selected");
@@ -397,10 +394,13 @@ const savedStopsMock = [
   },
 ];
 
-const groupTabs = ["LADs", "Stops"];
-const tabSelected = ref("LADs");
+const groupTabs = ["lads", "sites"];
+const tabSelected = ref("lads");
 const getSavedNumber = (name) => {
-  return name == "LADs" ? savedLadsMock.value.length : savedStopsMock.length;
+  return name == "lads" ? savedLadsMock.value.length : savedStopsMock.length;
+};
+const getSavedName = (tab) => {
+  return tab == "lads" ? t("tools.routesLads") : t("tools.sitesSites");
 };
 
 const selectLadGroup = (ladGroup) => {

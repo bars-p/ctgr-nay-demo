@@ -6,7 +6,7 @@ import { ref, computed } from "vue";
 export const useMapStore = defineStore("mapStore", () => {
   const userSettingsShown = ref(false);
 
-  const version = "0.0.3a";
+  const version = "0.0.3b";
 
   const mapStyles = [
     { value: 0, title: "Streets", uri: "mapbox://styles/mapbox/streets-v12" },
@@ -104,6 +104,7 @@ export const useMapStore = defineStore("mapStore", () => {
 
   //
   // Social data
+  //
   const socialColor = ref(null);
   const socialBars = ref(null);
 
@@ -354,6 +355,11 @@ export const useMapStore = defineStore("mapStore", () => {
   const siteSizeStep = ref(2);
 
   //
+  // Routes data
+  //
+  const skeletonColor = ref("#616161");
+
+  //
   // Connectivity data
   //
   const connectivityType = ref(null);
@@ -410,7 +416,7 @@ export const useMapStore = defineStore("mapStore", () => {
           .map((item) => ({ zoneId: item.toId, value: item.sp, dm: item.dm }))
       : demandConnectData
           .filter((item) => item.fromId == id)
-          .map((item) => ({ zoneId: item.toId, value: item.ch }));
+          .map((item) => ({ zoneId: item.toId, value: item.ch, dm: item.dm }));
   };
   const getConnectivityTo = (id) => {
     // For Speed add Demand data to aggregate several Zones selected
@@ -423,6 +429,7 @@ export const useMapStore = defineStore("mapStore", () => {
           .map((item) => ({
             zoneId: item.fromId,
             value: item.ch,
+            dm: item.dm,
           }));
   };
 
@@ -579,6 +586,11 @@ export const useMapStore = defineStore("mapStore", () => {
     removeCellFromSelected,
     clearSelectedCells,
     clearSelectedColorMode,
+
+    // Routes
+    skeletonColor,
+
+    // Sites
     sitesData,
     loadSitesData,
     getSiteName,
