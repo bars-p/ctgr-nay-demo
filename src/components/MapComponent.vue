@@ -82,6 +82,13 @@ watch(
     }
     if (to == "routes") {
       mapStore.turnOnLayer(layersIdxs.ladsTraces);
+      mapStore.turnOnLayer(layersIdxs.ladsSelected);
+      map.getCanvas().style.cursor =
+        mapStore.routesSelectMode == "routes" ? "pointer" : null;
+    }
+    if (from == "routes") {
+      mapStore.routesSelectMode = null;
+      mapStore.turnOffLayer(layersIdxs.ladsSelected);
     }
 
     // if (to == "social") {
@@ -265,11 +272,60 @@ watch(
   }
 );
 
+//
 // Routes
 watch(
-  () => mapStore.skeletonColor,
+  () => mapStore.routesSelectMode,
   () => {
-    setSkeletonColor(mapStore.skeletonColor);
+    map.getCanvas().style.cursor =
+      mapStore.routesSelectMode == "routes" ? "pointer" : null;
+  }
+);
+
+watch(
+  () => [
+    mapStore.busColor,
+    mapStore.trolleyColor,
+    mapStore.subwayColor,
+    mapStore.skeletonColor,
+  ],
+  () => {
+    setRoutesColor();
+  },
+  { deep: true }
+);
+
+watch(
+  () => mapStore.routesSelectedIds,
+  () => {
+    console.log("Watch - Routes Ids Changed:", mapStore.routesSelectedIds);
+    map.setFilter(mapStore.layers[layersIdxs.ladsSelected].name, [
+      "in",
+      "id",
+      ...[...mapStore.routesSelectedIds],
+    ]);
+  },
+  { deep: true }
+);
+watch(
+  () => mapStore.currentRoutesGroup,
+  () => {
+    if (mapStore.currentRoutesGroup) {
+      showCurrentRoutesGroup();
+    }
+  },
+  { deep: true }
+);
+watch(
+  () => mapStore.useCurrentRoutesGroup,
+  () => {
+    if (mapStore.useCurrentRoutesGroup) {
+      // Filter by current
+      showCurrentRoutesGroup();
+    } else {
+      // Clear filter
+      showAllRoutes();
+    }
   }
 );
 
@@ -285,6 +341,7 @@ let sourceStops = null;
 let zonesStats = null; // FIXME: Needed because of incorrect GeoJSON 1000x1000 pop and emp data
 let accessStats = null;
 let sourceLadsTraces = null;
+let sourceLadsSegments = null;
 
 const loadData = async () => {
   await axios
@@ -388,6 +445,29 @@ const loadData = async () => {
     .then((result) => (sourceLadsTraces = result.data))
     .catch((err) => console.log("ERROR load", err));
   console.log("Lads Traces Loaded:", sourceLadsTraces.features.length);
+  await axios
+    .get("Almaty_segments.geojson")
+    .then((result) => (sourceLadsSegments = result.data))
+    .catch((err) => console.log("ERROR load", err));
+  console.log("Lads Segments Loaded:", sourceLadsSegments.features.length);
+
+  await mapStore.loadRoutesData();
+
+  // Enrich traces with data
+  console.log("🚎 Add Modes to Traces");
+  for (const trace of sourceLadsTraces.features) {
+    const idx = mapStore.linesData.findIndex(
+      (item) => item.line == trace.properties.route_name
+    );
+    if (idx != -1) {
+      trace.properties.mode = mapStore.linesData[idx].mode;
+    } else {
+      trace.properties.mode = "Unknown";
+      console.log("No mode set for:", trace);
+    }
+    trace.properties.selected = false;
+  }
+  console.log("🚎 Result:", sourceLadsTraces.features);
 
   // console.log("🙆🏻🙆🏻🙆🏻 TEST", sourceBaseCells.features[101].properties);
 
@@ -449,9 +529,9 @@ const connectivityLayersIdxs = [
 ];
 const routesLayersIdxs = [
   layersIdxs.adminBorder,
-  layersIdxs.adminFill,
   layersIdxs.zonesBorder,
   layersIdxs.ladsTraces,
+  layersIdxs.ladsSelected,
 ];
 // const stopsLayersIdxs = [layersIdxs.adminBorder, layersIdxs.cellsFill];
 const sitesLayersIdxs = [
@@ -564,23 +644,6 @@ const buildLayers = () => {
 
     map.addLayer(
       {
-        id: mapStore.layers[layersIdxs.ladsTraces].name,
-        type: "line",
-        source: "lads-source",
-        layout: {
-          visibility: "none",
-        },
-        paint: {
-          "line-width": 2,
-          "line-color": mapStore.skeletonColor,
-          "line-opacity": 0.8,
-        },
-      },
-      "road-label"
-    );
-
-    map.addLayer(
-      {
         id: mapStore.layers[layersIdxs.zonesFill].name,
         type: "fill",
         source: "analytical-zones-source",
@@ -633,6 +696,99 @@ const buildLayers = () => {
             0.7,
             0.6,
           ],
+        },
+      },
+      "road-label"
+    );
+
+    map.addLayer(
+      {
+        id: "admin-areas-fill",
+        type: "fill",
+        source: "admin-areas-source",
+        layout: {
+          visibility: "none",
+        },
+        paint: {
+          "fill-color": ["get", "color"],
+          "fill-opacity": 0.4,
+        },
+      },
+      "road-label"
+    );
+
+    map.addLayer(
+      {
+        id: "cells-saved",
+        type: "fill",
+        source: "saved-areas-source",
+        layout: {
+          visibility: "none",
+        },
+        paint: {
+          "fill-color": ["get", "color"],
+          "fill-opacity": 0.7,
+        },
+      },
+      "road-label"
+    );
+
+    map.addLayer(
+      {
+        id: "cells-selected",
+        type: "line",
+        source: "cells-source",
+        layout: {
+          visibility: "none",
+        },
+        paint: {
+          "line-color": "#ff1100",
+          "line-opacity": 0.7,
+          "line-width": 2,
+        },
+        filter: ["in", "id", ""],
+      },
+      "road-label"
+    );
+
+    map.addLayer(
+      {
+        id: mapStore.layers[layersIdxs.ladsTraces].name,
+        type: "line",
+        source: "lads-source",
+        layout: {
+          visibility: "none",
+        },
+        paint: {
+          "line-width": 2,
+          "line-color": [
+            "case",
+            ["==", ["get", "mode"], "Bus"],
+            mapStore.busColor,
+            ["==", ["get", "mode"], "Trolley"],
+            mapStore.trolleyColor,
+            ["==", ["get", "mode"], "Subway"],
+            mapStore.subwayColor,
+            mapStore.skeletonColor,
+          ],
+          "line-opacity": 1,
+        },
+      },
+      "road-label"
+    );
+    map.addLayer(
+      {
+        id: mapStore.layers[layersIdxs.ladsSelected].name,
+        type: "line",
+        source: "lads-source",
+        layout: {
+          visibility: "none",
+        },
+        filter: ["in", "id", ""],
+        paint: {
+          "line-width": 4,
+          "line-color": "#8000ff",
+          "line-opacity": 0.6,
         },
       },
       "road-label"
@@ -712,56 +868,6 @@ const buildLayers = () => {
           "circle-color": mapStore.stopsColor,
           "circle-radius": 3,
         },
-      },
-      "road-label"
-    );
-
-    map.addLayer(
-      {
-        id: "admin-areas-fill",
-        type: "fill",
-        source: "admin-areas-source",
-        layout: {
-          visibility: "none",
-        },
-        paint: {
-          "fill-color": ["get", "color"],
-          "fill-opacity": 0.4,
-        },
-      },
-      "road-label"
-    );
-
-    map.addLayer(
-      {
-        id: "cells-saved",
-        type: "fill",
-        source: "saved-areas-source",
-        layout: {
-          visibility: "none",
-        },
-        paint: {
-          "fill-color": ["get", "color"],
-          "fill-opacity": 0.7,
-        },
-      },
-      "road-label"
-    );
-
-    map.addLayer(
-      {
-        id: "cells-selected",
-        type: "line",
-        source: "cells-source",
-        layout: {
-          visibility: "none",
-        },
-        paint: {
-          "line-color": "#ff1100",
-          "line-opacity": 0.7,
-          "line-width": 2,
-        },
-        filter: ["in", "id", ""],
       },
       "road-label"
     );
@@ -1007,7 +1113,8 @@ const buildLayers = () => {
       if (
         !(
           props.mode == "social" ||
-          (props.mode == "sites" && mapStore.sitesSelectionMode == "sites")
+          (props.mode == "sites" && mapStore.sitesSelectionMode == "sites") ||
+          (props.mode == "routes" && mapStore.routesSelectMode == "routes")
         )
       )
         return;
@@ -1096,6 +1203,12 @@ const buildLayers = () => {
             });
             break;
 
+          case "routes":
+            features = map.queryRenderedFeatures(bbox, {
+              layers: [mapStore.layers[layersIdxs.ladsTraces].name],
+            });
+            break;
+
           default:
             break;
         }
@@ -1122,6 +1235,11 @@ const buildLayers = () => {
             processSitesSelected(
               [...deduplicated.values()].map((item) => item.properties.id)
             );
+          } else if (props.mode == "routes") {
+            mapStore.routesSelectedIds = new Set([
+              ...mapStore.routesSelectedIds,
+              ...[...deduplicated.values()].map((item) => item.properties.id),
+            ]);
           }
         }
       }
@@ -1304,7 +1422,8 @@ const buildLayers = () => {
           (props.mode == "demand" && mapStore.demandLevel == "district") ||
           (props.mode == "sites" &&
             mapStore.sitesSelectionMode == "district" &&
-            !mapStore.useCurrentSiteGroup)
+            !mapStore.useCurrentSiteGroup) ||
+          (props.mode == "routes" && mapStore.routesSelectMode == "district")
         ) {
           map.getCanvas().style.cursor = "pointer";
           // console.log("Hovered:", e.features[0]);
@@ -1323,7 +1442,8 @@ const buildLayers = () => {
           (props.mode == "demand" && mapStore.demandLevel == "district") ||
           (props.mode == "sites" &&
             mapStore.sitesSelectionMode == "district" &&
-            !mapStore.useCurrentSiteGroup)
+            !mapStore.useCurrentSiteGroup) ||
+          (props.mode == "routes" && mapStore.routesSelectMode == "district")
         ) {
           map.getCanvas().style.cursor = "";
           mapPopup.remove();
@@ -1360,7 +1480,8 @@ const buildLayers = () => {
         (props.mode == "demand" && mapStore.demandLevel == "area") ||
         (props.mode == "sites" &&
           mapStore.sitesSelectionMode == "area" &&
-          !mapStore.useCurrentSiteGroup)
+          !mapStore.useCurrentSiteGroup) ||
+        (props.mode == "routes" && mapStore.routesSelectMode == "area")
       ) {
         map.getCanvas().style.cursor = "pointer";
         // console.log("Hovered:", e.features[0]);
@@ -1375,7 +1496,8 @@ const buildLayers = () => {
         (props.mode == "demand" && mapStore.demandLevel == "area") ||
         (props.mode == "sites" &&
           mapStore.sitesSelectionMode == "area" &&
-          !mapStore.useCurrentSiteGroup)
+          !mapStore.useCurrentSiteGroup) ||
+        (props.mode == "routes" && mapStore.routesSelectMode == "area")
       ) {
         map.getCanvas().style.cursor = "";
         mapPopup.remove();
@@ -1383,7 +1505,7 @@ const buildLayers = () => {
     });
 
     //
-    // Admin Area - District - Select Processing - DEMAND, SITES
+    // Admin Area - District - Select Processing - DEMAND, SITES, ROUTES
     //
     map.on(
       "click",
@@ -1400,6 +1522,10 @@ const buildLayers = () => {
         ) {
           const feature = Object.assign(item.features[0]);
           processSitesByDistrict(feature.properties.id);
+        }
+        if (props.mode == "routes" && mapStore.routesSelectMode == "district") {
+          const feature = Object.assign(item.features[0]);
+          processRoutesByDistrict(feature.properties.id);
         }
       }
     );
@@ -1433,6 +1559,36 @@ const buildLayers = () => {
       if (props.mode == "sites" && mapStore.sitesSelectionMode == "area") {
         const feature = Object.assign(item.features[0]);
         processSitesBySavedArea(feature.properties.name);
+      }
+      if (props.mode == "routes" && mapStore.routesSelectMode == "area") {
+        const feature = Object.assign(item.features[0]);
+        processRoutesBySavedArea(feature.properties.name);
+      }
+    });
+
+    //
+    // Routes Select
+    //
+    map.on("click", (e) => {
+      if (mapStore.measureActive) {
+        return;
+      }
+
+      if (props.mode == "routes" && mapStore.routesSelectMode == "routes") {
+        const bbox = [
+          [e.point.x - 5, e.point.y - 5],
+          [e.point.x + 5, e.point.y + 5],
+        ];
+        const selectedFeatures = map.queryRenderedFeatures(bbox, {
+          layers: [mapStore.layers[layersIdxs.ladsTraces].name],
+        });
+
+        console.log("Routes selected", selectedFeatures);
+        const ids = selectedFeatures.map((item) => item.properties.id);
+        mapStore.routesSelectedIds = new Set([
+          ...mapStore.routesSelectedIds,
+          ...ids,
+        ]);
       }
     });
 
@@ -1623,24 +1779,36 @@ const processSitesByDistrict = (districtId) => {
   processSitesSelected(mapStore.getSitesByDistrict(districtId));
 };
 
+const getCellsUnion = (cells) => {
+  let cellsUnion = null;
+  if (cells.length != 0) {
+    cellsUnion = cells[0];
+    for (let i = 1; i < cells.length; i++) {
+      cellsUnion = union(cellsUnion.geometry, cells[i].geometry);
+    }
+  }
+  return cellsUnion;
+};
+
 const processSitesBySavedArea = (name) => {
   console.log("Area:", name);
   const areaCells = mapStore.savedCellsData.filter(
     (item) => item.properties.name == name
   );
-  let areaUnion = null;
-  if (areaCells.length == 0) {
-    return;
-  } else {
-    areaUnion = areaCells[0];
-    for (let i = 1; i < areaCells.length; i++) {
-      areaUnion = union(areaUnion.geometry, areaCells[i].geometry);
-    }
-    // areaUnion.properties.name = areaCells[0].properties.name;
-    // areaUnion.properties.color = areaCells[0].properties.color;
-  }
-  // selectedSource.data.features = [areaUnion];
-  // map.getSource("saved-areas-source").setData(selectedSource.data);
+  const areaUnion = getCellsUnion(areaCells);
+  // let areaUnion = null;
+  // if (areaCells.length == 0) {
+  //   return;
+  // } else {
+  //   areaUnion = areaCells[0];
+  //   for (let i = 1; i < areaCells.length; i++) {
+  //     areaUnion = union(areaUnion.geometry, areaCells[i].geometry);
+  //   }
+  //   // areaUnion.properties.name = areaCells[0].properties.name;
+  //   // areaUnion.properties.color = areaCells[0].properties.color;
+  // }
+  // // selectedSource.data.features = [areaUnion];
+  // // map.getSource("saved-areas-source").setData(selectedSource.data);
 
   const siteIds = [];
 
@@ -1716,14 +1884,110 @@ const centerToSite = () => {
 //
 // Routes Logic
 //
-const setSkeletonColor = (color) => {
+const setRoutesColor = () => {
   const layerPaintData = {
     layerIdx: layersIdxs.ladsTraces,
     paintProps: {
-      "line-color": color,
+      "line-color": [
+        "case",
+        ["==", ["get", "mode"], "Bus"],
+        mapStore.busColor,
+        ["==", ["get", "mode"], "Trolley"],
+        mapStore.trolleyColor,
+        ["==", ["get", "mode"], "Subway"],
+        mapStore.subwayColor,
+        mapStore.skeletonColor,
+      ],
     },
   };
   updateLayerPaint(layerPaintData);
+};
+const showCurrentRoutesGroup = () => {
+  const ids = mapStore.currentRoutesGroup.routes
+    .filter((route) => route.shown)
+    .map((route) => route.id);
+  map.setFilter(mapStore.layers[layersIdxs.ladsTraces].name, [
+    "in",
+    "id",
+    ...ids,
+  ]);
+};
+const showAllRoutes = () => {
+  console.log("All Routes shown");
+  const filterProps = [
+    "any",
+    [
+      "all",
+      ["boolean", mapStore.modesDisplay[0].shown],
+      ["==", ["get", "mode"], mapStore.modesDisplay[0].mode],
+    ],
+    [
+      "all",
+      ["boolean", mapStore.modesDisplay[1].shown],
+      ["==", ["get", "mode"], mapStore.modesDisplay[1].mode],
+    ],
+    [
+      "all",
+      ["boolean", mapStore.modesDisplay[2].shown],
+      ["==", ["get", "mode"], mapStore.modesDisplay[2].mode],
+    ],
+    [
+      "all",
+      ["boolean", mapStore.modesDisplay[3].shown],
+      ["==", ["get", "mode"], mapStore.modesDisplay[3].mode],
+    ],
+  ];
+  map.setFilter(mapStore.layers[layersIdxs.ladsTraces].name, filterProps);
+};
+
+const processRoutesBySavedArea = (name) => {
+  console.log("Area:", name);
+  const areaCells = mapStore.savedCellsData.filter(
+    (item) => item.properties.name == name
+  );
+  const areaUnion = getCellsUnion(areaCells);
+
+  const siteIds = [];
+
+  sourceSitesCentroids.features.forEach((site) => {
+    if (booleanPointInPolygon(site.geometry.coordinates, areaUnion)) {
+      siteIds.push(site.properties.id);
+    }
+  });
+
+  const ladsIds = new Set();
+  siteIds.forEach((id) => {
+    const data = mapStore.getLadsBySite(id);
+    data.forEach((ladId) => ladsIds.add(ladId));
+  });
+  console.log("LADs found", ladsIds);
+  if (mapStore.useCurrentRoutesGroup) {
+    ladsIds.forEach((id) => {
+      if (!mapStore.currentRoutesGroup.ids.has(id)) {
+        ladsIds.delete(id);
+      }
+    });
+  }
+  mapStore.routesSelectedIds = ladsIds;
+};
+const processRoutesByDistrict = (districtId) => {
+  console.log("District", districtId);
+  const siteIds = mapStore.getSitesByDistrict(districtId);
+
+  const ladsIds = new Set();
+  siteIds.forEach((id) => {
+    const data = mapStore.getLadsBySite(id);
+    data.forEach((ladId) => ladsIds.add(ladId));
+  });
+  console.log("LADs found", ladsIds);
+  if (mapStore.useCurrentRoutesGroup) {
+    ladsIds.forEach((id) => {
+      if (!mapStore.currentRoutesGroup.ids.has(id)) {
+        ladsIds.delete(id);
+      }
+    });
+  }
+  mapStore.routesSelectedIds = ladsIds;
 };
 
 //

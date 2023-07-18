@@ -2,12 +2,12 @@
   <div>
     <tools-component :title="props.title">
       <template #actions>
-        <search-bar v-model="searchString"></search-bar>
+        <search-bar v-model="searchGroupsString"></search-bar>
       </template>
 
       <template #tools>
         <v-select
-          v-model="selectMode"
+          v-model="mapStore.routesSelectMode"
           clearable
           hide-details
           variant="outlined"
@@ -43,13 +43,20 @@
           class="mt-2 text-subtitle-2"
           :text="$t('tools.socialLayers')"
         ></v-label>
-        <v-row dense no-gutters>
+        <v-row
+          dense
+          no-gutters
+          :key="mode.mode"
+          v-for="(mode, i) in mapStore.modesDisplay"
+        >
           <v-col cols="10">
             <v-checkbox
+              :disabled="mapStore.useCurrentRoutesGroup"
               hide-details
               density="compact"
-              :label="$t('tools.routesSkeleton')"
-              v-model="mapStore.layers[mapStore.layersIdxs.ladsTraces].shown"
+              :label="modesName[i].name"
+              v-model="mode.shown"
+              @update:model-value="processModeSelect"
             ></v-checkbox>
           </v-col>
           <v-col cols="2">
@@ -60,56 +67,75 @@
               icon="mdi-checkbox-blank"
               class="ml-4 mt-2"
             >
-              <v-icon :color="mapStore.skeletonColor"></v-icon>
+              <v-icon :color="mode.color"></v-icon>
               <v-menu activator="parent" :close-on-content-click="false">
                 <v-color-picker
-                  v-model="mapStore.skeletonColor"
+                  v-model="mode.color"
                   show-swatches
+                  @update:model-value="updateModeColor(mode)"
                 ></v-color-picker>
               </v-menu>
             </v-btn>
           </v-col>
         </v-row>
-        <!-- <v-checkbox
-          hide-details
-          density="compact"
-          :label="$t('tools.routesStops')"
-          v-model="showStops"
-        ></v-checkbox> -->
 
-        <v-row dense class="mt-2 mb-4">
-          <v-col>
-            {{ $t("tools.routesLadsSelected") }}: <strong>0</strong>
-            <cancel-button @click="clearSelectedLads"></cancel-button>
+        <v-row dense class="mt-2" no-gutters>
+          <v-col cols="9" class="mb-1">
+            {{ $t("tools.routesLadsSelected") }}:
+            <span class="ml-3 font-weight-bold">{{
+              mapStore.routesSelectedIds.size
+            }}</span>
+          </v-col>
+          <v-col cols="3">
+            <span v-show="mapStore.routesSelectedIds.size > 0">
+              <v-btn
+                v-if="!mapStore.useCurrentRoutesGroup"
+                flat
+                density="compact"
+                icon
+                @click="addSelectedRoutes"
+              >
+                <v-icon color="green-darken-2"> mdi-plus </v-icon>
+                <v-tooltip activator="parent" location="bottom">{{
+                  $t("tools.routesAddTooltip")
+                }}</v-tooltip>
+              </v-btn>
+              <v-btn
+                v-else
+                flat
+                density="compact"
+                icon
+                @click="replaceWithSelectedRoutes"
+              >
+                <v-icon color="red-darken-2"> mdi-refresh </v-icon>
+                <v-tooltip activator="parent" location="bottom">{{
+                  $t("tools.routesReplaceTooltip")
+                }}</v-tooltip>
+              </v-btn>
+              <v-btn
+                flat
+                density="compact"
+                icon
+                @click="clearSelectedRoutes"
+                class="ml-2"
+              >
+                <v-icon color="red-lighten-2"> mdi-cancel </v-icon>
+                <v-tooltip activator="parent" location="bottom">{{
+                  $t("general.clear")
+                }}</v-tooltip>
+              </v-btn>
+            </span>
           </v-col>
         </v-row>
-        <v-row dense class="my-3" justify="space-around">
-          <v-btn
-            variant="outlined"
-            density="comfortable"
-            prepend-icon="mdi-plus"
-          >
-            <template #prepend>
-              <v-icon color="green-darken-2"></v-icon>
-            </template>
-            {{ $t("general.add") }}
-            <v-tooltip activator="parent" location="bottom">{{
-              $t("tools.routesAddTooltip")
-            }}</v-tooltip>
-          </v-btn>
-          <v-btn
-            variant="outlined"
-            density="comfortable"
-            prepend-icon="mdi-refresh"
-          >
-            <template #prepend>
-              <v-icon color="red-darken-2"></v-icon>
-            </template>
-            {{ $t("general.replace") }}
-            <v-tooltip activator="parent" location="bottom">{{
-              $t("tools.routesReplaceTooltip")
-            }}</v-tooltip>
-          </v-btn>
+        <v-row dense v-if="mapStore.currentRoutesGroup != null">
+          <v-col>
+            <v-switch
+              v-model="mapStore.useCurrentRoutesGroup"
+              :label="$t('tools.routesUseCurrent')"
+              hide-details
+              density="compact"
+            ></v-switch>
+          </v-col>
         </v-row>
       </template>
       <v-container class="data-block">
@@ -127,15 +153,15 @@
           </v-tab>
         </v-tabs>
         <v-window v-model="tabSelected">
-          <v-window-item value="lads">
+          <v-window-item value="routes">
             <v-list density="compact">
               <v-list-item
-                v-for="(ladGroup, idx) in savedLadsMock"
-                :key="ladGroup.name"
-                @click="selectLadGroup(ladGroup)"
+                v-for="(group, idx) in routesGroupsFiltered"
+                :key="group.name"
+                @click="selectRoutesGroup(group)"
               >
                 <v-list-item-title class="text-body-2">
-                  {{ idx + 1 }}. {{ ladGroup.name }} ({{ ladGroup.count }})
+                  {{ idx + 1 }}. {{ group.name }} ({{ group.ids.size }})
                 </v-list-item-title>
                 <template #append>
                   <v-btn
@@ -143,7 +169,7 @@
                     size="small"
                     flat
                     icon="mdi-trash-can-outline"
-                    @click.stop="deleteLadGroup(idx)"
+                    @click.stop="deleteRoutesGroup(group)"
                   >
                   </v-btn>
                 </template>
@@ -153,12 +179,14 @@
           <v-window-item value="sites">
             <v-list density="compact">
               <v-list-item
-                v-for="(stopGroup, idx) in savedStopsMock"
-                :key="stopGroup.name"
-                @click="selectStopsGroup(stopGroup)"
+                v-for="(sitesGroup, idx) in siteGroupsFiltered"
+                :key="sitesGroup.name"
+                @click="selectSitesGroup(sitesGroup)"
               >
                 <v-list-item-title class="text-body-2">
-                  {{ idx + 1 }}. {{ stopGroup.name }} ({{ stopGroup.count }})
+                  {{ idx + 1 }}. {{ sitesGroup.name }} ({{
+                    sitesGroup.ids.size
+                  }})
                 </v-list-item-title>
                 <template #append>
                   <v-btn
@@ -166,7 +194,7 @@
                     size="small"
                     flat
                     icon="mdi-trash-can-outline"
-                    @click.stop="deleteStopsGroup(idx)"
+                    @click.stop="deleteSitesGroup(sitesGroup)"
                   >
                   </v-btn>
                 </template>
@@ -178,17 +206,20 @@
     </tools-component>
 
     <tools-component
-      :title="`${t('tools.routesLadGroup')} (${ladsInGroupMock.length})`"
+      v-if="mapStore.currentRoutesGroup"
+      :title="`${t('tools.routesLadGroup')} (${
+        mapStore.currentRoutesGroup.ids.size
+      })`"
       class="lad-group"
     >
       <template #actions>
-        <search-bar v-model="searchLad"></search-bar>
+        <search-bar v-model="searchRoute"></search-bar>
         <close-button @close="processCloseGroup"></close-button>
       </template>
       <template #tools>
         <div class="mt-0">
           <v-text-field
-            v-model="ladGroupName"
+            v-model="routesGroupName"
             clearable
             :label="$t('tools.routesGroupName')"
             variant="outlined"
@@ -196,7 +227,7 @@
             hide-details
           >
             <template v-slot:append-inner>
-              <v-icon v-if="readyToSave" @click="saveLadGroup"
+              <v-icon v-if="readyToSave" @click="saveRoutesGroup"
                 >mdi-content-save</v-icon
               >
             </template>
@@ -258,43 +289,49 @@
 
         <v-list density="compact">
           <v-list-item
-            v-for="(lad, idx) in ladsInGroupMock"
-            :key="lad.id"
-            @click="selectSavedLad(lad)"
+            v-for="route in routesFiltered"
+            :key="route.id"
+            @click="selectSavedRoute(route)"
           >
-            <v-list-item-title class="text-body-2">
-              {{ idx + 1 }}. {{ lad.name }}
+            <v-list-item-title
+              class="text-body-2"
+              :class="isRouteSelected(route.id) ? 'font-weight-bold' : ''"
+            >
+              (<span :style="{ color: mapStore.getModeColor(route.id) }">{{
+                route.id
+              }}</span
+              >) {{ route.name }}
             </v-list-item-title>
             <template #append>
               <v-btn
                 density="comfortable"
                 size="small"
                 flat
-                :icon="lad.shown ? 'mdi-eye-outline' : 'mdi-eye-off-outline'"
-                @click.stop="toggleLadShown(idx)"
+                :icon="route.shown ? 'mdi-eye-outline' : 'mdi-eye-off-outline'"
+                @click.stop="toggleRouteShown(route.id)"
               >
               </v-btn>
-              <v-btn
+              <!-- <v-btn
                 density="comfortable"
                 size="small"
                 flat
                 icon="mdi-checkbox-blank"
               >
-                <v-icon :color="lad.color"></v-icon>
+                <v-icon :color="route.color"></v-icon>
                 <v-menu activator="parent" :close-on-content-click="false">
                   <v-color-picker
-                    v-model="lad.color"
+                    v-model="route.color"
                     show-swatches
                     @update:model-value="ladColorUpdate"
                   ></v-color-picker>
                 </v-menu>
-              </v-btn>
+              </v-btn> -->
               <v-btn
                 density="comfortable"
                 size="small"
                 flat
                 icon="mdi-trash-can-outline"
-                @click.stop="deleteLad(lad)"
+                @click.stop="deleteRoute(route)"
               >
               </v-btn>
             </template>
@@ -309,20 +346,24 @@
     <search-dialog
       v-model="showSearch"
       :title="$t('tools.routesSearchTitle')"
+      :search-label="$t('tools.routesLads')"
+      :search-items="searchData"
+      @select="processSearchResults"
     ></search-dialog>
   </div>
 </template>
 
 <script setup>
+import _ from "lodash";
 import ToolsComponent from "../ToolsComponent.vue";
-import CancelButton from "../elements/CancelButton.vue";
+
 import ApplyButton from "../elements/ApplyButton.vue";
 import ConfigButton from "../elements/ConfigButton.vue";
 import SearchBar from "../elements/SearchBar.vue";
 import DistributionDialog from "../DistributionDialog.vue";
 import SearchDialog from "../SearchDialog.vue";
 
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
 
 import { useI18n } from "vue-i18n";
 import CloseButton from "../elements/CloseButton.vue";
@@ -333,9 +374,11 @@ const mapStore = useMapStore();
 
 const props = defineProps(["title"]);
 
-const searchString = ref("");
+onMounted(async () => {
+  await mapStore.loadRoutesData();
+  await mapStore.loadSitesData();
+});
 
-const selectMode = ref(null);
 const selectModes = [
   {
     title: t("tools.routesSelect"),
@@ -343,79 +386,270 @@ const selectModes = [
   },
   {
     title: t("tools.demandAdminAreas"),
-    value: "zones",
+    value: "district",
   },
   {
     title: t("tools.socialSavedDisplay"),
-    value: "areas",
+    value: "area",
   },
 ];
 const changeSelectMode = () => {
-  console.log("Select Mode:", selectMode.value);
+  console.log("Select Mode:", mapStore.routesSelectMode);
+  switch (mapStore.routesSelectMode) {
+    case "routes":
+      mapStore.turnOnLayer(mapStore.layersIdxs.ladsTraces);
+      mapStore.turnOffLayer(mapStore.layersIdxs.adminAreaSelect);
+      mapStore.turnOffLayer(mapStore.layersIdxs.cellsSaved);
+      break;
+
+    case "district":
+      mapStore.turnOnLayer(mapStore.layersIdxs.adminAreaSelect);
+      mapStore.turnOnLayer(mapStore.layersIdxs.adminBorder);
+      mapStore.turnOffLayer(mapStore.layersIdxs.cellsSaved);
+      break;
+
+    case "area":
+      mapStore.turnOnLayer(mapStore.layersIdxs.cellsSaved);
+      mapStore.turnOffLayer(mapStore.layersIdxs.adminAreaSelect);
+      break;
+
+    default:
+      mapStore.turnOffLayer(mapStore.layersIdxs.adminAreaSelect);
+      mapStore.turnOffLayer(mapStore.layersIdxs.cellsSaved);
+      break;
+  }
 };
 
+const modesName = [
+  {
+    name: t("tools.routesModeBus"),
+    mode: "Bus",
+  },
+  {
+    name: t("tools.routesModeTrolley"),
+    mode: "Trolley",
+  },
+  {
+    name: t("tools.routesModeSubway"),
+    mode: "Subway",
+  },
+  {
+    name: t("tools.routesModeOther"),
+    mode: "Unknown",
+  },
+];
+const processModeSelect = () => {
+  const filterData = {
+    layerIdx: mapStore.layersIdxs.ladsTraces,
+    filterProps: [
+      "any",
+      [
+        "all",
+        ["boolean", mapStore.modesDisplay[0].shown],
+        ["==", ["get", "mode"], mapStore.modesDisplay[0].mode],
+      ],
+      [
+        "all",
+        ["boolean", mapStore.modesDisplay[1].shown],
+        ["==", ["get", "mode"], mapStore.modesDisplay[1].mode],
+      ],
+      [
+        "all",
+        ["boolean", mapStore.modesDisplay[2].shown],
+        ["==", ["get", "mode"], mapStore.modesDisplay[2].mode],
+      ],
+      [
+        "all",
+        ["boolean", mapStore.modesDisplay[3].shown],
+        ["==", ["get", "mode"], mapStore.modesDisplay[3].mode],
+      ],
+    ],
+  };
+  mapStore.newLayerFilter = filterData;
+};
+const updateModeColor = (mode) => {
+  switch (mode.mode) {
+    case "Bus":
+      mapStore.busColor = mode.color;
+      break;
+
+    case "Trolley":
+      mapStore.trolleyColor = mode.color;
+      break;
+
+    case "Subway":
+      mapStore.subwayColor = mode.color;
+      break;
+
+    case "Unknown":
+      mapStore.skeletonColor = mode.color;
+      break;
+
+    default:
+      break;
+  }
+};
+
+//
+// Search & Distribution
+//
 const showDistribution = ref(false);
 const showSearch = ref(false);
 
-// const showSkeleton = ref(true);
-// const showStops = ref(false);
+const searchData = computed(() => {
+  // return mapStore.currentRoutesGroup == null ||
+  //   mapStore.useCurrentRoutesGroup == false
+  //   ? mapStore.ladsData.map((lad) => ({
+  //       id: lad.ladId,
+  //       name: `(${lad.ladId}) ${lad.line} -> ${lad.dir}`,
+  //     }))
+  //   : mapStore.currentRoutesGroup.routes.map((lad) => ({
+  //       id: lad.id,
+  //       name: `(${lad.id}) ${lad.name}`,
+  //     }));
+  const ids =
+    mapStore.currentRoutesGroup == null ||
+    mapStore.useCurrentRoutesGroup == false
+      ? mapStore.ladsData.map((lad) => lad.ladId)
+      : mapStore.currentRoutesGroup.routes.map((lad) => lad.id);
+  const result = ids.map((id) => {
+    const lad = mapStore.ladsData.find((lad) => lad.ladId == id);
+    if (lad) {
+      const startSite = mapStore.sitesData.find(
+        (site) => site.id == lad?.startId
+      );
+      const endSite = mapStore.sitesData.find((site) => site.id == lad?.endId);
+      return {
+        id,
+        name: `(${id}) ${lad?.line} -> ${lad?.dir} "${startSite?.name} - ${endSite?.name}"`,
+      };
+    } else {
+      return `(${id}) Not found`;
+    }
+  });
+  return result;
+});
 
-// const skeletonColor = ref("#757575");
-// const skeletonColorSelect = () => {
-//   console.log("Skeleton color select");
-// };
-
-const clearSelectedLads = () => {
-  console.log("Clear selected");
+const processSearchResults = (ids) => {
+  ids.forEach((id) => mapStore.routesSelectedIds.add(id));
 };
 
-const savedLadsMock = ref([
-  {
-    name: "Central routes",
-    count: 8,
-  },
-  {
-    name: "Routes from area 1",
-    count: 15,
-  },
-  {
-    name: "Routes with very long name and description",
-    count: 15,
-  },
-]);
-const savedStopsMock = [
-  {
-    name: "Stops around Hospital",
-    count: 9,
-  },
-  {
-    name: "Central stops",
-    count: 57,
-  },
-];
+const addSelectedRoutes = () => {
+  if (mapStore.currentRoutesGroup) {
+    // Exist - add items to if new selected
+    mapStore.routesSelectedIds.forEach((id) => {
+      if (!mapStore.currentRoutesGroup.ids.has(id)) {
+        mapStore.currentRoutesGroup.ids.add(id);
+        mapStore.currentRoutesGroup.routes.push({
+          id: id,
+          name: mapStore.getRouteName(id),
+          shown: true,
+        });
+      }
+    });
+  } else {
+    // Not Exist - create new group
+    mapStore.currentRoutesGroup = {
+      name: null,
+      ids: new Set(mapStore.routesSelectedIds),
+      routes: [...mapStore.routesSelectedIds].map((id) => ({
+        id: id,
+        name: mapStore.getRouteName(id),
+        shown: true,
+      })),
+    };
+  }
+  mapStore.useCurrentRoutesGroup = true;
+  mapStore.routesSelectedIds.clear();
+};
 
-const groupTabs = ["lads", "sites"];
-const tabSelected = ref("lads");
-const getSavedNumber = (name) => {
-  return name == "lads" ? savedLadsMock.value.length : savedStopsMock.length;
+const replaceWithSelectedRoutes = () => {
+  mapStore.currentRoutesGroup = {
+    name: null,
+    ids: new Set(mapStore.routesSelectedIds),
+    routes: [...mapStore.routesSelectedIds].map((id) => ({
+      id: id,
+      name: mapStore.getRouteName(id),
+      shown: true,
+    })),
+  };
+  if (!mapStore.useCurrentRoutesGroup) {
+    mapStore.useCurrentRoutesGroup = true;
+  }
+  mapStore.routesSelectedIds.clear();
+};
+
+const clearSelectedRoutes = () => {
+  mapStore.routesSelectedIds.clear();
+};
+
+const groupTabs = ["routes", "sites"];
+const tabSelected = ref("routes");
+const getSavedNumber = (tab) => {
+  return tab == "routes"
+    ? mapStore.savedRoutesGroups.length
+    : mapStore.savedSitesGroups.length;
 };
 const getSavedName = (tab) => {
-  return tab == "lads" ? t("tools.routesLads") : t("tools.sitesSites");
+  return tab == "routes" ? t("tools.routesLads") : t("tools.sitesSites");
 };
 
-const selectLadGroup = (ladGroup) => {
-  console.log("Select", ladGroup);
+const searchGroupsString = ref("");
+const siteGroupsFiltered = computed(() => {
+  return tabSelected.value == "sites"
+    ? mapStore.savedSitesGroups.filter((group) =>
+        group.name
+          .toLowerCase()
+          .includes(searchGroupsString.value.toLowerCase())
+      )
+    : mapStore.savedSitesGroups;
+});
+const routesGroupsFiltered = computed(() => {
+  return tabSelected.value == "routes"
+    ? mapStore.savedRoutesGroups.filter((group) =>
+        group.name
+          .toLowerCase()
+          .includes(searchGroupsString.value.toLowerCase())
+      )
+    : mapStore.savedRoutesGroups;
+});
+
+const selectRoutesGroup = (group) => {
+  routesGroupName.value = group.name;
+  mapStore.currentRoutesGroup = _.cloneDeep(group);
+  mapStore.useCurrentRoutesGroup = true;
 };
-const deleteLadGroup = (ladGroup) => {
-  console.log("Delete", ladGroup);
-  savedLadsMock.value.splice(ladGroup, 1);
-  console.log("LADs:", savedLadsMock.value);
+const deleteRoutesGroup = (group) => {
+  console.log("Delete", group);
+  mapStore.savedRoutesGroups = mapStore.savedRoutesGroups.filter(
+    (item) => item.name != group.name
+  );
 };
-const selectStopsGroup = (item) => {
-  console.log("Select stops group", item);
+const selectSitesGroup = (group) => {
+  console.log("Select stops group", group);
+  mapStore.currentSitesGroup = _.cloneDeep(group);
+  mapStore.useCurrentSiteGroup = true;
+
+  const ladsIds = new Set();
+  group.ids.forEach((id) => {
+    const data = mapStore.getLadsBySite(id);
+    data.forEach((ladId) => ladsIds.add(ladId));
+  });
+  console.log("LADs found", ladsIds);
+  if (mapStore.useCurrentRoutesGroup) {
+    ladsIds.forEach((id) => {
+      if (!mapStore.currentRoutesGroup.ids.has(id)) {
+        ladsIds.delete(id);
+      }
+    });
+  }
+  mapStore.routesSelectedIds = ladsIds;
 };
-const deleteStopsGroup = (item) => {
-  console.log("Delete stops group", item);
+const deleteSitesGroup = (group) => {
+  console.log("Delete stops group", group);
+  mapStore.savedSitesGroups = mapStore.savedSitesGroups.filter(
+    (item) => item.name != group.name
+  );
 };
 
 // LAD Group
@@ -438,73 +672,130 @@ const ladDisplayOptions = [
   },
 ];
 
-const ladsInGroupMock = ref([
-  {
-    id: 101,
-    name: "1-0-1",
-    color: "#DCE775",
-    shown: true,
-  },
-  {
-    id: 102,
-    name: "1-0-2",
-    color: "#C0CA33",
-    shown: true,
-  },
-  {
-    id: 201,
-    name: "M-0-1",
-    color: "#FF4081",
-    shown: false,
-  },
-  {
-    id: 202,
-    name: "M-0-2",
-    color: "#C51162",
-    shown: true,
-  },
-]);
+// const ladsInGroupMock = ref([
+//   {
+//     id: 101,
+//     name: "1-0-1",
+//     color: "#DCE775",
+//     shown: true,
+//   },
+//   {
+//     id: 102,
+//     name: "1-0-2",
+//     color: "#C0CA33",
+//     shown: true,
+//   },
+//   {
+//     id: 201,
+//     name: "M-0-1",
+//     color: "#FF4081",
+//     shown: false,
+//   },
+//   {
+//     id: 202,
+//     name: "M-0-2",
+//     color: "#C51162",
+//     shown: true,
+//   },
+// ]);
 
 const processCloseGroup = () => {
   console.log("Close Group panel");
+  mapStore.currentRoutesGroup = null;
+  mapStore.useCurrentRoutesGroup = false;
+  routesGroupName.value = null;
+  // mapStore.siteSizeStep = defaultSizeStep;
+  // mapStore.siteColorMode = null;
+  // mapStore.siteSizeMode = null;
+  // mapStore.turnOffLayer(mapStore.layersIdxs.sitesAnalytics);
+  // mapStore.turnOnLayer(mapStore.layersIdxs.sitesCentroids);
 };
 
-const searchLad = ref("");
-
-const toggleLadShown = (ladIdx) => {
-  ladsInGroupMock.value[ladIdx].shown = !ladsInGroupMock.value[ladIdx].shown;
-};
-
-const ladGroupName = ref(null);
-const readyToSave = computed(() => {
-  return ladGroupName.value?.length > 0;
+const searchRoute = ref("");
+const routesFiltered = computed(() => {
+  return mapStore.currentRoutesGroup.routes.filter((route) =>
+    (route.name.toLowerCase() + route.id.toString()).includes(
+      searchRoute.value.toLowerCase()
+    )
+  );
 });
-const saveLadGroup = () => {
-  console.log("Save LadGroup", ladGroupName.value);
+
+const toggleRouteShown = (id) => {
+  const route = mapStore.currentRoutesGroup.routes.find(
+    (item) => item.id == id
+  );
+  route.shown = !route.shown;
 };
 
-const selectSavedLad = (lad) => {
-  console.log("LAD selected", lad);
+const routesGroupName = ref(null);
+const readyToSave = computed(() => {
+  return routesGroupName.value?.length > 0;
+});
+const saveRoutesGroup = () => {
+  console.log("Save Routes Group", routesGroupName.value);
+  const savedGroupIdx = mapStore.savedRoutesGroups.findIndex(
+    (group) => group.name == routesGroupName.value
+  );
+  // console.log("Found Index", savedGroupIdx);
+  if (savedGroupIdx != -1) {
+    console.log("Update Group");
+    mapStore.updateSavedRoutesGroup(
+      savedGroupIdx,
+      _.cloneDeep({
+        ...mapStore.currentRoutesGroup,
+        name: routesGroupName.value,
+      })
+    );
+  } else {
+    console.log("Save New Group");
+    mapStore.savedRoutesGroups.push(
+      _.cloneDeep({
+        ...mapStore.currentRoutesGroup,
+        name: routesGroupName.value,
+      })
+    );
+  }
 };
-const deleteLad = (lad) => {
-  console.log("Delete LAD", lad.name);
+
+const selectSavedRoute = (route) => {
+  if (mapStore.routesSelectedIds.has(route.id)) {
+    mapStore.routesSelectedIds.delete(route.id);
+  } else {
+    mapStore.routesSelectedIds.add(route.id);
+  }
+};
+const isRouteSelected = (id) => {
+  return mapStore.routesSelectedIds.has(id);
+};
+
+const deleteRoute = (route) => {
+  console.log("Delete LAD", route);
+  mapStore.currentRoutesGroup.ids.delete(route.id);
+  mapStore.currentRoutesGroup.routes =
+    mapStore.currentRoutesGroup.routes.filter((item) => item.id != route.id);
+  if (mapStore.routesSelectedIds.has(route.id)) {
+    mapStore.routesSelectedIds.delete(route.id);
+  }
+  if (mapStore.currentRoutesGroup.routes.length == 0) {
+    processCloseGroup();
+  }
 };
 // const ladColorSelect = (ladName) => {
 //   console.log("Select Color for LAD:", ladName);
 // };
-const ladColorUpdate = (color) => {
-  console.log("Set New color to:", color);
-};
+// const ladColorUpdate = (color) => {
+//   console.log("Set New color to:", color);
+// };
 </script>
 
 <style scoped>
 .data-block {
   overflow: auto;
-  max-height: calc(100vh - 582px);
+  max-height: calc(100vh - 620px);
 }
 .data-lad-group {
   overflow: auto;
-  max-height: calc(100vh - 470px);
+  max-height: calc(100vh - 510px);
 }
 .lad-group {
   position: absolute;

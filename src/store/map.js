@@ -6,7 +6,7 @@ import { ref, computed } from "vue";
 export const useMapStore = defineStore("mapStore", () => {
   const userSettingsShown = ref(false);
 
-  const version = "0.0.3c";
+  const version = "0.0.3f";
 
   const mapStyles = [
     { value: 0, title: "Streets", uri: "mapbox://styles/mapbox/streets-v12" },
@@ -42,9 +42,10 @@ export const useMapStore = defineStore("mapStore", () => {
     sitesSelected: 16,
     sitesAnalytics: 17,
     ladsTraces: 18,
-    measurePoints: 19,
-    measureLines: 20,
-    measureLabels: 21,
+    ladsSelected: 19,
+    measurePoints: 20,
+    measureLines: 21,
+    measureLabels: 22,
   };
   const layers = ref([
     { idx: 0, name: "admin-areas-border", shown: false },
@@ -66,9 +67,10 @@ export const useMapStore = defineStore("mapStore", () => {
     { idx: 16, name: "sites-selected", shown: false },
     { idx: 17, name: "sites-analytics", shown: false },
     { idx: 18, name: "lads-traces", shown: false },
-    { idx: 19, name: "measure-points", shown: false },
-    { idx: 20, name: "measure-lines", shown: false },
-    { idx: 21, name: "measure-labels", shown: false },
+    { idx: 19, name: "lads-selected", shown: false },
+    { idx: 20, name: "measure-points", shown: false },
+    { idx: 21, name: "measure-lines", shown: false },
+    { idx: 22, name: "measure-labels", shown: false },
   ]);
 
   const turnOnLayer = (idx) => {
@@ -349,7 +351,7 @@ export const useMapStore = defineStore("mapStore", () => {
   const useCurrentSiteGroup = ref(false);
 
   const savedSitesGroups = ref([]);
-  const updatedSaveSitesGroup = (idx, groupData) => {
+  const updateSavedSitesGroup = (idx, groupData) => {
     savedSitesGroups.value[idx] = groupData;
   };
   const siteSizeMode = ref(null);
@@ -359,7 +361,121 @@ export const useMapStore = defineStore("mapStore", () => {
   //
   // Routes data
   //
+  const routesSelectMode = ref(null);
+
+  const routesSelectedIds = ref(new Set());
+  const useCurrentRoutesGroup = ref(false);
+  const currentRoutesGroup = ref(null);
+  const savedRoutesGroups = ref([]);
+  const updateSavedRoutesGroup = (idx, groupData) => {
+    savedRoutesGroups.value[idx] = groupData;
+  };
+
   const skeletonColor = ref("#616161");
+  const busColor = ref("#00b300");
+  const trolleyColor = ref("#00ace6");
+  const subwayColor = ref("#ff3300");
+
+  const modesDisplay = ref([
+    {
+      mode: "Bus",
+      color: busColor.value,
+      shown: true,
+    },
+    {
+      mode: "Trolley",
+      color: trolleyColor.value,
+      shown: true,
+    },
+    {
+      mode: "Subway",
+      color: subwayColor.value,
+      shown: true,
+    },
+    {
+      mode: "Unknown",
+      color: skeletonColor.value,
+      shown: true,
+    },
+  ]);
+
+  const linesData = ref([]);
+  const ladsData = ref([]);
+  const routesData = ref([]);
+
+  const loadRoutesData = async () => {
+    if (linesData.value.length == 0) {
+      await axios
+        .get("Almaty_lines.json")
+        .then((result) => (linesData.value = result.data))
+        .catch((err) => console.warn("Error loading Lines data", err));
+    }
+    if (ladsData.value.length == 0) {
+      await axios
+        .get("Almaty_lads.json")
+        .then((result) => (ladsData.value = result.data))
+        .catch((err) => console.warn("Error loading LADs data", err));
+    }
+    if (routesData.value.length == 0) {
+      await axios
+        .get("Almaty_routes.json")
+        .then((result) => (routesData.value = result.data))
+        .catch((err) => console.warn("Error loading Routes data", err));
+    }
+    console.log(
+      "Loaded Routes Data",
+      linesData.value.length,
+      ladsData.value.length,
+      routesData.value.length
+    );
+  };
+
+  const getRouteName = (id) => {
+    const lad = ladsData.value.find((lad) => lad.ladId == id);
+    const line = linesData.value.find((line) => line.line == lad?.line);
+    const mode = line ? line.mode : "Unknown";
+    return lad ? lad.line + " -> " + lad.dir + " (" + mode + ")" : "Not found";
+  };
+  const getModeColor = (id) => {
+    let color = skeletonColor.value;
+    const lad = ladsData.value.find((lad) => lad.ladId == id);
+    const line = linesData.value.find((line) => line.line == lad?.line);
+    if (lad && line) {
+      const mode = line.mode;
+      switch (mode) {
+        case "Bus":
+          color = busColor.value;
+          break;
+        case "Trolley":
+          color = trolleyColor.value;
+          break;
+        case "Subway":
+          color = subwayColor.value;
+          break;
+
+        default:
+          break;
+      }
+    }
+
+    return color;
+  };
+
+  const getLadsBySite = (id) => {
+    const ladsIds = routesData.value
+      .filter((item) => item.siteId == id)
+      .map((item) => item.ladId);
+    const result = new Set(ladsIds);
+    return [...result];
+  };
+
+  const getSitesByLad = (id) => {
+    const sitesIds = routesData.value
+      .filter((item) => item.ladId == id)
+      .map((item) => item.siteId);
+    const result = new Set(sitesIds);
+    return [...result];
+  };
 
   //
   // Connectivity data
@@ -589,27 +705,6 @@ export const useMapStore = defineStore("mapStore", () => {
     clearSelectedCells,
     clearSelectedColorMode,
 
-    // Routes
-    skeletonColor,
-
-    // Sites
-    sitesData,
-    loadSitesData,
-    getSiteName,
-    getSiteStopIds,
-    getSitesByDistrict,
-    sitesColor,
-    centroidsColor,
-    stopsColor,
-    sitesSelectionMode,
-    selectedSiteIds,
-    currentSitesGroup,
-    useCurrentSiteGroup,
-    savedSitesGroups,
-    updatedSaveSitesGroup,
-    siteSizeMode,
-    siteColorMode,
-    siteSizeStep,
     // demandConnectData, // FIXME: Access by getters
     loadDemandConnectData,
     getDemandFrom,
@@ -629,6 +724,48 @@ export const useMapStore = defineStore("mapStore", () => {
     demandProcessItems,
     demandResetData,
     getZoneIdsByDistrict,
+
+    // Routes
+    routesSelectMode,
+    routesSelectedIds,
+    skeletonColor,
+    busColor,
+    trolleyColor,
+    subwayColor,
+    modesDisplay,
+    linesData,
+    ladsData,
+    routesData,
+    loadRoutesData,
+    useCurrentRoutesGroup,
+    currentRoutesGroup,
+    savedRoutesGroups,
+    updateSavedRoutesGroup,
+    getRouteName,
+    getModeColor,
+    getLadsBySite,
+    getSitesByLad,
+
+    // Sites
+    sitesData,
+    loadSitesData,
+    getSiteName,
+    getSiteStopIds,
+    getSitesByDistrict,
+    sitesColor,
+    centroidsColor,
+    stopsColor,
+    sitesSelectionMode,
+    selectedSiteIds,
+    currentSitesGroup,
+    useCurrentSiteGroup,
+    savedSitesGroups,
+    updateSavedSitesGroup,
+    siteSizeMode,
+    siteColorMode,
+    siteSizeStep,
+
+    //Connectivity
     connectivityType,
     connectivityDirection,
     connectivityGeneralDirection,

@@ -130,10 +130,11 @@
         <v-row dense class="mt-2" no-gutters>
           <v-col cols="9" class="mb-1">
             {{ $t("tools.sitesSelected") }}:
-            <strong class="ml-2">{{
+            <span class="ml-3 font-weight-bold">{{
               mapStore.selectedSiteIds.size
-            }}</strong> </v-col
-          ><v-col cols="3">
+            }}</span>
+          </v-col>
+          <v-col cols="3">
             <span v-show="mapStore.selectedSiteIds.size > 0">
               <v-btn
                 v-if="!mapStore.useCurrentSiteGroup"
@@ -204,7 +205,7 @@
           </v-tab>
         </v-tabs>
         <v-window v-model="tabSelected">
-          <v-window-item value="lads">
+          <v-window-item value="routes">
             <v-list density="compact">
               <v-list-item
                 v-for="(ladGroup, idx) in ladGroupsFiltered"
@@ -212,7 +213,7 @@
                 @click="selectLadGroup(ladGroup)"
               >
                 <v-list-item-title class="text-body-2">
-                  {{ idx + 1 }}. {{ ladGroup.name }} ({{ ladGroup.count }})
+                  {{ idx + 1 }}. {{ ladGroup.name }} ({{ ladGroup.ids.size }})
                 </v-list-item-title>
                 <template #append>
                   <v-btn
@@ -220,7 +221,7 @@
                     size="small"
                     flat
                     icon="mdi-trash-can-outline"
-                    @click.stop="deleteLadGroup(idx)"
+                    @click.stop="deleteRoutesGroup(ladGroup)"
                   >
                   </v-btn>
                 </template>
@@ -446,6 +447,7 @@ console.log("🟢🟢 Re-executes Site Tools");
 
 onMounted(async () => {
   await mapStore.loadSitesData();
+  await mapStore.loadRoutesData();
 
   // FIXME: Data loading with backend
   if (sitesStats == null) {
@@ -484,18 +486,18 @@ const siteGroupsFiltered = computed(() => {
     : mapStore.savedSitesGroups;
 });
 const ladGroupsFiltered = computed(() => {
-  return tabSelected.value == "lads"
-    ? savedLadsMock.value.filter((group) =>
+  return tabSelected.value == "routes"
+    ? mapStore.savedRoutesGroups.filter((group) =>
         group.name
           .toLowerCase()
           .includes(searchGroupsString.value.toLowerCase())
       )
-    : savedLadsMock.value;
+    : mapStore.savedRoutesGroups;
 });
 
 const selectModes = [
   {
-    title: t("tools.stopsSitesSelect"),
+    title: t("tools.sitesSelect"),
     value: "sites",
   },
   {
@@ -556,6 +558,7 @@ const processSearchResults = (ids) => {
 
 //
 // Distribution logic
+//
 let sitesDataForDistribution = [];
 let categoriesSelected = ref({});
 let distributedItems = ref({});
@@ -688,49 +691,43 @@ const replaceWithSelectedSites = () => {
   mapStore.selectedSiteIds.clear();
 };
 
-const savedLadsMock = ref([
-  {
-    name: "Central routes",
-    count: 8,
-  },
-  {
-    name: "Routes from area 1",
-    count: 15,
-  },
-  {
-    name: "Routes with very long name and description",
-    count: 15,
-  },
-]);
-// const savedSitesMock = [
-//   {
-//     name: "Stops around Hospital",
-//     count: 9,
-//   },
-//   {
-//     name: "Central stops",
-//     count: 57,
-//   },
-// ];
-
-const groupTabs = ["lads", "sites"];
+const groupTabs = ["routes", "sites"];
 const tabSelected = ref("sites");
 const getSavedName = (tab) => {
-  return tab == "lads" ? t("tools.routesLads") : t("tools.sitesSites");
+  return tab == "routes" ? t("tools.routesLads") : t("tools.sitesSites");
 };
 const getSavedNumber = (tab) => {
-  return tab == "lads"
-    ? savedLadsMock.value.length
+  return tab == "routes"
+    ? mapStore.savedRoutesGroups.length
     : mapStore.savedSitesGroups.length;
 };
 
-const selectLadGroup = (ladGroup) => {
-  console.log("Select", ladGroup);
+const selectLadGroup = (group) => {
+  console.log("Select", group);
+  mapStore.currentRoutesGroup = _.cloneDeep(group);
+  mapStore.useCurrentRoutesGroup = true;
+
+  const sitesIds = new Set();
+  group.ids.forEach((id) => {
+    const data = mapStore.getSitesByLad(id);
+    data.forEach((siteId) => sitesIds.add(siteId));
+  });
+  console.log("Sites found", sitesIds);
+  if (mapStore.useCurrentSiteGroup) {
+    console.log("Current Group", mapStore.currentSitesGroup);
+    sitesIds.forEach((id) => {
+      if (!mapStore.currentSitesGroup.ids.has(id)) {
+        sitesIds.delete(id);
+      }
+    });
+  }
+  mapStore.selectedSiteIds = sitesIds;
 };
-const deleteLadGroup = (ladGroup) => {
-  console.log("Delete", ladGroup);
-  savedLadsMock.value.splice(ladGroup, 1);
-  console.log("LADs:", savedLadsMock.value);
+const deleteRoutesGroup = (group) => {
+  console.log("Delete", group);
+  mapStore.savedRoutesGroups = mapStore.savedRoutesGroups.filter(
+    (item) => item.name != group.name
+  );
 };
 const selectSitesGroup = (item) => {
   console.log("Select sites group", item);
@@ -806,7 +803,7 @@ const saveSitesGroup = () => {
   // console.log("Found Index", savedGroupIdx);
   if (savedGroupIdx != -1) {
     console.log("Update");
-    mapStore.updatedSaveSitesGroup(
+    mapStore.updateSavedSitesGroup(
       savedGroupIdx,
       _.cloneDeep({
         ...mapStore.currentSitesGroup,
@@ -881,9 +878,9 @@ const applyAnalyticsDisplay = () => {
   //   siteSizeMode.value,
   //   siteSizeStep.value
   // );
-  if (mapStore.siteColorMode == null && mapStore.siteSizeMode == null) {
-    return;
-  }
+  // if (mapStore.siteColorMode == null && mapStore.siteSizeMode == null) {
+  //   return;
+  // }
   const paintProps = {};
   if (mapStore.siteSizeMode != null) {
     const sizeStep = mapStore.siteSizeStep
@@ -894,9 +891,11 @@ const applyAnalyticsDisplay = () => {
       ["+", ["get", mapStore.siteSizeMode], 1],
       sizeStep,
     ];
-    if (mapStore.siteColorMode == null) {
-      paintProps["circle-color"] = defaultSiteColor;
-    }
+    // if (mapStore.siteColorMode == null) {
+    //   paintProps["circle-color"] = defaultSiteColor;
+    // }
+  } else {
+    paintProps["circle-radius"] = defaultSizeStep * 3;
   }
   if (mapStore.siteColorMode != null) {
     paintProps["circle-color"] = {
@@ -910,9 +909,11 @@ const applyAnalyticsDisplay = () => {
         [5, "#ff0000"],
       ],
     };
-    if (mapStore.siteSizeMode == null) {
-      paintProps["circle-radius"] = defaultSizeStep * 3;
-    }
+    // if (mapStore.siteSizeMode == null) {
+    //   paintProps["circle-radius"] = defaultSizeStep * 3;
+    // }
+  } else {
+    paintProps["circle-color"] = defaultSiteColor;
   }
 
   console.log("Props to apply", paintProps);

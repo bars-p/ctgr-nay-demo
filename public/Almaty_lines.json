@@ -1,0 +1,722 @@
+[
+ {
+   "line": "1",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "2",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "4",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "5",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "5А",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "5Б",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "5В",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "7",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "8",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "10",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "11",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "12",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "13",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "14",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "15",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "16",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "17",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "18",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "19",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "20",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "21",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "22",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "23",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "25",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "27",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "28",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "29",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "29P",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "30",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "31",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "32",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "34",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "36",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "37",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "38",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "40",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "41",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "42",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "44",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "45",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "46",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "47",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "48",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "50",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "51",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "52",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "56",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "57",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "59",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "60",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "62",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "63",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "65",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "66",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "67",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "68",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "69",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "70",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "71",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "72",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "73",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "74",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "77",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "78",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "79",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "80",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "81",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "85",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "86",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "92",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "95",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "98",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "99",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "102",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "103",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "104",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "104а",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "106",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "110",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "111",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "112",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "113",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "115",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "116",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "117",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "118",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "119",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "120",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "120A",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "121",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "122",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "123",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "124",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "125",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "125А",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "126",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "127",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "128",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "129",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "131",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "133ш",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "135",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "137",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "141",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "201",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "202",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "203",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "204",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "205",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Rapid"
+ },
+ {
+   "line": "206",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "207",
+   "mode": "Bus",
+   "pow": "Diesel",
+   "service": "Regular"
+ },
+ {
+   "line": "ТП1",
+   "mode": "Trolley",
+   "pow": "Elecrtro",
+   "service": "Regular"
+ },
+ {
+   "line": "ТП5",
+   "mode": "Trolley",
+   "pow": "Elecrtro",
+   "service": "Regular"
+ },
+ {
+   "line": "ТП7",
+   "mode": "Trolley",
+   "pow": "Elecrtro",
+   "service": "Regular"
+ },
+ {
+   "line": "ТП9",
+   "mode": "Trolley",
+   "pow": "Elecrtro",
+   "service": "Regular"
+ },
+ {
+   "line": "ТП11",
+   "mode": "Trolley",
+   "pow": "Elecrtro",
+   "service": "Regular"
+ },
+ {
+   "line": "ТП12",
+   "mode": "Trolley",
+   "pow": "Elecrtro",
+   "service": "Regular"
+ },
+ {
+   "line": "ТП19",
+   "mode": "Trolley",
+   "pow": "Elecrtro",
+   "service": "Regular"
+ },
+ {
+   "line": "ТП25",
+   "mode": "Trolley",
+   "pow": "Elecrtro",
+   "service": "Regular"
+ },
+ {
+   "line": "М1",
+   "mode": "Subway",
+   "pow": "Elecrtro",
+   "service": "Rapid"
+ }
+]
