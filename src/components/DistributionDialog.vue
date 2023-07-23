@@ -226,6 +226,7 @@ const distribute = () => {
   emit("distributed", distributedItems);
 
   distribution.value = dataObject;
+  isAnySelected.value = false;
 };
 
 // const distribution = computed(() => {
