@@ -1,1335 +1,1335 @@
 [
-  {
-    "name": "LAD length (km)",
-    "field": "len",
-    "fieldGroup": "len_gr",
-    "levels": [
+ {
+   "name": "LAD length (km)",
+   "field": "len",
+   "fieldGroup": "len_gr",
+   "levels": [
       {
-        "name": "Very short",
-        "details": "(0 - 8)"
+         "name": "Very short",
+         "details": "(0 - 8)"
       },
       {
-        "name": "Short",
-        "details": "(8 - 16)"
+         "name": "Short",
+         "details": "(8 - 16)"
       },
       {
-        "name": "Average",
-        "details": "(16 - 24)"
+         "name": "Average",
+         "details": "(16 - 24)"
       },
       {
-        "name": "Long",
-        "details": "(24 - 32)"
+         "name": "Long",
+         "details": "(24 - 32)"
       },
       {
-        "name": "Very long",
-        "details": "(32 - 40)"
+         "name": "Very long",
+         "details": "(32 - 40)"
       },
       {
-        "name": "Extreme",
-        "details": "(40+)"
+         "name": "Extreme",
+         "details": "(40+)"
       }
-    ]
-  },
-  {
-    "name": "LAD stops number",
-    "field": "st",
-    "fieldGroup": "st_gr",
-    "levels": [
+   ]
+},
+ {
+   "name": "LAD stops number",
+   "field": "st",
+   "fieldGroup": "st_gr",
+   "levels": [
       {
-        "name": "Very low",
-        "details": "(0 - 10)"
+         "name": "Very low",
+         "details": "(0 - 10)"
       },
       {
-        "name": "Low",
-        "details": "(10 - 20)"
+         "name": "Low",
+         "details": "(10 - 20)"
       },
       {
-        "name": "Average",
-        "details": "(20 - 30)"
+         "name": "Average",
+         "details": "(20 - 30)"
       },
       {
-        "name": "High",
-        "details": "(30 - 40)"
+         "name": "High",
+         "details": "(30 - 40)"
       },
       {
-        "name": "Very high",
-        "details": "(40 - 50)"
+         "name": "Very high",
+         "details": "(40 - 50)"
       },
       {
-        "name": "Huge",
-        "details": "(50+)"
+         "name": "Huge",
+         "details": "(50+)"
       }
-    ]
-  },
-  {
-    "name": "Segment length average (m)",
-    "field": "seg_avg",
-    "fieldGroup": "seg_avg_gr",
-    "levels": [
+   ]
+},
+ {
+   "name": "Segment length average (m)",
+   "field": "seg_avg",
+   "fieldGroup": "seg_avg_gr",
+   "levels": [
       {
-        "name": "Very short",
-        "details": "(0 - 1000)"
+         "name": "Very short",
+         "details": "(0 - 150)"
       },
       {
-        "name": "Short",
-        "details": "(1000 - 2000)"
+         "name": "Short",
+         "details": "(150 - 300)"
       },
       {
-        "name": "Average",
-        "details": "(2000 - 3000)"
+         "name": "Average",
+         "details": "(300 - 500)"
       },
       {
-        "name": "Long",
-        "details": "(3000 - 4000)"
+         "name": "Long",
+         "details": "(500 - 800)"
       },
       {
-        "name": "Very long",
-        "details": "(4000 - 5000)"
+         "name": "Very long",
+         "details": "(4000 - 5000)"
       },
       {
-        "name": "Extreme",
-        "details": "(5000+)"
+         "name": "Extreme",
+         "details": "(1500+)"
       }
-    ]
-  },
-  {
-    "name": "Segment length maximum (m)",
-    "field": "seg_max",
-    "fieldGroup": "seg_max_gr",
-    "levels": [
+   ]
+},
+ {
+   "name": "Segment length maximum (m)",
+   "field": "seg_max",
+   "fieldGroup": "seg_max_gr",
+   "levels": [
       {
-        "name": "Very short",
-        "details": "(0 - 2400)"
+         "name": "Very short",
+         "details": "(0 - 300)"
       },
       {
-        "name": "Short",
-        "details": "(2400 - 4800)"
+         "name": "Short",
+         "details": "(300 - 600)"
       },
       {
-        "name": "Average",
-        "details": "(4800 - 7200)"
+         "name": "Average",
+         "details": "(600 - 1000)"
       },
       {
-        "name": "Long",
-        "details": "(7200 - 9600)"
+         "name": "Long",
+         "details": "(1000 - 1600)"
       },
       {
-        "name": "Very long",
-        "details": "(9600 - 12000)"
+         "name": "Very long",
+         "details": "(9600 - 12000)"
       },
       {
-        "name": "Extreme",
-        "details": "(12000+)"
+         "name": "Extreme",
+         "details": "(3000+)"
       }
-    ]
-  },
-  {
-    "name": "Segment length minimum (m)",
-    "field": "seg_min",
-    "fieldGroup": "seg_min_gr",
-    "levels": [
+   ]
+},
+ {
+   "name": "Segment length minimum (m)",
+   "field": "seg_min",
+   "fieldGroup": "seg_min_gr",
+   "levels": [
       {
-        "name": "Very short",
-        "details": "(0 - 1000)"
+         "name": "Very short",
+         "details": "(0 - 75)"
       },
       {
-        "name": "Short",
-        "details": "(1000 - 2000)"
+         "name": "Short",
+         "details": "(75 - 150)"
       },
       {
-        "name": "Average",
-        "details": "(2000 - 3000)"
+         "name": "Average",
+         "details": "(150 - 250)"
       },
       {
-        "name": "Long",
-        "details": "(3000 - 4000)"
+         "name": "Long",
+         "details": "(250 - 400)"
       },
       {
-        "name": "Very long",
-        "details": "(4000 - 5000)"
+         "name": "Very long",
+         "details": "(4000 - 5000)"
       },
       {
-        "name": "Extreme",
-        "details": "(5000+)"
+         "name": "Extreme",
+         "details": "(750+)"
       }
-    ]
-  },
-  {
-    "name": "Segment length variation",
-    "field": "seg_var",
-    "fieldGroup": "seg_var_gr",
-    "levels": [
+   ]
+},
+ {
+   "name": "Segment length variation",
+   "field": "seg_var",
+   "fieldGroup": "seg_var_gr",
+   "levels": [
       {
-        "name": "Very low",
-        "details": "(0% - 30%)"
+         "name": "Very low",
+         "details": "(0% - 30%)"
       },
       {
-        "name": "Low",
-        "details": "(30% - 60%)"
+         "name": "Low",
+         "details": "(30% - 60%)"
       },
       {
-        "name": "Average",
-        "details": "(60% - 90%)"
+         "name": "Average",
+         "details": "(60% - 90%)"
       },
       {
-        "name": "High",
-        "details": "(90% - 120%)"
+         "name": "High",
+         "details": "(90% - 120%)"
       },
       {
-        "name": "Very high",
-        "details": "(120% - 150%)"
+         "name": "Very high",
+         "details": "(120% - 150%)"
       },
       {
-        "name": "Huge",
-        "details": "(150%+)"
+         "name": "Huge",
+         "details": "(150%+)"
       }
-    ]
-  },
-  {
-    "name": "Run time (minutes)",
-    "field": "rt_mn",
-    "fieldGroup": "rt_mn_gr",
-    "levels": [
+   ]
+},
+ {
+   "name": "Run time (minutes)",
+   "field": "rt_mn",
+   "fieldGroup": "rt_mn_gr",
+   "levels": [
       {
-        "name": "Very low",
-        "details": "(0 - 25)"
+         "name": "Very low",
+         "details": "(0 - 25)"
       },
       {
-        "name": "Low",
-        "details": "(25 - 50)"
+         "name": "Low",
+         "details": "(25 - 50)"
       },
       {
-        "name": "Average",
-        "details": "(50 - 75)"
+         "name": "Average",
+         "details": "(50 - 75)"
       },
       {
-        "name": "High",
-        "details": "(75 - 100)"
+         "name": "High",
+         "details": "(75 - 100)"
       },
       {
-        "name": "Very high",
-        "details": "(100 - 125)"
+         "name": "Very high",
+         "details": "(100 - 125)"
       },
       {
-        "name": "Huge",
-        "details": "(125+)"
+         "name": "Huge",
+         "details": "(125+)"
       }
-    ]
-  },
-  {
-    "name": "Speed average (kmh)",
-    "field": "sp_avg",
-    "fieldGroup": "sp_avg_gr",
-    "levels": [
+   ]
+},
+ {
+   "name": "Speed average (kmh)",
+   "field": "sp_avg",
+   "fieldGroup": "sp_avg_gr",
+   "levels": [
       {
-        "name": "Very low",
-        "details": "(0 - 6)"
+         "name": "Very low",
+         "details": "(0 - 6)"
       },
       {
-        "name": "Low",
-        "details": "(6 - 12)"
+         "name": "Low",
+         "details": "(6 - 12)"
       },
       {
-        "name": "Average",
-        "details": "(12 - 18)"
+         "name": "Average",
+         "details": "(12 - 18)"
       },
       {
-        "name": "High",
-        "details": "(18 - 24)"
+         "name": "High",
+         "details": "(18 - 24)"
       },
       {
-        "name": "Very high",
-        "details": "(24 - 30)"
+         "name": "Very high",
+         "details": "(24 - 30)"
       },
       {
-        "name": "Extreme",
-        "details": "(30+)"
+         "name": "Extreme",
+         "details": "(30+)"
       }
-    ]
-  },
-  {
-    "name": "Speed max (kmh)",
-    "field": "sp_max",
-    "fieldGroup": "sp_max_gr",
-    "levels": [
+   ]
+},
+ {
+   "name": "Speed max (kmh)",
+   "field": "sp_max",
+   "fieldGroup": "sp_max_gr",
+   "levels": [
       {
-        "name": "Very low",
-        "details": "(0 - 15)"
+         "name": "Very low",
+         "details": "(0 - 15)"
       },
       {
-        "name": "Low",
-        "details": "(15 - 30)"
+         "name": "Low",
+         "details": "(15 - 30)"
       },
       {
-        "name": "Average",
-        "details": "(30 - 45)"
+         "name": "Average",
+         "details": "(30 - 45)"
       },
       {
-        "name": "High",
-        "details": "(45 - 60)"
+         "name": "High",
+         "details": "(45 - 60)"
       },
       {
-        "name": "Very high",
-        "details": "(60 - 75)"
+         "name": "Very high",
+         "details": "(60 - 75)"
       },
       {
-        "name": "Extreme",
-        "details": "(75+)"
+         "name": "Extreme",
+         "details": "(75+)"
       }
-    ]
-  },
-  {
-    "name": "Speed variation",
-    "field": "sp_coef",
-    "fieldGroup": "sp_coef_gr",
-    "levels": [
+   ]
+},
+ {
+   "name": "Speed variation",
+   "field": "sp_coef",
+   "fieldGroup": "sp_coef_gr",
+   "levels": [
       {
-        "name": "Very low",
-        "details": "(0 - 1)"
+         "name": "Very low",
+         "details": "(0 - 1)"
       },
       {
-        "name": "Low",
-        "details": "(1 - 2)"
+         "name": "Low",
+         "details": "(1 - 2)"
       },
       {
-        "name": "Average",
-        "details": "(2 - 3)"
+         "name": "Average",
+         "details": "(2 - 3)"
       },
       {
-        "name": "High",
-        "details": "(3 - 4)"
+         "name": "High",
+         "details": "(3 - 4)"
       },
       {
-        "name": "Very high",
-        "details": "(4 - 5)"
+         "name": "Very high",
+         "details": "(4 - 5)"
       },
       {
-        "name": "Huge",
-        "details": "(5+)"
+         "name": "Huge",
+         "details": "(5+)"
       }
-    ]
-  },
-  {
-    "name": "Trips per hour number",
-    "field": "trips",
-    "fieldGroup": "trips_gr",
-    "levels": [
+   ]
+},
+ {
+   "name": "Trips per hour number",
+   "field": "trips",
+   "fieldGroup": "trips_gr",
+   "levels": [
       {
-        "name": "Very low",
-        "details": "(0 - 2)"
+         "name": "Very low",
+         "details": "(0 - 2)"
       },
       {
-        "name": "Low",
-        "details": "(2 - 5)"
+         "name": "Low",
+         "details": "(2 - 5)"
       },
       {
-        "name": "Average",
-        "details": "(5 - 8)"
+         "name": "Average",
+         "details": "(5 - 8)"
       },
       {
-        "name": "High",
-        "details": "(8 - 11)"
+         "name": "High",
+         "details": "(8 - 11)"
       },
       {
-        "name": "Very high",
-        "details": "(11 - 14)"
+         "name": "Very high",
+         "details": "(11 - 14)"
       },
       {
-        "name": "Huge",
-        "details": "(14+)"
+         "name": "Huge",
+         "details": "(14+)"
       }
-    ]
-  },
-  {
-    "name": "Headway (minutes)",
-    "field": "hdw",
-    "fieldGroup": "hdw_gr",
-    "levels": [
+   ]
+},
+ {
+   "name": "Headway (minutes)",
+   "field": "hdw",
+   "fieldGroup": "hdw_gr",
+   "levels": [
       {
-        "name": "Very low",
-        "details": "(0 - 20)"
+         "name": "Very low",
+         "details": "(0 - 4)"
       },
       {
-        "name": "Low",
-        "details": "(20 - 40)"
+         "name": "Low",
+         "details": "(4 - 8)"
       },
       {
-        "name": "Average",
-        "details": "(40 - 60)"
+         "name": "Average",
+         "details": "(8 - 12)"
       },
       {
-        "name": "High",
-        "details": "(60 - 80)"
+         "name": "High",
+         "details": "(12 - 20)"
       },
       {
-        "name": "Very high",
-        "details": "(80 - 100)"
+         "name": "Very high",
+         "details": "(20 - 45)"
       },
       {
-        "name": "Huge",
-        "details": "(100+)"
+         "name": "Huge",
+         "details": "(45+)"
       }
-    ]
-  },
-  {
-    "name": "Vehicle-kilometer",
-    "field": "vh_km",
-    "fieldGroup": "vh_km_gr",
-    "levels": [
+   ]
+},
+ {
+   "name": "Vehicle-kilometer",
+   "field": "vh_km",
+   "fieldGroup": "vh_km_gr",
+   "levels": [
       {
-        "name": "Very low",
-        "details": "(0 - 50)"
+         "name": "Very low",
+         "details": "(0 - 50)"
       },
       {
-        "name": "Low",
-        "details": "(50 - 100)"
+         "name": "Low",
+         "details": "(50 - 100)"
       },
       {
-        "name": "Average",
-        "details": "(100 - 150)"
+         "name": "Average",
+         "details": "(100 - 150)"
       },
       {
-        "name": "High",
-        "details": "(150 - 200)"
+         "name": "High",
+         "details": "(150 - 200)"
       },
       {
-        "name": "Very high",
-        "details": "(200 - 250)"
+         "name": "Very high",
+         "details": "(200 - 250)"
       },
       {
-        "name": "Huge",
-        "details": "(250+)"
+         "name": "Huge",
+         "details": "(250+)"
       }
-    ]
-  },
-  {
-    "name": "Vehicle-hours",
-    "field": "vh_hr",
-    "fieldGroup": "vh_hr_gr",
-    "levels": [
+   ]
+},
+ {
+   "name": "Vehicle-hours",
+   "field": "vh_hr",
+   "fieldGroup": "vh_hr_gr",
+   "levels": [
       {
-        "name": "Very low",
-        "details": "(0 - 2)"
+         "name": "Very low",
+         "details": "(0 - 2)"
       },
       {
-        "name": "Low",
-        "details": "(2 - 5)"
+         "name": "Low",
+         "details": "(2 - 5)"
       },
       {
-        "name": "Average",
-        "details": "(5 - 8)"
+         "name": "Average",
+         "details": "(5 - 8)"
       },
       {
-        "name": "High",
-        "details": "(8 - 11)"
+         "name": "High",
+         "details": "(8 - 11)"
       },
       {
-        "name": "Very high",
-        "details": "(11 - 14)"
+         "name": "Very high",
+         "details": "(11 - 14)"
       },
       {
-        "name": "Huge",
-        "details": "(14+)"
+         "name": "Huge",
+         "details": "(14+)"
       }
-    ]
-  },
-  {
-    "name": "Capacity-vehicle-kilometer",
-    "field": "cap_km",
-    "fieldGroup": "cap_km_gr",
-    "levels": [
+   ]
+},
+ {
+   "name": "Capacity-vehicle-kilometer",
+   "field": "cap_km",
+   "fieldGroup": "cap_km_gr",
+   "levels": [
       {
-        "name": "Very low",
-        "details": "(0 - 4000)"
+         "name": "Very low",
+         "details": "(0 - 4000)"
       },
       {
-        "name": "Low",
-        "details": "(4000 - 8000)"
+         "name": "Low",
+         "details": "(4000 - 8000)"
       },
       {
-        "name": "Average",
-        "details": "(8000 - 12000)"
+         "name": "Average",
+         "details": "(8000 - 12000)"
       },
       {
-        "name": "High",
-        "details": "(12000 - 16000)"
+         "name": "High",
+         "details": "(12000 - 16000)"
       },
       {
-        "name": "Very high",
-        "details": "(16000 - 20000)"
+         "name": "Very high",
+         "details": "(16000 - 20000)"
       },
       {
-        "name": "Huge",
-        "details": "(20000+)"
+         "name": "Huge",
+         "details": "(20000+)"
       }
-    ]
-  },
-  {
-    "name": "Capacity-vehicle-hours",
-    "field": "cap_hr",
-    "fieldGroup": "cap_hr_gr",
-    "levels": [
+   ]
+},
+ {
+   "name": "Capacity-vehicle-hours",
+   "field": "cap_hr",
+   "fieldGroup": "cap_hr_gr",
+   "levels": [
       {
-        "name": "Very low",
-        "details": "(0 - 250)"
+         "name": "Very low",
+         "details": "(0 - 250)"
       },
       {
-        "name": "Low",
-        "details": "(250 - 500)"
+         "name": "Low",
+         "details": "(250 - 500)"
       },
       {
-        "name": "Average",
-        "details": "(500 - 750)"
+         "name": "Average",
+         "details": "(500 - 750)"
       },
       {
-        "name": "High",
-        "details": "(750 - 1000)"
+         "name": "High",
+         "details": "(750 - 1000)"
       },
       {
-        "name": "Very high",
-        "details": "(1000 - 1250)"
+         "name": "Very high",
+         "details": "(1000 - 1250)"
       },
       {
-        "name": "Huge",
-        "details": "(1250+)"
+         "name": "Huge",
+         "details": "(1250+)"
       }
-    ]
-  },
-  {
-    "name": "Passenger's trip number",
-    "field": "pas_tr",
-    "fieldGroup": "pas_tr_gr",
-    "levels": [
+   ]
+},
+ {
+   "name": "Passenger's trip number",
+   "field": "pas_tr",
+   "fieldGroup": "pas_tr_gr",
+   "levels": [
       {
-        "name": "Very low",
-        "details": "(0 - 40)"
+         "name": "Very low",
+         "details": "(0 - 40)"
       },
       {
-        "name": "Low",
-        "details": "(40 - 80)"
+         "name": "Low",
+         "details": "(40 - 80)"
       },
       {
-        "name": "Average",
-        "details": "(80 - 120)"
+         "name": "Average",
+         "details": "(80 - 120)"
       },
       {
-        "name": "High",
-        "details": "(120 - 160)"
+         "name": "High",
+         "details": "(120 - 160)"
       },
       {
-        "name": "Very high",
-        "details": "(160 - 200)"
+         "name": "Very high",
+         "details": "(160 - 200)"
       },
       {
-        "name": "Huge",
-        "details": "(200+)"
+         "name": "Huge",
+         "details": "(200+)"
       }
-    ]
-  },
-  {
-    "name": "Passengers per period",
-    "field": "pas_per",
-    "fieldGroup": "pas_per_gr",
-    "levels": [
+   ]
+},
+ {
+   "name": "Passengers per period",
+   "field": "pas_per",
+   "fieldGroup": "pas_per_gr",
+   "levels": [
       {
-        "name": "Very low",
-        "details": "(0 - 400)"
+         "name": "Very low",
+         "details": "(0 - 400)"
       },
       {
-        "name": "Low",
-        "details": "(400 - 800)"
+         "name": "Low",
+         "details": "(400 - 800)"
       },
       {
-        "name": "Average",
-        "details": "(800 - 1200)"
+         "name": "Average",
+         "details": "(800 - 1200)"
       },
       {
-        "name": "High",
-        "details": "(1200 - 1600)"
+         "name": "High",
+         "details": "(1200 - 1600)"
       },
       {
-        "name": "Very high",
-        "details": "(1600 - 2000)"
+         "name": "Very high",
+         "details": "(1600 - 2000)"
       },
       {
-        "name": "Huge",
-        "details": "(2000+)"
+         "name": "Huge",
+         "details": "(2000+)"
       }
-    ]
-  },
-  {
-    "name": "Passengers per vehicle-kilometer",
-    "field": "pas_veh_km",
-    "fieldGroup": "pas_veh_km_gr",
-    "levels": [
+   ]
+},
+ {
+   "name": "Passengers per vehicle-kilometer",
+   "field": "pas_veh_km",
+   "fieldGroup": "pas_veh_km_gr",
+   "levels": [
       {
-        "name": "Very low",
-        "details": "(0 - 3)"
+         "name": "Very low",
+         "details": "(0 - 3)"
       },
       {
-        "name": "Low",
-        "details": "(3 - 6)"
+         "name": "Low",
+         "details": "(3 - 6)"
       },
       {
-        "name": "Average",
-        "details": "(6 - 9)"
+         "name": "Average",
+         "details": "(6 - 9)"
       },
       {
-        "name": "High",
-        "details": "(9 - 12)"
+         "name": "High",
+         "details": "(9 - 12)"
       },
       {
-        "name": "Very high",
-        "details": "(12 - 15)"
+         "name": "Very high",
+         "details": "(12 - 15)"
       },
       {
-        "name": "Huge",
-        "details": "(10+)"
+         "name": "Huge",
+         "details": "(10+)"
       }
-    ]
-  },
-  {
-    "name": "Passengers per vehicle-hour",
-    "field": "pas_veh_hr",
-    "fieldGroup": "pas_veh_hr_gr",
-    "levels": [
+   ]
+},
+ {
+   "name": "Passengers per vehicle-hour",
+   "field": "pas_veh_hr",
+   "fieldGroup": "pas_veh_hr_gr",
+   "levels": [
       {
-        "name": "Very low",
-        "details": "(0 - 30)"
+         "name": "Very low",
+         "details": "(0 - 30)"
       },
       {
-        "name": "Low",
-        "details": "(30 - 60)"
+         "name": "Low",
+         "details": "(30 - 60)"
       },
       {
-        "name": "Average",
-        "details": "(60 - 90)"
+         "name": "Average",
+         "details": "(60 - 90)"
       },
       {
-        "name": "High",
-        "details": "(90 - 120)"
+         "name": "High",
+         "details": "(90 - 120)"
       },
       {
-        "name": "Very high",
-        "details": "(120 - 150)"
+         "name": "Very high",
+         "details": "(120 - 150)"
       },
       {
-        "name": "Huge",
-        "details": "(150+)"
+         "name": "Huge",
+         "details": "(150+)"
       }
-    ]
-  },
-  {
-    "name": "Passenger capacity per kilometer",
-    "field": "pas_cap_km",
-    "fieldGroup": "pas_cap_km_gr",
-    "levels": [
+   ]
+},
+ {
+   "name": "Passenger capacity per kilometer",
+   "field": "pas_cap_km",
+   "fieldGroup": "pas_cap_km_gr",
+   "levels": [
       {
-        "name": "Very low",
-        "details": "(0 - 0.03)"
+         "name": "Very low",
+         "details": "(0 - 0.03)"
       },
       {
-        "name": "Low",
-        "details": "(0.03 - 0.06)"
+         "name": "Low",
+         "details": "(0.03 - 0.06)"
       },
       {
-        "name": "Average",
-        "details": "(0.06 - 0.09)"
+         "name": "Average",
+         "details": "(0.06 - 0.09)"
       },
       {
-        "name": "High",
-        "details": "(0.09 - 0.12)"
+         "name": "High",
+         "details": "(0.09 - 0.12)"
       },
       {
-        "name": "Very high",
-        "details": "(0.12 - 0.15)"
+         "name": "Very high",
+         "details": "(0.12 - 0.15)"
       },
       {
-        "name": "Huge",
-        "details": "(0.15+)"
+         "name": "Huge",
+         "details": "(0.15+)"
       }
-    ]
-  },
-  {
-    "name": "Passenger capacity per hour",
-    "field": "pas_cap_hr",
-    "fieldGroup": "pas_cap_hr_gr",
-    "levels": [
+   ]
+},
+ {
+   "name": "Passenger capacity per hour",
+   "field": "pas_cap_hr",
+   "fieldGroup": "pas_cap_hr_gr",
+   "levels": [
       {
-        "name": "Very low",
-        "details": "(0 - 0.6)"
+         "name": "Very low",
+         "details": "(0 - 0.6)"
       },
       {
-        "name": "Low",
-        "details": "(0.6 - 1.2)"
+         "name": "Low",
+         "details": "(0.6 - 1.2)"
       },
       {
-        "name": "Average",
-        "details": "(1.2 - 1.8)"
+         "name": "Average",
+         "details": "(1.2 - 1.8)"
       },
       {
-        "name": "High",
-        "details": "(1.8 - 2.4)"
+         "name": "High",
+         "details": "(1.8 - 2.4)"
       },
       {
-        "name": "Very high",
-        "details": "(2.4 - 3)"
+         "name": "Very high",
+         "details": "(2.4 - 3)"
       },
       {
-        "name": "Huge",
-        "details": "(3+)"
+         "name": "Huge",
+         "details": "(3+)"
       }
-    ]
-  },
-  {
-    "name": "Passenger kilometers per trip",
-    "field": "pas_km_tr",
-    "fieldGroup": "pas_km_tr_gr",
-    "levels": [
+   ]
+},
+ {
+   "name": "Passenger kilometers per trip",
+   "field": "pas_km_tr",
+   "fieldGroup": "pas_km_tr_gr",
+   "levels": [
       {
-        "name": "Very low",
-        "details": "(0 - 300)"
+         "name": "Very low",
+         "details": "(0 - 300)"
       },
       {
-        "name": "Low",
-        "details": "(300 - 600)"
+         "name": "Low",
+         "details": "(300 - 600)"
       },
       {
-        "name": "Average",
-        "details": "(600 - 900)"
+         "name": "Average",
+         "details": "(600 - 900)"
       },
       {
-        "name": "High",
-        "details": "(900 - 1200)"
+         "name": "High",
+         "details": "(900 - 1200)"
       },
       {
-        "name": "Very high",
-        "details": "(1200 - 1500)"
+         "name": "Very high",
+         "details": "(1200 - 1500)"
       },
       {
-        "name": "Huge",
-        "details": "(1500+)"
+         "name": "Huge",
+         "details": "(1500+)"
       }
-    ]
-  },
-  {
-    "name": "Passenger's average trips length (km)",
-    "field": "pas_tr_avg",
-    "fieldGroup": "pas_tr_avg_gr",
-    "levels": [
+   ]
+},
+ {
+   "name": "Passenger's average trips length (km)",
+   "field": "pas_tr_avg",
+   "fieldGroup": "pas_tr_avg_gr",
+   "levels": [
       {
-        "name": "Very short",
-        "details": "(0 - 4)"
+         "name": "Very short",
+         "details": "(0 - 4)"
       },
       {
-        "name": "Short",
-        "details": "(4 - 8)"
+         "name": "Short",
+         "details": "(4 - 8)"
       },
       {
-        "name": "Average",
-        "details": "(8 - 12)"
+         "name": "Average",
+         "details": "(8 - 12)"
       },
       {
-        "name": "Long",
-        "details": "(12 - 16)"
+         "name": "Long",
+         "details": "(12 - 16)"
       },
       {
-        "name": "Very long",
-        "details": "(16 - 20)"
+         "name": "Very long",
+         "details": "(16 - 20)"
       },
       {
-        "name": "Extreme",
-        "details": "(20+)"
+         "name": "Extreme",
+         "details": "(20+)"
       }
-    ]
-  },
-  {
-    "name": "Passenger's turnover",
-    "field": "pas_turn",
-    "fieldGroup": "pas_turn_gr",
-    "levels": [
+   ]
+},
+ {
+   "name": "Passenger's turnover",
+   "field": "pas_turn",
+   "fieldGroup": "pas_turn_gr",
+   "levels": [
       {
-        "name": "Very low",
-        "details": "(0 - 1.5)"
+         "name": "Very low",
+         "details": "(0 - 1.5)"
       },
       {
-        "name": "Low",
-        "details": "(1.5 - 3)"
+         "name": "Low",
+         "details": "(1.5 - 3)"
       },
       {
-        "name": "Average",
-        "details": "(3 - 4.5)"
+         "name": "Average",
+         "details": "(3 - 4.5)"
       },
       {
-        "name": "High",
-        "details": "(4.5 - 6)"
+         "name": "High",
+         "details": "(4.5 - 6)"
       },
       {
-        "name": "Very high",
-        "details": "(6 - 7)"
+         "name": "Very high",
+         "details": "(6 - 7)"
       },
       {
-        "name": "Huge",
-        "details": "(7+)"
+         "name": "Huge",
+         "details": "(7+)"
       }
-    ]
-  },
-  {
-    "name": "Focus boarding (percent)",
-    "field": "foc_board",
-    "fieldGroup": "foc_board_gr",
-    "levels": [
+   ]
+},
+ {
+   "name": "Focus boarding (percent)",
+   "field": "foc_board",
+   "fieldGroup": "foc_board_gr",
+   "levels": [
       {
-        "name": "In first part",
-        "details": "(0% - 17%)"
+         "name": "In first part",
+         "details": "(0% - 17%)"
       },
       {
-        "name": "In second part",
-        "details": "(17% - 34%)"
+         "name": "In second part",
+         "details": "(17% - 34%)"
       },
       {
-        "name": "In third part",
-        "details": "(34% - 51%)"
+         "name": "In third part",
+         "details": "(34% - 51%)"
       },
       {
-        "name": "In forth part",
-        "details": "(51% - 68%)"
+         "name": "In forth part",
+         "details": "(51% - 68%)"
       },
       {
-        "name": "In fifth part",
-        "details": "(68% - 85%)"
+         "name": "In fifth part",
+         "details": "(68% - 85%)"
       },
       {
-        "name": "In sixth part",
-        "details": "(85%+)"
+         "name": "In sixth part",
+         "details": "(85%+)"
       }
-    ]
-  },
-  {
-    "name": "Focus maximum load (percent)",
-    "field": "foc_load",
-    "fieldGroup": "foc_load_gr",
-    "levels": [
+   ]
+},
+ {
+   "name": "Focus maximum load (percent)",
+   "field": "foc_load",
+   "fieldGroup": "foc_load_gr",
+   "levels": [
       {
-        "name": "In first part",
-        "details": "(0% - 17%)"
+         "name": "In first part",
+         "details": "(0% - 17%)"
       },
       {
-        "name": "In second part",
-        "details": "(17% - 34%)"
+         "name": "In second part",
+         "details": "(17% - 34%)"
       },
       {
-        "name": "In third part",
-        "details": "(34% - 51%)"
+         "name": "In third part",
+         "details": "(34% - 51%)"
       },
       {
-        "name": "In forth part",
-        "details": "(51% - 68%)"
+         "name": "In forth part",
+         "details": "(51% - 68%)"
       },
       {
-        "name": "In fifth part",
-        "details": "(68% - 85%)"
+         "name": "In fifth part",
+         "details": "(68% - 85%)"
       },
       {
-        "name": "In sixth part",
-        "details": "(85%+)"
+         "name": "In sixth part",
+         "details": "(85%+)"
       }
-    ]
-  },
-  {
-    "name": "Focus alighting (percent)",
-    "field": "foc_alight",
-    "fieldGroup": "foc_alight_gr",
-    "levels": [
+   ]
+},
+ {
+   "name": "Focus alighting (percent)",
+   "field": "foc_alight",
+   "fieldGroup": "foc_alight_gr",
+   "levels": [
       {
-        "name": "In first part",
-        "details": "(0% - 17%)"
+         "name": "In first part",
+         "details": "(0% - 17%)"
       },
       {
-        "name": "In second part",
-        "details": "(17% - 34%)"
+         "name": "In second part",
+         "details": "(17% - 34%)"
       },
       {
-        "name": "In third part",
-        "details": "(34% - 51%)"
+         "name": "In third part",
+         "details": "(34% - 51%)"
       },
       {
-        "name": "In forth part",
-        "details": "(51% - 68%)"
+         "name": "In forth part",
+         "details": "(51% - 68%)"
       },
       {
-        "name": "In fifth part",
-        "details": "(68% - 85%)"
+         "name": "In fifth part",
+         "details": "(68% - 85%)"
       },
       {
-        "name": "In sixth part",
-        "details": "(85%+)"
+         "name": "In sixth part",
+         "details": "(85%+)"
       }
-    ]
-  },
-  {
-    "name": "Load maximum",
-    "field": "load_max",
-    "fieldGroup": "load_max_gr",
-    "levels": [
+   ]
+},
+ {
+   "name": "Load maximum",
+   "field": "load_max",
+   "fieldGroup": "load_max_gr",
+   "levels": [
       {
-        "name": "Very low",
-        "details": "(0 - 20)"
+         "name": "Very low",
+         "details": "(0 - 20)"
       },
       {
-        "name": "Low",
-        "details": "(20 - 40)"
+         "name": "Low",
+         "details": "(20 - 40)"
       },
       {
-        "name": "Average",
-        "details": "(40 - 60)"
+         "name": "Average",
+         "details": "(40 - 60)"
       },
       {
-        "name": "High",
-        "details": "(60 - 80)"
+         "name": "High",
+         "details": "(60 - 80)"
       },
       {
-        "name": "Very high",
-        "details": "(80 - 100)"
+         "name": "Very high",
+         "details": "(80 - 100)"
       },
       {
-        "name": "Huge",
-        "details": "(100+)"
+         "name": "Huge",
+         "details": "(100+)"
       }
-    ]
-  },
-  {
-    "name": "Load average",
-    "field": "load_avg",
-    "fieldGroup": "load_avg_gr",
-    "levels": [
+   ]
+},
+ {
+   "name": "Load average",
+   "field": "load_avg",
+   "fieldGroup": "load_avg_gr",
+   "levels": [
       {
-        "name": "Very low",
-        "details": "(0 - 15)"
+         "name": "Very low",
+         "details": "(0 - 15)"
       },
       {
-        "name": "Low",
-        "details": "(15 - 30)"
+         "name": "Low",
+         "details": "(15 - 30)"
       },
       {
-        "name": "Average",
-        "details": "(30 - 45)"
+         "name": "Average",
+         "details": "(30 - 45)"
       },
       {
-        "name": "High",
-        "details": "(45 - 60)"
+         "name": "High",
+         "details": "(45 - 60)"
       },
       {
-        "name": "Very high",
-        "details": "(60 - 75)"
+         "name": "Very high",
+         "details": "(60 - 75)"
       },
       {
-        "name": "Huge",
-        "details": "(75+)"
+         "name": "Huge",
+         "details": "(75+)"
       }
-    ]
-  },
-  {
-    "name": "Load variation",
-    "field": "load_coef",
-    "fieldGroup": "load_coef_gr",
-    "levels": [
+   ]
+},
+ {
+   "name": "Load variation",
+   "field": "load_coef",
+   "fieldGroup": "load_coef_gr",
+   "levels": [
       {
-        "name": "Very low",
-        "details": "(0 - 0.6)"
+         "name": "Very low",
+         "details": "(0 - 0.6)"
       },
       {
-        "name": "Low",
-        "details": "(0.6 - 1.2)"
+         "name": "Low",
+         "details": "(0.6 - 1.2)"
       },
       {
-        "name": "Average",
-        "details": "(1.2 - 1.8)"
+         "name": "Average",
+         "details": "(1.2 - 1.8)"
       },
       {
-        "name": "High",
-        "details": "(1.8 - 2.4)"
+         "name": "High",
+         "details": "(1.8 - 2.4)"
       },
       {
-        "name": "Very high",
-        "details": "(2.4 - 3)"
+         "name": "Very high",
+         "details": "(2.4 - 3)"
       },
       {
-        "name": "Huge",
-        "details": "(3+)"
+         "name": "Huge",
+         "details": "(3+)"
       }
-    ]
-  },
-  {
-    "name": "LAD's part with low load",
-    "field": "load_dst_low",
-    "fieldGroup": "load_dst_low_gr",
-    "levels": [
+   ]
+},
+ {
+   "name": "Trip distance with low load",
+   "field": "load_dst_low",
+   "fieldGroup": "load_dst_low_gr",
+   "levels": [
       {
-        "name": "In first part",
-        "details": "(0% - 17%)"
+         "name": "In first part",
+         "details": "(0% - 17%)"
       },
       {
-        "name": "In second part",
-        "details": "(17% - 34%)"
+         "name": "In second part",
+         "details": "(17% - 34%)"
       },
       {
-        "name": "In third part",
-        "details": "(34% - 51%)"
+         "name": "In third part",
+         "details": "(34% - 51%)"
       },
       {
-        "name": "In forth part",
-        "details": "(51% - 68%)"
+         "name": "In forth part",
+         "details": "(51% - 68%)"
       },
       {
-        "name": "In fifth part",
-        "details": "(68% - 85%)"
+         "name": "In fifth part",
+         "details": "(68% - 85%)"
       },
       {
-        "name": "In sixth part",
-        "details": "(85%+)"
+         "name": "In sixth part",
+         "details": "(85%+)"
       }
-    ]
-  },
-  {
-    "name": "LAD's part with average load",
-    "field": "load_dst_avg",
-    "fieldGroup": "load_dst_avg_gr",
-    "levels": [
+   ]
+},
+ {
+   "name": "Trip distance with average load",
+   "field": "load_dst_avg",
+   "fieldGroup": "load_dst_avg_gr",
+   "levels": [
       {
-        "name": "In first part",
-        "details": "(0% - 17%)"
+         "name": "In first part",
+         "details": "(0% - 17%)"
       },
       {
-        "name": "In second part",
-        "details": "(17% - 34%)"
+         "name": "In second part",
+         "details": "(17% - 34%)"
       },
       {
-        "name": "In third part",
-        "details": "(34% - 51%)"
+         "name": "In third part",
+         "details": "(34% - 51%)"
       },
       {
-        "name": "In forth part",
-        "details": "(51% - 68%)"
+         "name": "In forth part",
+         "details": "(51% - 68%)"
       },
       {
-        "name": "In fifth part",
-        "details": "(68% - 85%)"
+         "name": "In fifth part",
+         "details": "(68% - 85%)"
       },
       {
-        "name": "In sixth part",
-        "details": "(85%+)"
+         "name": "In sixth part",
+         "details": "(85%+)"
       }
-    ]
-  },
-  {
-    "name": "LAD's part with high load",
-    "field": "load_dst_high",
-    "fieldGroup": "load_dst_high_gr",
-    "levels": [
+   ]
+},
+ {
+   "name": "Trip distance with high load",
+   "field": "load_dst_high",
+   "fieldGroup": "load_dst_high_gr",
+   "levels": [
       {
-        "name": "In first part",
-        "details": "(0% - 17%)"
+         "name": "In first part",
+         "details": "(0% - 17%)"
       },
       {
-        "name": "In second part",
-        "details": "(17% - 34%)"
+         "name": "In second part",
+         "details": "(17% - 34%)"
       },
       {
-        "name": "In third part",
-        "details": "(34% - 51%)"
+         "name": "In third part",
+         "details": "(34% - 51%)"
       },
       {
-        "name": "In forth part",
-        "details": "(51% - 68%)"
+         "name": "In forth part",
+         "details": "(51% - 68%)"
       },
       {
-        "name": "In fifth part",
-        "details": "(68% - 85%)"
+         "name": "In fifth part",
+         "details": "(68% - 85%)"
       },
       {
-        "name": "In sixth part",
-        "details": "(85%+)"
+         "name": "In sixth part",
+         "details": "(85%+)"
       }
-    ]
-  },
-  {
-    "name": "Passengers per square meter level",
-    "field": "pas_sqm_lvl",
-    "fieldGroup": "pas_sqm_lvl_gr",
-    "levels": [
+   ]
+},
+ {
+   "name": "Passengers per square meter level",
+   "field": "pas_sqm_lvl",
+   "fieldGroup": "pas_sqm_lvl_gr",
+   "levels": [
       {
-        "name": "Very low",
-        "details": "(0 - 1)"
+         "name": "Very low",
+         "details": "(0 - 1)"
       },
       {
-        "name": "Low",
-        "details": "(1 - 2)"
+         "name": "Low",
+         "details": "(1 - 2)"
       },
       {
-        "name": "Average",
-        "details": "(2 - 3)"
+         "name": "Average",
+         "details": "(2 - 3)"
       },
       {
-        "name": "High",
-        "details": "(3 - 4)"
+         "name": "High",
+         "details": "(3 - 4)"
       },
       {
-        "name": "Very high",
-        "details": "(4 - 5)"
+         "name": "Very high",
+         "details": "(4 - 5)"
       },
       {
-        "name": "Huge",
-        "details": "(5+)"
+         "name": "Huge",
+         "details": "(5+)"
       }
-    ]
-  },
-  {
-    "name": "Load - half seats",
-    "field": "ld_half_seats",
-    "fieldGroup": "ld_half_seats_gr",
-    "levels": [
+   ]
+},
+ {
+   "name": "Load - half seats",
+   "field": "ld_half_seats",
+   "fieldGroup": "ld_half_seats_gr",
+   "levels": [
       {
-        "name": "In first part",
-        "details": "(0% - 17%)"
+         "name": "In first part",
+         "details": "(0% - 17%)"
       },
       {
-        "name": "In second part",
-        "details": "(17% - 34%)"
+         "name": "In second part",
+         "details": "(17% - 34%)"
       },
       {
-        "name": "In third part",
-        "details": "(34% - 51%)"
+         "name": "In third part",
+         "details": "(34% - 51%)"
       },
       {
-        "name": "In forth part",
-        "details": "(51% - 68%)"
+         "name": "In forth part",
+         "details": "(51% - 68%)"
       },
       {
-        "name": "In fifth part",
-        "details": "(68% - 85%)"
+         "name": "In fifth part",
+         "details": "(68% - 85%)"
       },
       {
-        "name": "In sixth part",
-        "details": "(85%+)"
+         "name": "In sixth part",
+         "details": "(85%+)"
       }
-    ]
-  },
-  {
-    "name": "Load - all seats",
-    "field": "ld_all_seats",
-    "fieldGroup": "ld_all_seats_gr",
-    "levels": [
+   ]
+},
+ {
+   "name": "Load - all seats",
+   "field": "ld_all_seats",
+   "fieldGroup": "ld_all_seats_gr",
+   "levels": [
       {
-        "name": "In first part",
-        "details": "(0% - 17%)"
+         "name": "In first part",
+         "details": "(0% - 17%)"
       },
       {
-        "name": "In second part",
-        "details": "(17% - 34%)"
+         "name": "In second part",
+         "details": "(17% - 34%)"
       },
       {
-        "name": "In third part",
-        "details": "(34% - 51%)"
+         "name": "In third part",
+         "details": "(34% - 51%)"
       },
       {
-        "name": "In forth part",
-        "details": "(51% - 68%)"
+         "name": "In forth part",
+         "details": "(51% - 68%)"
       },
       {
-        "name": "In fifth part",
-        "details": "(68% - 85%)"
+         "name": "In fifth part",
+         "details": "(68% - 85%)"
       },
       {
-        "name": "In sixth part",
-        "details": "(85%+)"
+         "name": "In sixth part",
+         "details": "(85%+)"
       }
-    ]
-  },
-  {
-    "name": "Load - average level",
-    "field": "ld_avg",
-    "fieldGroup": "ld_avg_gr",
-    "levels": [
+   ]
+},
+ {
+   "name": "Load - average level",
+   "field": "ld_avg",
+   "fieldGroup": "ld_avg_gr",
+   "levels": [
       {
-        "name": "In first part",
-        "details": "(0% - 17%)"
+         "name": "In first part",
+         "details": "(0% - 17%)"
       },
       {
-        "name": "In second part",
-        "details": "(17% - 34%)"
+         "name": "In second part",
+         "details": "(17% - 34%)"
       },
       {
-        "name": "In third part",
-        "details": "(34% - 51%)"
+         "name": "In third part",
+         "details": "(34% - 51%)"
       },
       {
-        "name": "In forth part",
-        "details": "(51% - 68%)"
+         "name": "In forth part",
+         "details": "(51% - 68%)"
       },
       {
-        "name": "In fifth part",
-        "details": "(68% - 85%)"
+         "name": "In fifth part",
+         "details": "(68% - 85%)"
       },
       {
-        "name": "In sixth part",
-        "details": "(85%+)"
+         "name": "In sixth part",
+         "details": "(85%+)"
       }
-    ]
-  },
-  {
-    "name": "Load - high level",
-    "field": "ld_high",
-    "fieldGroup": "ld_high_gr",
-    "levels": [
+   ]
+},
+ {
+   "name": "Load - high level",
+   "field": "ld_high",
+   "fieldGroup": "ld_high_gr",
+   "levels": [
       {
-        "name": "In first part",
-        "details": "(0% - 17%)"
+         "name": "In first part",
+         "details": "(0% - 17%)"
       },
       {
-        "name": "In second part",
-        "details": "(17% - 34%)"
+         "name": "In second part",
+         "details": "(17% - 34%)"
       },
       {
-        "name": "In third part",
-        "details": "(34% - 51%)"
+         "name": "In third part",
+         "details": "(34% - 51%)"
       },
       {
-        "name": "In forth part",
-        "details": "(51% - 68%)"
+         "name": "In forth part",
+         "details": "(51% - 68%)"
       },
       {
-        "name": "In fifth part",
-        "details": "(68% - 85%)"
+         "name": "In fifth part",
+         "details": "(68% - 85%)"
       },
       {
-        "name": "In sixth part",
-        "details": "(85%+)"
+         "name": "In sixth part",
+         "details": "(85%+)"
       }
-    ]
-  },
-  {
-    "name": "Load - very high level",
-    "field": "ld_extra",
-    "fieldGroup": "ld_extra_gr",
-    "levels": [
+   ]
+},
+ {
+   "name": "Load - very high level",
+   "field": "ld_extra",
+   "fieldGroup": "ld_extra_gr",
+   "levels": [
       {
-        "name": "In first part",
-        "details": "(0% - 17%)"
+         "name": "In first part",
+         "details": "(0% - 17%)"
       },
       {
-        "name": "In second part",
-        "details": "(17% - 34%)"
+         "name": "In second part",
+         "details": "(17% - 34%)"
       },
       {
-        "name": "In third part",
-        "details": "(34% - 51%)"
+         "name": "In third part",
+         "details": "(34% - 51%)"
       },
       {
-        "name": "In forth part",
-        "details": "(51% - 68%)"
+         "name": "In forth part",
+         "details": "(51% - 68%)"
       },
       {
-        "name": "In fifth part",
-        "details": "(68% - 85%)"
+         "name": "In fifth part",
+         "details": "(68% - 85%)"
       },
       {
-        "name": "In sixth part",
-        "details": "(85%+)"
+         "name": "In sixth part",
+         "details": "(85%+)"
       }
-    ]
-  },
-  {
-    "name": "Load - critical level",
-    "field": "ld_crit",
-    "fieldGroup": "ld_crit_gr",
-    "levels": [
+   ]
+},
+ {
+   "name": "Load - critical level",
+   "field": "ld_crit",
+   "fieldGroup": "ld_crit_gr",
+   "levels": [
       {
-        "name": "In first part",
-        "details": "(0% - 17%)"
+         "name": "In first part",
+         "details": "(0% - 17%)"
       },
       {
-        "name": "In second part",
-        "details": "(17% - 34%)"
+         "name": "In second part",
+         "details": "(17% - 34%)"
       },
       {
-        "name": "In third part",
-        "details": "(34% - 51%)"
+         "name": "In third part",
+         "details": "(34% - 51%)"
       },
       {
-        "name": "In forth part",
-        "details": "(51% - 68%)"
+         "name": "In forth part",
+         "details": "(51% - 68%)"
       },
       {
-        "name": "In fifth part",
-        "details": "(68% - 85%)"
+         "name": "In fifth part",
+         "details": "(68% - 85%)"
       },
       {
-        "name": "In sixth part",
-        "details": "(85%+)"
+         "name": "In sixth part",
+         "details": "(85%+)"
       }
-    ]
-  },
-  {
-    "name": "Inderectness geographical",
-    "field": "indir_geo",
-    "fieldGroup": "indir_geo_gr",
-    "levels": [
+   ]
+},
+ {
+   "name": "Inderectness geographical",
+   "field": "indir_geo",
+   "fieldGroup": "indir_geo_gr",
+   "levels": [
       {
-        "name": "Very low",
-        "details": "(0 - 1)"
+         "name": "Very low",
+         "details": "(0 - 1)"
       },
       {
-        "name": "Low",
-        "details": "(1 - 2)"
+         "name": "Low",
+         "details": "(1 - 2)"
       },
       {
-        "name": "Average",
-        "details": "(2 - 3)"
+         "name": "Average",
+         "details": "(2 - 3)"
       },
       {
-        "name": "High",
-        "details": "(3 - 4)"
+         "name": "High",
+         "details": "(3 - 4)"
       },
       {
-        "name": "Very high",
-        "details": "(4 - 5)"
+         "name": "Very high",
+         "details": "(4 - 5)"
       },
       {
-        "name": "Huge",
-        "details": "(5+)"
+         "name": "Huge",
+         "details": "(5+)"
       }
-    ]
-  },
-  {
-    "name": "Inderectness passenger's",
-    "field": "indir_pas",
-    "fieldGroup": "indir_pas_gr",
-    "levels": [
+   ]
+},
+ {
+   "name": "Inderectness passenger's",
+   "field": "indir_pas",
+   "fieldGroup": "indir_pas_gr",
+   "levels": [
       {
-        "name": "Very low",
-        "details": "(0 - 0.4)"
+         "name": "Very low",
+         "details": "(0 - 0.4)"
       },
       {
-        "name": "Low",
-        "details": "(0.4 - 0.8)"
+         "name": "Low",
+         "details": "(0.4 - 0.8)"
       },
       {
-        "name": "Average",
-        "details": "(0.8 - 1.2)"
+         "name": "Average",
+         "details": "(0.8 - 1.2)"
       },
       {
-        "name": "High",
-        "details": "(1.2 - 1.6)"
+         "name": "High",
+         "details": "(1.2 - 1.6)"
       },
       {
-        "name": "Very high",
-        "details": "(1.6 - 2)"
+         "name": "Very high",
+         "details": "(1.6 - 2)"
       },
       {
-        "name": "Huge",
-        "details": "(2+)"
+         "name": "Huge",
+         "details": "(2+)"
       }
-    ]
-  }
+   ]
+}
 ]

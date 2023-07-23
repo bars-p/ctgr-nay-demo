@@ -4,7 +4,7 @@
       <v-card-title>
         <v-row>
           <v-col cols="11">
-            <span class="text-h6">{{ title }}</span>
+            <span class="text-h6">{{ title }} ({{ props.items.length }})</span>
             <v-spacer></v-spacer>
           </v-col>
           <v-col cols="1" class="text-right">
