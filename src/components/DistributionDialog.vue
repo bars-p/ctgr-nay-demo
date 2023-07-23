@@ -74,7 +74,7 @@
                       </template>
                       <v-list density="compact" max-height="300px">
                         <v-list-item
-                          v-for="(obj, j) in props.fieldItems[item.fieldGroup][
+                          v-for="(obj, j) in itemsByGroups[item.fieldGroup][
                             i - 1
                           ]"
                           :key="obj.id"
@@ -138,25 +138,9 @@ const props = defineProps([
   "title",
   "categories",
   "fieldLength",
-  "selected",
-  // "anySelected",
   "items",
-  "fieldItems",
 ]);
-const emit = defineEmits([
-  "update:modelValue",
-  "selectFieldGroup",
-  "distributed",
-  "selectItem",
-  "done",
-]);
-
-// onMounted(() => {
-//   console.log("🐸🐸 onMounted Called");
-//   if (dialogOpened.value) {
-//     distribute();
-//   }
-// });
+const emit = defineEmits(["update:modelValue", "done"]);
 
 const dialogOpened = computed({
   get() {
@@ -178,6 +162,7 @@ watch(
 );
 
 const distribution = ref({});
+const itemsByGroups = ref({});
 const isAnySelected = ref(false);
 
 const distribute = () => {
@@ -197,13 +182,12 @@ const distribute = () => {
       dataObject[group][i] = new Object({
         number: 0,
         percent: 0,
-        selected: props.selected[group][i],
+        selected: false,
       });
       distributedItems[group][i] = new Array();
     }
   });
   props.items.forEach((item) => {
-    // console.log("ITEM:", item);
     Object.keys(dataObject).forEach((group) => {
       dataObject[group][item[group]].number++;
       distributedItems[group][item[group]].push({
@@ -223,62 +207,14 @@ const distribute = () => {
     }
   });
   console.log("TABLE: Distributed Items", distributedItems);
-  emit("distributed", distributedItems);
 
   distribution.value = dataObject;
+  itemsByGroups.value = distributedItems;
   isAnySelected.value = false;
 };
 
-// const distribution = computed(() => {
-//   console.log("😡😡😡 Distribution Calculation");
-//   const dataObject = {};
-//   const distributedItems = {};
-//   props.categories.forEach((item) => {
-//     dataObject[item.fieldGroup] = new Array(props.fieldLength).fill(null);
-//     distributedItems[item.fieldGroup] = new Array(props.fieldLength).fill(null);
-//   });
-
-//   console.log("Data Object Constructed", dataObject);
-
-//   Object.keys(dataObject).forEach((group) => {
-//     for (let i = 0; i < dataObject[group].length; i++) {
-//       dataObject[group][i] = new Object({
-//         number: 0,
-//         percent: 0,
-//         selected: props.selected[group][i],
-//       });
-//       distributedItems[group][i] = new Array();
-//     }
-//   });
-//   props.items.forEach((item) => {
-//     // console.log("ITEM:", item);
-//     Object.keys(dataObject).forEach((group) => {
-//       dataObject[group][item[group]].number++;
-//       distributedItems[group][item[group]].push({
-//         id: item.id,
-//         name: item.name,
-//         value: Math.round(item[getFieldName(group)]),
-//         selected: true,
-//       });
-//     });
-//   });
-//   Object.keys(dataObject).forEach((group) => {
-//     for (let i = 0; i < dataObject[group].length; i++) {
-//       dataObject[group][i].percent =
-//         Math.round(
-//           (100 * 100 * dataObject[group][i].number) / props.items.length
-//         ) / 100;
-//     }
-//   });
-//   console.log("TABLE: Distributed Items", distributedItems);
-//   emit("distributed", distributedItems);
-//   return dataObject;
-// });
-
 const selectRangeItem = (fieldGroup, idx) => {
   console.log("Selected:", fieldGroup, idx);
-
-  emit("selectFieldGroup", { fieldGroup: fieldGroup, idx: idx });
 
   distribution.value[fieldGroup][idx].selected =
     !distribution.value[fieldGroup][idx].selected;
@@ -286,16 +222,10 @@ const selectRangeItem = (fieldGroup, idx) => {
 
   isAnySelected.value = false;
   Object.keys(distribution.value).forEach((fieldGroup) => {
-    // console.log(
-    //   "Watch field",
-    //   fieldGroup,
-    //   categoriesSelected.value[fieldGroup]
-    // );
     const fieldSelected = distribution.value[fieldGroup].reduce(
       (result, current) => result || current.selected,
       false
     );
-    // console.log("Field result", fieldGroup, fieldSelected);
     isAnySelected.value = isAnySelected.value || fieldSelected;
   });
   console.log("Selected", isAnySelected.value);
@@ -307,19 +237,18 @@ const showItems = (name, idx) => {
 
 const toggleSelectItem = (fieldGroup, position, idx) => {
   console.log("Item", fieldGroup, position, idx);
-  emit("selectItem", { fieldGroup, position, idx });
-  // mockLads.value[idx].selected = !mockLads.value[idx].selected;
+  itemsByGroups.value[fieldGroup][position][idx].selected =
+    !itemsByGroups.value[fieldGroup][position][idx].selected;
 };
 
 const selectDistributionResult = () => {
   const selectedItemsIds = new Set();
-  Object.keys(props.selected).forEach((fieldGroup) => {
+  Object.keys(distribution.value).forEach((fieldGroup) => {
     for (let i = 0; i < props.fieldLength; i++) {
-      if (props.selected[fieldGroup][i]) {
-        // TODO: If true - process all items in group
+      if (distribution.value[fieldGroup][i].selected) {
+        // If true - process all items in group
         console.log("🟢 Group selected", fieldGroup);
-        console.log("🟢 Group items", props.fieldItems[fieldGroup][i]);
-        props.fieldItems[fieldGroup][i].forEach((item) => {
+        itemsByGroups.value[fieldGroup][i].forEach((item) => {
           if (item.selected) {
             selectedItemsIds.add(item.id);
           }
@@ -327,8 +256,6 @@ const selectDistributionResult = () => {
       }
     }
   });
-
-  console.log("DISTRIBUTION RESULT", props.fieldItems);
   emit("done", selectedItemsIds);
   dialogOpened.value = false;
 };

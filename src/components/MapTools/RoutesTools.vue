@@ -345,11 +345,6 @@
       :categories="routesCategories"
       :field-length="fieldLength"
       :items="routesDataForDistribution"
-      :field-items="distributedItems"
-      :selected="categoriesSelected"
-      @select-field-group="processFieldSelect"
-      @select-item="processItemSelect"
-      @distributed="processDistributedItems"
       @done="processDistributionSelected"
     ></distribution-dialog>
     <search-dialog
@@ -374,7 +369,7 @@ import SearchBar from "../elements/SearchBar.vue";
 import DistributionDialog from "../DistributionDialog.vue";
 import SearchDialog from "../SearchDialog.vue";
 
-import { ref, computed, onMounted, watch } from "vue";
+import { ref, computed, onMounted } from "vue";
 
 import { useI18n } from "vue-i18n";
 import CloseButton from "../elements/CloseButton.vue";
@@ -526,16 +521,6 @@ const updateModeColor = (mode) => {
 const showSearch = ref(false);
 
 const searchData = computed(() => {
-  // return mapStore.currentRoutesGroup == null ||
-  //   mapStore.useCurrentRoutesGroup == false
-  //   ? mapStore.ladsData.map((lad) => ({
-  //       id: lad.ladId,
-  //       name: `(${lad.ladId}) ${lad.line} -> ${lad.dir}`,
-  //     }))
-  //   : mapStore.currentRoutesGroup.routes.map((lad) => ({
-  //       id: lad.id,
-  //       name: `(${lad.id}) ${lad.name}`,
-  //     }));
   const ids =
     mapStore.currentRoutesGroup == null ||
     mapStore.useCurrentRoutesGroup == false
@@ -570,10 +555,6 @@ const showDistribution = ref(false);
 const fieldLength = 6; // FIXME: Should be calculated from Categories data
 
 let routesDataForDistribution = [];
-let categoriesSelected = ref({});
-let distributedItems = ref({});
-
-const isAnyFieldSelected = ref(false);
 
 const openDistributionDialog = () => {
   routesDataForDistribution =
@@ -589,69 +570,16 @@ const openDistributionDialog = () => {
           name: getLadName(rt.id),
           ...routesStats.find((item) => item.id == rt.id),
         }));
-  routesCategories.forEach((item) => {
-    categoriesSelected.value[item.fieldGroup] = new Array(fieldLength).fill(
-      false
-    );
-    distributedItems.value[item.fieldGroup] = new Array(fieldLength).fill(null);
-  });
-  Object.keys(distributedItems.value).forEach((fieldGroup) => {
-    for (let i = 0; i < fieldLength; i++) {
-      distributedItems.value[fieldGroup][i] = new Array();
-    }
-  });
 
   console.log("Routes Data For Distr:", routesDataForDistribution);
 
   showDistribution.value = true;
 };
 
-watch(
-  () => categoriesSelected,
-  () => {
-    isAnyFieldSelected.value = false;
-    Object.keys(categoriesSelected.value).forEach((fieldGroup) => {
-      // console.log(
-      //   "Watch field",
-      //   fieldGroup,
-      //   categoriesSelected.value[fieldGroup]
-      // );
-      const fieldSelected = categoriesSelected.value[fieldGroup].reduce(
-        (result, current) => result || current,
-        false
-      );
-      // console.log("Field result", fieldGroup, fieldSelected);
-      isAnyFieldSelected.value = isAnyFieldSelected.value || fieldSelected;
-    });
-    // console.log("Any Selected Watched", isAnyFieldSelected.value);
-  },
-  { deep: true }
-);
-
-const processFieldSelect = (data) => {
-  console.log("ROUTES: Field selected", data);
-  categoriesSelected.value[data.fieldGroup][data.idx] =
-    !categoriesSelected.value[data.fieldGroup][data.idx];
-};
-
-const processItemSelect = (data) => {
-  console.log("ROUTES: Item selected", data);
-  distributedItems.value[data.fieldGroup][data.position][data.idx].selected =
-    !distributedItems.value[data.fieldGroup][data.position][data.idx].selected;
-  // console.log("Items processed", distributedItems.value);
-};
-
-const processDistributedItems = (data) => {
-  distributedItems.value = _.cloneDeep(data);
-  console.log("ROUTES Distributed Data", distributedItems.value);
-};
-
 const processDistributionSelected = (selectedIds) => {
   console.log("🤖 Distribution Done", ...selectedIds);
 
   selectedIds.forEach((id) => mapStore.routesSelectedIds.add(id));
-  // console.log("Categories", categoriesSelected.value);
-  // console.log("Items", distributedItems.value);
 };
 
 //

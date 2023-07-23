@@ -400,11 +400,6 @@
       :categories="sitesCategories"
       :field-length="fieldLength"
       :items="sitesDataForDistribution"
-      :field-items="distributedItems"
-      :selected="categoriesSelected"
-      @select-field-group="processFieldSelect"
-      @select-item="processItemSelect"
-      @distributed="processDistributedItems"
       @done="processDistributionSelected"
     ></distribution-dialog>
     <search-dialog
@@ -430,7 +425,7 @@ import SearchBar from "../elements/SearchBar.vue";
 import DistributionDialog from "../DistributionDialog.vue";
 import SearchDialog from "../SearchDialog.vue";
 
-import { ref, computed, onMounted, watch } from "vue";
+import { ref, computed, onMounted } from "vue";
 
 import { useI18n } from "vue-i18n";
 const { t } = useI18n();
@@ -559,8 +554,6 @@ const processSearchResults = (ids) => {
 // Distribution logic
 //
 let sitesDataForDistribution = [];
-let categoriesSelected = ref({});
-let distributedItems = ref({});
 const openDistributionDialog = () => {
   sitesDataForDistribution =
     mapStore.currentSitesGroup == null || mapStore.useCurrentSiteGroup == false
@@ -572,71 +565,14 @@ const openDistributionDialog = () => {
           ...site,
           ...sitesStats.find((item) => item.id == site.id),
         }));
-  sitesCategories.forEach((item) => {
-    categoriesSelected.value[item.fieldGroup] = new Array(fieldLength).fill(
-      false
-    );
-    distributedItems.value[item.fieldGroup] = new Array(fieldLength).fill(null);
-  });
-  Object.keys(distributedItems.value).forEach((fieldGroup) => {
-    for (let i = 0; i < fieldLength; i++) {
-      distributedItems.value[fieldGroup][i] = new Array();
-    }
-  });
-  // console.log("Selected Array", categoriesSelected);
-  // console.log("Distributed Items", distributedItems.value);
-
-  // console.log("Items", sitesDataForDistribution);
 
   showDistribution.value = true;
-};
-const isAnyFieldSelected = ref(false);
-watch(
-  () => categoriesSelected,
-  () => {
-    isAnyFieldSelected.value = false;
-    Object.keys(categoriesSelected.value).forEach((fieldGroup) => {
-      // console.log(
-      //   "Watch field",
-      //   fieldGroup,
-      //   categoriesSelected.value[fieldGroup]
-      // );
-      const fieldSelected = categoriesSelected.value[fieldGroup].reduce(
-        (result, current) => result || current,
-        false
-      );
-      // console.log("Field result", fieldGroup, fieldSelected);
-      isAnyFieldSelected.value = isAnyFieldSelected.value || fieldSelected;
-    });
-    // console.log("Any Selected Watched", isAnyFieldSelected.value);
-  },
-  { deep: true }
-);
-
-const processFieldSelect = (data) => {
-  console.log("SITES: Field selected", data);
-  categoriesSelected.value[data.fieldGroup][data.idx] =
-    !categoriesSelected.value[data.fieldGroup][data.idx];
-};
-
-const processItemSelect = (data) => {
-  console.log("SITES: Item selected", data);
-  distributedItems.value[data.fieldGroup][data.position][data.idx].selected =
-    !distributedItems.value[data.fieldGroup][data.position][data.idx].selected;
-  console.log("Items processed", distributedItems.value);
-};
-
-const processDistributedItems = (data) => {
-  distributedItems.value = _.cloneDeep(data);
-  console.log("SITES Distributed Data", distributedItems.value);
 };
 
 const processDistributionSelected = (selectedIds) => {
   console.log("🤖 Distribution Done", ...selectedIds);
 
   selectedIds.forEach((id) => mapStore.selectedSiteIds.add(id));
-  // console.log("Categories", categoriesSelected.value);
-  // console.log("Items", distributedItems.value);
 };
 
 //
