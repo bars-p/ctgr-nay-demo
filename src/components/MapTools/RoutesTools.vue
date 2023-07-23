@@ -25,7 +25,7 @@
             variant="outlined"
             color="grey-darken-3"
             class="mr-3"
-            @click="showDistribution = true"
+            @click="openDistributionDialog"
             >{{ $t("general.distribution") }}</v-btn
           >
           <v-btn
@@ -342,6 +342,16 @@
     <distribution-dialog
       v-model="showDistribution"
       :title="$t('tools.routesDistributionTitle')"
+      :categories="routesCategories"
+      :field-length="fieldLength"
+      :items="routesDataForDistribution"
+      :field-items="distributedItems"
+      :selected="categoriesSelected"
+      :any-selected="isAnyFieldSelected"
+      @select-field-group="processFieldSelect"
+      @select-item="processItemSelect"
+      @distributed="processDistributedItems"
+      @done="processDistributionSelected"
     ></distribution-dialog>
     <search-dialog
       v-model="showSearch"
@@ -355,6 +365,8 @@
 
 <script setup>
 import _ from "lodash";
+import axios from "axios";
+
 import ToolsComponent from "../ToolsComponent.vue";
 
 import ApplyButton from "../elements/ApplyButton.vue";
@@ -363,7 +375,7 @@ import SearchBar from "../elements/SearchBar.vue";
 import DistributionDialog from "../DistributionDialog.vue";
 import SearchDialog from "../SearchDialog.vue";
 
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, watch } from "vue";
 
 import { useI18n } from "vue-i18n";
 import CloseButton from "../elements/CloseButton.vue";
@@ -374,9 +386,28 @@ const mapStore = useMapStore();
 
 const props = defineProps(["title"]);
 
+let routesStats = null;
+let routesCategories = null;
+
 onMounted(async () => {
   await mapStore.loadRoutesData();
   await mapStore.loadSitesData();
+
+  // FIXME: Data loading with backend
+  if (routesStats == null) {
+    console.log("Load Routes Stats");
+    await axios
+      .get("Almaty_lads_stats.json")
+      .then((result) => (routesStats = result.data))
+      .catch((err) => console.warn("Error loading Routes stats", err));
+  }
+  if (routesCategories == null) {
+    console.log("Load Routes Categories");
+    await axios
+      .get("Almaty_lads_categories.json")
+      .then((result) => (routesCategories = result.data))
+      .catch((err) => console.warn("Error loading Routes categories", err));
+  }
 });
 
 const selectModes = [
@@ -388,11 +419,11 @@ const selectModes = [
     title: t("tools.demandAdminAreas"),
     value: "district",
   },
-  {
+  mapStore.savedAreas.length > 0 && {
     title: t("tools.socialSavedDisplay"),
     value: "area",
   },
-];
+].filter(Boolean);
 const changeSelectMode = () => {
   console.log("Select Mode:", mapStore.routesSelectMode);
   switch (mapStore.routesSelectMode) {
@@ -491,9 +522,8 @@ const updateModeColor = (mode) => {
 };
 
 //
-// Search & Distribution
+// Search Logic
 //
-const showDistribution = ref(false);
 const showSearch = ref(false);
 
 const searchData = computed(() => {
@@ -533,6 +563,101 @@ const searchData = computed(() => {
 const processSearchResults = (ids) => {
   ids.forEach((id) => mapStore.routesSelectedIds.add(id));
 };
+
+//
+// DISTRIBUTION LOGIC
+//
+const showDistribution = ref(false);
+const fieldLength = 6; // FIXME: Should be calculated from Categories data
+
+let routesDataForDistribution = [];
+let categoriesSelected = ref({});
+let distributedItems = ref({});
+
+const isAnyFieldSelected = ref(false);
+
+const openDistributionDialog = () => {
+  routesDataForDistribution =
+    mapStore.currentRoutesGroup == null ||
+    mapStore.useCurrentRoutesGroup == false
+      ? mapStore.ladsData.map((rt, i) => ({
+          ...rt,
+          name: `${mapStore.ladsData[i].line}->${mapStore.ladsData[i].dir}`,
+          ...routesStats[i],
+        }))
+      : mapStore.currentRoutesGroup.routes.map((rt) => ({
+          ...rt,
+          name: getLadName(rt.id),
+          ...routesStats.find((item) => item.id == rt.id),
+        }));
+  routesCategories.forEach((item) => {
+    categoriesSelected.value[item.fieldGroup] = new Array(fieldLength).fill(
+      false
+    );
+    distributedItems.value[item.fieldGroup] = new Array(fieldLength).fill(null);
+  });
+  Object.keys(distributedItems.value).forEach((fieldGroup) => {
+    for (let i = 0; i < fieldLength; i++) {
+      distributedItems.value[fieldGroup][i] = new Array();
+    }
+  });
+
+  console.log("Routes Data For Distr:", routesDataForDistribution);
+
+  showDistribution.value = true;
+};
+
+watch(
+  () => categoriesSelected,
+  () => {
+    isAnyFieldSelected.value = false;
+    Object.keys(categoriesSelected.value).forEach((fieldGroup) => {
+      // console.log(
+      //   "Watch field",
+      //   fieldGroup,
+      //   categoriesSelected.value[fieldGroup]
+      // );
+      const fieldSelected = categoriesSelected.value[fieldGroup].reduce(
+        (result, current) => result || current,
+        false
+      );
+      // console.log("Field result", fieldGroup, fieldSelected);
+      isAnyFieldSelected.value = isAnyFieldSelected.value || fieldSelected;
+    });
+    // console.log("Any Selected Watched", isAnyFieldSelected.value);
+  },
+  { deep: true }
+);
+
+const processFieldSelect = (data) => {
+  console.log("ROUTES: Field selected", data);
+  categoriesSelected.value[data.fieldGroup][data.idx] =
+    !categoriesSelected.value[data.fieldGroup][data.idx];
+};
+
+const processItemSelect = (data) => {
+  console.log("ROUTES: Item selected", data);
+  distributedItems.value[data.fieldGroup][data.position][data.idx].selected =
+    !distributedItems.value[data.fieldGroup][data.position][data.idx].selected;
+  console.log("Items processed", distributedItems.value);
+};
+
+const processDistributedItems = (data) => {
+  distributedItems.value = _.cloneDeep(data);
+  console.log("ROUTES Distributed Data", distributedItems.value);
+};
+
+const processDistributionSelected = (selectedIds) => {
+  console.log("🤖 Distribution Done", ...selectedIds);
+
+  selectedIds.forEach((id) => mapStore.routesSelectedIds.add(id));
+  // console.log("Categories", categoriesSelected.value);
+  // console.log("Items", distributedItems.value);
+};
+
+//
+// Selected processing
+//
 
 const addSelectedRoutes = () => {
   if (mapStore.currentRoutesGroup) {
@@ -780,12 +905,23 @@ const deleteRoute = (route) => {
     processCloseGroup();
   }
 };
+
+const getLadName = (id) => {
+  console.log("ID", id);
+  const lad = mapStore.ladsData.find((lad) => lad.ladId == id);
+  console.log("LAD found", lad);
+  return `${lad.line}->${lad.dir}`;
+};
+
 // const ladColorSelect = (ladName) => {
 //   console.log("Select Color for LAD:", ladName);
 // };
 // const ladColorUpdate = (color) => {
 //   console.log("Set New color to:", color);
 // };
+
+//
+//
 </script>
 
 <style scoped>

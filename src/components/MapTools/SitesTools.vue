@@ -584,8 +584,10 @@ const openDistributionDialog = () => {
       distributedItems.value[fieldGroup][i] = new Array();
     }
   });
-  console.log("Selected Array", categoriesSelected);
-  console.log("Distributed Items", distributedItems.value);
+  // console.log("Selected Array", categoriesSelected);
+  // console.log("Distributed Items", distributedItems.value);
+
+  // console.log("Items", sitesDataForDistribution);
 
   showDistribution.value = true;
 };

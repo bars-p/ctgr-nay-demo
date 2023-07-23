@@ -75,6 +75,7 @@ export default {
   map: {
     layerBorders: "Borders",
     layerDistricts: "Districts",
+    layerGrid: "Grid",
     layerZones: "Zones",
     layerCells: "Cells",
     layerSites: "Sites",

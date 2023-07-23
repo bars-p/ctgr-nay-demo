@@ -84,8 +84,12 @@ const layers = ref([
     ...getLayerData(mapStore.layersIdxs.adminFill),
   },
   {
-    title: t("map.layerZones"),
+    title: t("map.layerGrid"),
     ...getLayerData(mapStore.layersIdxs.zonesBorder),
+  },
+  {
+    title: t("map.layerZones"),
+    ...getLayerData(mapStore.layersIdxs.zonesFill),
   },
   {
     title: t("map.layerCells"),

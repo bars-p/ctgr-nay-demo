@@ -34,23 +34,23 @@
                 class="data-block"
                 v-for="i in 6"
                 :key="i"
-                @click="selectRangeItem(item.field, i - 1)"
+                @click="selectRangeItem(item.fieldGroup, i - 1)"
                 :style="`background: rgba(0, 0, 0, ${
-                  distribution[item.field][i - 1].percent / 100
+                  distribution[item.fieldGroup][i - 1].percent / 100
                 }); color: ${
-                  distribution[item.field][i - 1].percent / 100 > 0.4
+                  distribution[item.fieldGroup][i - 1].percent / 100 > 0.4
                     ? '#fff'
                     : 'rgba(0,0,0,0.87)'
                 }; border: ${
-                  distribution[item.field][i - 1].selected
+                  distribution[item.fieldGroup][i - 1].selected
                     ? '3px solid #4da6ff'
                     : ''
                 }`"
               >
                 <v-row dense no-gutters>
                   <v-col cols="10" class="mt-1">
-                    {{ distribution[item.field][i - 1].percent }}% ({{
-                      distribution[item.field][i - 1].number
+                    {{ distribution[item.fieldGroup][i - 1].percent }}% ({{
+                      distribution[item.fieldGroup][i - 1].number
                     }})
                   </v-col>
                   <v-col cols="2" class="text-right">
@@ -62,9 +62,10 @@
                           flat
                           size="small"
                           density="comfortable"
-                          @click.stop="showItems(item.field, i - 1)"
+                          @click.stop="showItems(item, i - 1)"
                           :color="
-                            distribution[item.field][i - 1].percent / 100 > 0.2
+                            distribution[item.fieldGroup][i - 1].percent / 100 >
+                            0.2
                               ? 'grey-darken-1'
                               : 'grey-lighten-3'
                           "
@@ -73,14 +74,16 @@
                       </template>
                       <v-list density="compact" max-height="300px">
                         <v-list-item
-                          v-for="(obj, j) in props.fieldItems[item.field][
+                          v-for="(obj, j) in props.fieldItems[item.fieldGroup][
                             i - 1
                           ]"
                           :key="obj.id"
                           :value="obj.id"
                           class="my-0 py-0"
                           min-width="120px"
-                          @click.stop="toggleSelectItem(item.field, i - 1, j)"
+                          @click.stop="
+                            toggleSelectItem(item.fieldGroup, i - 1, j)
+                          "
                         >
                           <v-list-item-title class="text-body-2">
                             <v-icon
@@ -165,6 +168,9 @@ const distribution = computed(() => {
     dataObject[item.fieldGroup] = new Array(props.fieldLength).fill(null);
     distributedItems[item.fieldGroup] = new Array(props.fieldLength).fill(null);
   });
+
+  console.log("Data Object Constructed", dataObject);
+
   Object.keys(dataObject).forEach((group) => {
     for (let i = 0; i < dataObject[group].length; i++) {
       dataObject[group][i] = new Object({
@@ -176,6 +182,7 @@ const distribution = computed(() => {
     }
   });
   props.items.forEach((item) => {
+    // console.log("ITEM:", item);
     Object.keys(dataObject).forEach((group) => {
       dataObject[group][item[group]].number++;
       distributedItems[group][item[group]].push({
@@ -239,9 +246,8 @@ const selectDistributionResult = () => {
   dialogOpened.value = false;
 };
 
-// FIXME: A bit weird way to get field name
 const getFieldName = (groupName) => {
-  return groupName.split("_")[0];
+  return props.categories.find((item) => item.fieldGroup == groupName).field;
 };
 </script>
 

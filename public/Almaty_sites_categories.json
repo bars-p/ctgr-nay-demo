@@ -1,7 +1,7 @@
 [
   {
-    "name": "LADs number",
-    "field": "lads_group",
+    "name": "Routes number",
+    "field": "lads",
     "fieldGroup": "lads_group",
     "levels": [
       {
@@ -32,7 +32,7 @@
   },
   {
     "name": "Trips number (per hour)",
-    "field": "trips_group",
+    "field": "trips",
     "fieldGroup": "trips_group",
     "levels": [
       {
@@ -63,7 +63,7 @@
   },
   {
     "name": "Transit capacity (per hour)",
-    "field": "cap_group",
+    "field": "cap",
     "fieldGroup": "cap_group",
     "levels": [
       {
@@ -94,7 +94,7 @@
   },
   {
     "name": "Boarding (per hour)",
-    "field": "board_group",
+    "field": "board",
     "fieldGroup": "board_group",
     "levels": [
       {
@@ -125,7 +125,7 @@
   },
   {
     "name": "Alighting (per hour)",
-    "field": "alight_group",
+    "field": "alight",
     "fieldGroup": "alight_group",
     "levels": [
       {
