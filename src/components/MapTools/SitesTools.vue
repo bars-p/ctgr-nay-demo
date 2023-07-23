@@ -402,7 +402,6 @@
       :items="sitesDataForDistribution"
       :field-items="distributedItems"
       :selected="categoriesSelected"
-      :any-selected="isAnyFieldSelected"
       @select-field-group="processFieldSelect"
       @select-item="processItemSelect"
       @distributed="processDistributedItems"

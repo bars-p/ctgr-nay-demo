@@ -112,7 +112,7 @@
         <v-btn
           color="primary"
           @click="selectDistributionResult"
-          :disabled="!props.anySelected"
+          :disabled="!isAnySelected"
           min-width="200px"
           >{{ $t("tools.routesDialogSelect") }}</v-btn
         >
@@ -131,7 +131,7 @@
 <script setup>
 import CloseButton from "./elements/CloseButton.vue";
 
-import { computed } from "vue";
+import { ref, computed, watch } from "vue";
 
 const props = defineProps([
   "modelValue",
@@ -139,7 +139,7 @@ const props = defineProps([
   "categories",
   "fieldLength",
   "selected",
-  "anySelected",
+  // "anySelected",
   "items",
   "fieldItems",
 ]);
@@ -151,6 +151,13 @@ const emit = defineEmits([
   "done",
 ]);
 
+// onMounted(() => {
+//   console.log("🐸🐸 onMounted Called");
+//   if (dialogOpened.value) {
+//     distribute();
+//   }
+// });
+
 const dialogOpened = computed({
   get() {
     return props.modelValue;
@@ -160,8 +167,22 @@ const dialogOpened = computed({
   },
 });
 
-const distribution = computed(() => {
-  console.log("😡😡😡 Distribution Calculation");
+watch(
+  () => dialogOpened.value,
+  () => {
+    console.log("🐸🐸 Watch worked", dialogOpened.value);
+    if (dialogOpened.value) {
+      distribute();
+    }
+  }
+);
+
+const distribution = ref({});
+const isAnySelected = ref(false);
+
+const distribute = () => {
+  console.log("🫥🫥🫥 Distribute Started");
+
   const dataObject = {};
   const distributedItems = {};
   props.categories.forEach((item) => {
@@ -203,15 +224,80 @@ const distribution = computed(() => {
   });
   console.log("TABLE: Distributed Items", distributedItems);
   emit("distributed", distributedItems);
-  return dataObject;
-});
+
+  distribution.value = dataObject;
+};
+
+// const distribution = computed(() => {
+//   console.log("😡😡😡 Distribution Calculation");
+//   const dataObject = {};
+//   const distributedItems = {};
+//   props.categories.forEach((item) => {
+//     dataObject[item.fieldGroup] = new Array(props.fieldLength).fill(null);
+//     distributedItems[item.fieldGroup] = new Array(props.fieldLength).fill(null);
+//   });
+
+//   console.log("Data Object Constructed", dataObject);
+
+//   Object.keys(dataObject).forEach((group) => {
+//     for (let i = 0; i < dataObject[group].length; i++) {
+//       dataObject[group][i] = new Object({
+//         number: 0,
+//         percent: 0,
+//         selected: props.selected[group][i],
+//       });
+//       distributedItems[group][i] = new Array();
+//     }
+//   });
+//   props.items.forEach((item) => {
+//     // console.log("ITEM:", item);
+//     Object.keys(dataObject).forEach((group) => {
+//       dataObject[group][item[group]].number++;
+//       distributedItems[group][item[group]].push({
+//         id: item.id,
+//         name: item.name,
+//         value: Math.round(item[getFieldName(group)]),
+//         selected: true,
+//       });
+//     });
+//   });
+//   Object.keys(dataObject).forEach((group) => {
+//     for (let i = 0; i < dataObject[group].length; i++) {
+//       dataObject[group][i].percent =
+//         Math.round(
+//           (100 * 100 * dataObject[group][i].number) / props.items.length
+//         ) / 100;
+//     }
+//   });
+//   console.log("TABLE: Distributed Items", distributedItems);
+//   emit("distributed", distributedItems);
+//   return dataObject;
+// });
 
 const selectRangeItem = (fieldGroup, idx) => {
   console.log("Selected:", fieldGroup, idx);
 
   emit("selectFieldGroup", { fieldGroup: fieldGroup, idx: idx });
 
-  console.log("Distribution", distribution.value);
+  distribution.value[fieldGroup][idx].selected =
+    !distribution.value[fieldGroup][idx].selected;
+  console.log("🚎🚎🚎Distribution", distribution.value);
+
+  isAnySelected.value = false;
+  Object.keys(distribution.value).forEach((fieldGroup) => {
+    // console.log(
+    //   "Watch field",
+    //   fieldGroup,
+    //   categoriesSelected.value[fieldGroup]
+    // );
+    const fieldSelected = distribution.value[fieldGroup].reduce(
+      (result, current) => result || current.selected,
+      false
+    );
+    // console.log("Field result", fieldGroup, fieldSelected);
+    isAnySelected.value = isAnySelected.value || fieldSelected;
+  });
+  console.log("Selected", isAnySelected.value);
 };
 
 const showItems = (name, idx) => {

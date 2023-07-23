@@ -347,7 +347,6 @@
       :items="routesDataForDistribution"
       :field-items="distributedItems"
       :selected="categoriesSelected"
-      :any-selected="isAnyFieldSelected"
       @select-field-group="processFieldSelect"
       @select-item="processItemSelect"
       @distributed="processDistributedItems"
@@ -639,7 +638,7 @@ const processItemSelect = (data) => {
   console.log("ROUTES: Item selected", data);
   distributedItems.value[data.fieldGroup][data.position][data.idx].selected =
     !distributedItems.value[data.fieldGroup][data.position][data.idx].selected;
-  console.log("Items processed", distributedItems.value);
+  // console.log("Items processed", distributedItems.value);
 };
 
 const processDistributedItems = (data) => {
