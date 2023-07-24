@@ -74,9 +74,9 @@
                       </template>
                       <v-list density="compact" max-height="300px">
                         <v-list-item
-                          v-for="(obj, j) in itemsByGroups[item.fieldGroup][
-                            i - 1
-                          ]"
+                          v-for="(obj, j) in orderByValueAsc(
+                            itemsByGroups[item.fieldGroup][i - 1]
+                          )"
                           :key="obj.id"
                           :value="obj.id"
                           class="my-0 py-0"
@@ -193,7 +193,7 @@ const distribute = () => {
       distributedItems[group][item[group]].push({
         id: item.id,
         name: item.name,
-        value: Math.round(item[getFieldName(group)]),
+        value: getItemValue(item[getFieldName(group)], getFieldDecimals(group)),
         selected: true,
       });
     });
@@ -260,8 +260,18 @@ const selectDistributionResult = () => {
   dialogOpened.value = false;
 };
 
+const getItemValue = (val, dec) => {
+  return Math.round(val * Math.pow(10, dec)) / Math.pow(10, dec);
+};
 const getFieldName = (groupName) => {
   return props.categories.find((item) => item.fieldGroup == groupName).field;
+};
+const getFieldDecimals = (groupName) => {
+  return props.categories.find((item) => item.fieldGroup == groupName).decimals;
+};
+
+const orderByValueAsc = (dataItems) => {
+  return dataItems.sort((a, b) => a.value - b.value);
 };
 </script>
 

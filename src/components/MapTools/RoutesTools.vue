@@ -87,7 +87,7 @@
             }}</span>
           </v-col>
           <v-col cols="3">
-            <span v-show="mapStore.routesSelectedIds.size > 0">
+            <span v-if="mapStore.routesSelectedIds.size > 0">
               <v-btn
                 v-if="!mapStore.useCurrentRoutesGroup"
                 flat

@@ -135,7 +135,7 @@
             }}</span>
           </v-col>
           <v-col cols="3">
-            <span v-show="mapStore.selectedSiteIds.size > 0">
+            <span v-if="mapStore.selectedSiteIds.size > 0">
               <v-btn
                 v-if="!mapStore.useCurrentSiteGroup"
                 flat

@@ -1,157 +1,162 @@
 [
-  {
-    "name": "Routes number",
-    "field": "lads",
-    "fieldGroup": "lads_group",
-    "levels": [
+ {
+   "name": "LADs number",
+   "field": "lads",
+   "fieldGroup": "lads_group",
+   "decimals": 0,
+   "levels": [
       {
-        "name": "Very low",
-        "details": "(0 - 9)"
+         "name": "Very low",
+         "details": "(0 - 9)"
       },
       {
-        "name": "Low",
-        "details": "(10 - 19)"
+         "name": "Low",
+         "details": "(10 - 19)"
       },
       {
-        "name": "Average",
-        "details": "(20 - 29)"
+         "name": "Average",
+         "details": "(20 - 29)"
       },
       {
-        "name": "High",
-        "details": "(30 - 39)"
+         "name": "High",
+         "details": "(30 - 39)"
       },
       {
-        "name": "Very high",
-        "details": "(40 - 49)"
+         "name": "Very high",
+         "details": "(40 - 49)"
       },
       {
-        "name": "Huge",
-        "details": "(50+)"
+         "name": "Huge",
+         "details": "(50+)"
       }
-    ]
-  },
-  {
-    "name": "Trips number (per hour)",
-    "field": "trips",
-    "fieldGroup": "trips_group",
-    "levels": [
+   ]
+},
+ {
+   "name": "Trips number (per hour)",
+   "field": "trips",
+   "fieldGroup": "trips_group",
+   "decimals": 1,
+   "levels": [
       {
-        "name": "Very low",
-        "details": "(0 - 59)"
+         "name": "Very low",
+         "details": "(0 - 59)"
       },
       {
-        "name": "Low",
-        "details": "(60 - 119)"
+         "name": "Low",
+         "details": "(60 - 119)"
       },
       {
-        "name": "Average",
-        "details": "(120 - 179)"
+         "name": "Average",
+         "details": "(120 - 179)"
       },
       {
-        "name": "High",
-        "details": "(180 - 239)"
+         "name": "High",
+         "details": "(180 - 239)"
       },
       {
-        "name": "Very high",
-        "details": "(240 - 299)"
+         "name": "Very high",
+         "details": "(240 - 299)"
       },
       {
-        "name": "Huge",
-        "details": "(300+)"
+         "name": "Huge",
+         "details": "(300+)"
       }
-    ]
-  },
-  {
-    "name": "Transit capacity (per hour)",
-    "field": "cap",
-    "fieldGroup": "cap_group",
-    "levels": [
+   ]
+},
+ {
+   "name": "Transit capacity (per hour)",
+   "field": "cap",
+   "fieldGroup": "cap_group",
+   "decimals": 0,
+   "levels": [
       {
-        "name": "Very low",
-        "details": "(0 - 4999)"
+         "name": "Very low",
+         "details": "(0 - 4999)"
       },
       {
-        "name": "Low",
-        "details": "(5000 - 9999)"
+         "name": "Low",
+         "details": "(5000 - 9999)"
       },
       {
-        "name": "Average",
-        "details": "(10000 - 14999)"
+         "name": "Average",
+         "details": "(10000 - 14999)"
       },
       {
-        "name": "High",
-        "details": "(15000 - 19999)"
+         "name": "High",
+         "details": "(15000 - 19999)"
       },
       {
-        "name": "Very high",
-        "details": "(20000 - 24999)"
+         "name": "Very high",
+         "details": "(20000 - 24999)"
       },
       {
-        "name": "Huge",
-        "details": "(25000+)"
+         "name": "Huge",
+         "details": "(25000+)"
       }
-    ]
-  },
-  {
-    "name": "Boarding (per hour)",
-    "field": "board",
-    "fieldGroup": "board_group",
-    "levels": [
+   ]
+},
+ {
+   "name": "Boarding (per hour)",
+   "field": "board",
+   "fieldGroup": "board_group",
+   "decimals": 0,
+   "levels": [
       {
-        "name": "Very low",
-        "details": "(0 - 599)"
+         "name": "Very low",
+         "details": "(0 - 599)"
       },
       {
-        "name": "Low",
-        "details": "(600 - 1199)"
+         "name": "Low",
+         "details": "(600 - 1199)"
       },
       {
-        "name": "Average",
-        "details": "(1200 - 1799)"
+         "name": "Average",
+         "details": "(1200 - 1799)"
       },
       {
-        "name": "High",
-        "details": "(1800 - 2399)"
+         "name": "High",
+         "details": "(1800 - 2399)"
       },
       {
-        "name": "Very high",
-        "details": "(2400 - 2999)"
+         "name": "Very high",
+         "details": "(2400 - 2999)"
       },
       {
-        "name": "Huge",
-        "details": "(3000+)"
+         "name": "Huge",
+         "details": "(3000+)"
       }
-    ]
-  },
-  {
-    "name": "Alighting (per hour)",
-    "field": "alight",
-    "fieldGroup": "alight_group",
-    "levels": [
+   ]
+},
+ {
+   "name": "Alighting (per hour)",
+   "field": "alight",
+   "fieldGroup": "alight_group",
+   "decimals": 0,
+   "levels": [
       {
-        "name": "Very low",
-        "details": "(0 - 599)"
+         "name": "Very low",
+         "details": "(0 - 599)"
       },
       {
-        "name": "Low",
-        "details": "(600 - 1199)"
+         "name": "Low",
+         "details": "(600 - 1199)"
       },
       {
-        "name": "Average",
-        "details": "(1200 - 1799)"
+         "name": "Average",
+         "details": "(1200 - 1799)"
       },
       {
-        "name": "High",
-        "details": "(1800 - 2399)"
+         "name": "High",
+         "details": "(1800 - 2399)"
       },
       {
-        "name": "Very high",
-        "details": "(2400 - 2999)"
+         "name": "Very high",
+         "details": "(2400 - 2999)"
       },
       {
-        "name": "Huge",
-        "details": "(3000+)"
+         "name": "Huge",
+         "details": "(3000+)"
       }
-    ]
-  }
+   ]
+}
 ]
