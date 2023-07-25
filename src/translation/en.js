@@ -188,7 +188,7 @@ export default {
 
     //Connectivity
     connectivityType: "Type of connectivity",
-    connectivitySpeed: "LAD speed",
+    connectivitySpeed: "Transit integrated speed",
     connectivityRoute: "Transfer level",
     connectivityGeneral: "General connectivity",
     connectivityGaps: "Demand level filter",

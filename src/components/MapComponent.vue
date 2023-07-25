@@ -1585,10 +1585,23 @@ const buildLayers = () => {
 
         console.log("Routes selected", selectedFeatures);
         const ids = selectedFeatures.map((item) => item.properties.id);
-        mapStore.routesSelectedIds = new Set([
-          ...mapStore.routesSelectedIds,
-          ...ids,
-        ]);
+
+        // Routes select TOGGLE
+        //
+        ids.forEach((id) => {
+          if (mapStore.routesSelectedIds.has(id)) {
+            mapStore.routesSelectedIds.delete(id);
+          } else {
+            mapStore.routesSelectedIds.add(id);
+          }
+        });
+
+        // Routes select ADD
+        //
+        // mapStore.routesSelectedIds = new Set([
+        //   ...mapStore.routesSelectedIds,
+        //   ...ids,
+        // ]);
       }
     });
 
