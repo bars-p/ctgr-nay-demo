@@ -760,7 +760,7 @@ const buildLayers = () => {
           visibility: "none",
         },
         paint: {
-          "line-width": 2,
+          "line-width": 4,
           "line-color": [
             "case",
             ["==", ["get", "mode"], "Bus"],
@@ -786,7 +786,7 @@ const buildLayers = () => {
         },
         filter: ["in", "id", ""],
         paint: {
-          "line-width": 4,
+          "line-width": 6,
           "line-color": "#8000ff",
           "line-opacity": 0.6,
         },
@@ -1567,8 +1567,29 @@ const buildLayers = () => {
     });
 
     //
-    // Routes Select
+    // Routes processing
     //
+    // map.on("mousemove", mapStore.layers[layersIdxs.ladsTraces].name, (e) => {
+    //   if (props.mode == "routes" && mapStore.routesSelectMode == "routes") {
+    //     map.getCanvas().style.cursor = "pointer";
+    //     // console.log("Hovered:", e.features[0]);
+    //     const routesData = e.features[0].properties;
+    //     console.log("Routes Pointed", routesData);
+    //     // const name = mapStore.getSiteName(siteData.id);
+    //     // const description = `${t("tools.sitesId")}: ${siteData.id}<br>${t(
+    //     //   "tools.sitesName"
+    //     // )}: ${name}`;
+    //     const description = "Routes...";
+    //     mapPopup.setLngLat(e.lngLat).setHTML(description).addTo(map);
+    //   }
+    // });
+    // map.on("mouseleave", mapStore.layers[layersIdxs.ladsTraces].name, () => {
+    //   if (props.mode == "routes" && mapStore.routesSelectMode == "routes") {
+    //     map.getCanvas().style.cursor = "";
+    //     mapPopup.remove();
+    //   }
+    // });
+
     map.on("click", (e) => {
       if (mapStore.measureActive) {
         return;
