@@ -119,6 +119,16 @@ const restoreMain = () => {
   mapStore.clearSelectedCells();
   mapStore.clearSavedCellsData();
 
+  mapStore.selectedSiteIds.clear();
+  mapStore.currentSitesGroup = null;
+  mapStore.savedSitesGroups = [];
+  // mapStore.useCurrentSiteGroup = false;
+
+  mapStore.routesSelectedIds.clear();
+  mapStore.currentRoutesGroup = null;
+  mapStore.savedRoutesGroups = [];
+  // mapStore.useCurrentRoutesGroup = false;
+
   mapStore.demandResetData();
   mapStore.connectivityResetData();
   mapStore.accessabilityResetData();

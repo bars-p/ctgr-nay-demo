@@ -79,12 +79,22 @@ watch(
     }
     if (from == "sites") {
       mapStore.turnOffLayer(layersIdxs.sitesSelected);
+      if (mapStore.useCurrentSiteGroup) {
+        if (mapStore.currentSitesGroup == null) {
+          mapStore.useCurrentSiteGroup = false;
+        }
+      }
     }
     if (to == "routes") {
       mapStore.turnOnLayer(layersIdxs.ladsTraces);
       mapStore.turnOnLayer(layersIdxs.ladsSelected);
       map.getCanvas().style.cursor =
         mapStore.routesSelectMode == "routes" ? "pointer" : null;
+      if (mapStore.useCurrentRoutesGroup) {
+        if (mapStore.currentRoutesGroup == null) {
+          mapStore.useCurrentRoutesGroup = false;
+        }
+      }
     }
     if (from == "routes") {
       mapStore.routesSelectMode = null;
