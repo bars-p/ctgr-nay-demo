@@ -371,6 +371,8 @@ export const useMapStore = defineStore("mapStore", () => {
     savedRoutesGroups.value[idx] = groupData;
   };
 
+  const showRouteInfo = ref(false);
+
   const skeletonColor = ref("#90A4AE");
   const busColor = ref("#00b300");
   const trolleyColor = ref("#00ace6");
@@ -728,6 +730,7 @@ export const useMapStore = defineStore("mapStore", () => {
     // Routes
     routesSelectMode,
     routesSelectedIds,
+    showRouteInfo,
     skeletonColor,
     busColor,
     trolleyColor,

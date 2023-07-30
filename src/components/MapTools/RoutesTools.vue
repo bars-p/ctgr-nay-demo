@@ -288,57 +288,77 @@
         </v-label>
 
         <v-list density="compact">
-          <v-list-item
-            v-for="route in routesFiltered"
-            :key="route.id"
-            @click="selectSavedRoute(route)"
-          >
-            <v-list-item-title
-              class="text-body-2"
-              :class="isRouteSelected(route.id) ? 'font-weight-bold' : ''"
-            >
-              (<span :style="{ color: mapStore.getModeColor(route.id) }">{{
-                route.id
-              }}</span
-              >) {{ route.name }}
-            </v-list-item-title>
-            <template #append>
-              <v-btn
-                density="comfortable"
-                size="small"
-                flat
-                :icon="route.shown ? 'mdi-eye-outline' : 'mdi-eye-off-outline'"
-                @click.stop="toggleRouteShown(route.id)"
-              >
-              </v-btn>
-              <!-- <v-btn
-                density="comfortable"
-                size="small"
-                flat
-                icon="mdi-checkbox-blank"
-              >
-                <v-icon :color="route.color"></v-icon>
-                <v-menu activator="parent" :close-on-content-click="false">
-                  <v-color-picker
-                    v-model="route.color"
-                    show-swatches
-                    @update:model-value="ladColorUpdate"
-                  ></v-color-picker>
-                </v-menu>
-              </v-btn> -->
-              <v-btn
-                density="comfortable"
-                size="small"
-                flat
-                icon="mdi-trash-can-outline"
-                @click.stop="deleteRoute(route)"
-              >
-              </v-btn>
-            </template>
-          </v-list-item>
+          <template v-for="route in routesFiltered" :key="route.id">
+            <v-hover v-slot="{ isHovering, props }">
+              <v-list-item @click="selectSavedRoute(route)" v-bind="props">
+                <v-list-item-title
+                  class="text-body-2"
+                  :class="isRouteSelected(route.id) ? 'font-weight-bold' : ''"
+                >
+                  (<span :style="{ color: mapStore.getModeColor(route.id) }">{{
+                    route.id
+                  }}</span
+                  >) {{ route.name }}
+                </v-list-item-title>
+                <template #prepend>
+                  <v-btn
+                    density="comfortable"
+                    size="small"
+                    flat
+                    class="mr-1"
+                    :icon="
+                      route.shown ? 'mdi-eye-outline' : 'mdi-eye-off-outline'
+                    "
+                    @click.stop="toggleRouteShown(route.id)"
+                  >
+                  </v-btn>
+                </template>
+                <template #append v-if="isHovering">
+                  <v-btn
+                    density="comfortable"
+                    size="small"
+                    flat
+                    icon="mdi-information-outline"
+                    @click.stop="showRouteInfo(route)"
+                  >
+                  </v-btn>
+                  <!-- <v-btn
+                  density="comfortable"
+                  size="small"
+                  flat
+                  icon="mdi-checkbox-blank"
+                >
+                  <v-icon :color="route.color"></v-icon>
+                  <v-menu activator="parent" :close-on-content-click="false">
+                    <v-color-picker
+                      v-model="route.color"
+                      show-swatches
+                      @update:model-value="ladColorUpdate"
+                    ></v-color-picker>
+                  </v-menu>
+                </v-btn> -->
+                  <v-btn
+                    density="comfortable"
+                    size="small"
+                    flat
+                    icon="mdi-trash-can-outline"
+                    @click.stop="deleteRoute(route)"
+                  >
+                  </v-btn>
+                </template>
+              </v-list-item>
+            </v-hover>
+          </template>
         </v-list>
       </v-container>
     </tools-component>
+
+    <route-info
+      :lad="routeInfoSelected"
+      :categories="routesCategories"
+      v-if="mapStore.showRouteInfo"
+    ></route-info>
+
     <distribution-dialog
       v-model="showDistribution"
       :title="$t('tools.routesDistributionTitle')"
@@ -368,11 +388,12 @@ import ConfigButton from "../elements/ConfigButton.vue";
 import SearchBar from "../elements/SearchBar.vue";
 import DistributionDialog from "../DistributionDialog.vue";
 import SearchDialog from "../SearchDialog.vue";
+import RouteInfo from "./RouteInfo.vue";
+import CloseButton from "../elements/CloseButton.vue";
 
 import { ref, computed, onMounted } from "vue";
 
 import { useI18n } from "vue-i18n";
-import CloseButton from "../elements/CloseButton.vue";
 const { t } = useI18n();
 
 import { useMapStore } from "@/store/map";
@@ -705,6 +726,8 @@ const deleteSitesGroup = (group) => {
 };
 
 // LAD Group
+const routeInfoSelected = ref(null);
+
 const ladDisplayOptions = [
   {
     title: t("tools.routesFrequency"),
@@ -771,6 +794,16 @@ const routesFiltered = computed(() => {
     )
   );
 });
+
+const showRouteInfo = (route) => {
+  const routeData = {
+    name: route.name,
+    ...routesStats.find((item) => item.id == route.id),
+  };
+  routeInfoSelected.value = routeData;
+  console.log("Info for:", routeData);
+  mapStore.showRouteInfo = true;
+};
 
 const toggleRouteShown = (id) => {
   const route = mapStore.currentRoutesGroup.routes.find(
