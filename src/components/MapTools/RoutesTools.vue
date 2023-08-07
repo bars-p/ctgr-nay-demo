@@ -1,6 +1,6 @@
 <template>
   <div>
-    <tools-component :title="props.title">
+    <tools-component :title="props.title" v-if="!mapStore.showRouteInfo">
       <template #actions>
         <search-bar v-model="searchGroupsString"></search-bar>
       </template>
@@ -295,10 +295,10 @@
                   class="text-body-2"
                   :class="isRouteSelected(route.id) ? 'font-weight-bold' : ''"
                 >
-                  (<span :style="{ color: mapStore.getModeColor(route.id) }">{{
+                  [<span :style="{ color: mapStore.getModeColor(route.id) }">{{
                     route.id
                   }}</span
-                  >) {{ route.name }}
+                  >] {{ route.name }}
                 </v-list-item-title>
                 <template #prepend>
                   <v-btn
@@ -357,6 +357,7 @@
       :lad="routeInfoSelected"
       :categories="routesCategories"
       v-if="mapStore.showRouteInfo"
+      class="route-info"
     ></route-info>
 
     <distribution-dialog

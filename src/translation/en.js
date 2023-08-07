@@ -141,6 +141,8 @@ export default {
     routesModeSubway: "Subway",
     routesModeOther: "Other modes",
     routesUseCurrent: "Use current routes group",
+    routesSitesList: "Sites sequence",
+    routesStats: "Route statistics",
 
     // Stops
     // stopsSelectMode: "Select mode",
