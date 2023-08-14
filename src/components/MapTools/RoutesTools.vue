@@ -779,6 +779,7 @@ const processCloseGroup = () => {
   console.log("Close Group panel");
   mapStore.currentRoutesGroup = null;
   mapStore.useCurrentRoutesGroup = false;
+  mapStore.showRouteInfo = false;
   routesGroupName.value = null;
   // mapStore.siteSizeStep = defaultSizeStep;
   // mapStore.siteColorMode = null;

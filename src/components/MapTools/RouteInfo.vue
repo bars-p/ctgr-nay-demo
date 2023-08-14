@@ -26,12 +26,23 @@
       </v-row>
     </v-container>
     <v-container v-else class="sites-block">
-      <p
+      <v-list density="compact">
+        <v-list-item
+          v-for="(site, i) in sites"
+          :key="site.id"
+          @click="selectSite(site)"
+        >
+          <v-list-item-title :class="site.selected ? 'font-weight-bold' : ''">
+            {{ i + 1 }}. [{{ site.id }}] {{ site.name }}
+          </v-list-item-title>
+        </v-list-item>
+      </v-list>
+      <!-- <p
         v-for="(siteId, i) in mapStore.getSitesByLad(props.lad.id)"
         :key="siteId"
       >
-        {{ i + 1 }}. {{ mapStore.getSiteName(siteId) }}
-      </p>
+        {{ i + 1 }}. [{{ siteId }}] {{ mapStore.getSiteName(siteId) }}
+      </p> -->
     </v-container>
   </tools-component>
 </template>
@@ -40,7 +51,7 @@
 import ToolsComponent from "../ToolsComponent.vue";
 import CloseButton from "../elements/CloseButton.vue";
 
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 
 import { useI18n } from "vue-i18n";
 const { t } = useI18n();
@@ -49,6 +60,18 @@ import { useMapStore } from "@/store/map";
 const mapStore = useMapStore();
 
 const props = defineProps(["lad", "categories"]);
+
+onMounted(() => {
+  const sitesIds = mapStore.getSitesByLad(props.lad.id);
+  sites.value = sitesIds.map((id) => ({
+    id,
+    selected: false,
+    name: mapStore.getSiteName(id),
+  }));
+  console.log("Sites", sites.value);
+});
+
+const sites = ref([]);
 
 const selectedMode = ref("sites");
 
@@ -62,6 +85,11 @@ const displayModes = [
     value: "stats",
   },
 ];
+
+const selectSite = (site) => {
+  console.log("Selected Site", site);
+  site.selected = !site.selected;
+};
 </script>
 
 <style scoped>
