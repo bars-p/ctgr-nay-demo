@@ -804,10 +804,16 @@ const showRouteInfo = (route) => {
   };
   routeInfoSelected.value = routeData;
   console.log("Info for:", routeData);
+
+  // mapStore.routeInfoSiteSizeStep = 2;
+  // mapStore.routeInfoSegmentWidthStep = 2;
+  // mapStore.routeInfoShowSegmentSpeed = false;
+
   mapStore.showRouteInfo = true;
 };
 
 const toggleRouteShown = (id) => {
+  console.log("RT Group", mapStore.currentRoutesGroup);
   const route = mapStore.currentRoutesGroup.routes.find(
     (item) => item.id == id
   );

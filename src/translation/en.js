@@ -143,6 +143,8 @@ export default {
     routesUseCurrent: "Use current routes group",
     routesSitesList: "Sites sequence",
     routesStats: "Route statistics",
+    routesSegmentWidth: "Segment width",
+    routesSegmentSpeed: "Show segments speed",
 
     // Stops
     // stopsSelectMode: "Select mode",
@@ -176,7 +178,10 @@ export default {
     sitesLadsNumber: "LADs number",
     sitesBoarding: "Boarding",
     sitesAlighting: "Alighting",
+    sitesBoardingTotal: "Boarding all routes",
+    sitesAlightingTotal: "Alighting all routes",
     sitesCapacity: "Transit capacity",
+    sitesFlowAfter: "Ridership volume",
     sitesDistributionTitle: "Sites distribution",
     sitesSearchTitle: "Sites search",
     sitesGroup: "Sites group",

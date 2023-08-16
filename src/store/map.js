@@ -6,7 +6,7 @@ import { ref, computed } from "vue";
 export const useMapStore = defineStore("mapStore", () => {
   const userSettingsShown = ref(false);
 
-  const version = "0.0.4d";
+  const version = "0.0.5a";
 
   const mapStyles = [
     { value: 0, title: "Streets", uri: "mapbox://styles/mapbox/streets-v12" },
@@ -46,6 +46,12 @@ export const useMapStore = defineStore("mapStore", () => {
     measurePoints: 20,
     measureLines: 21,
     measureLabels: 22,
+    ladsDetails: 23,
+    ladsSegments: 24,
+    sitesDetails: 25,
+    sitesLabels: 26,
+    extraCircles: 27,
+    extraSymbols: 28,
   };
   const layers = ref([
     { idx: 0, name: "admin-areas-border", shown: false },
@@ -71,6 +77,12 @@ export const useMapStore = defineStore("mapStore", () => {
     { idx: 20, name: "measure-points", shown: false },
     { idx: 21, name: "measure-lines", shown: false },
     { idx: 22, name: "measure-labels", shown: false },
+    { idx: 23, name: "lads-details", shown: false },
+    { idx: 24, name: "lads-segments", shown: false },
+    { idx: 25, name: "sites-details", shown: false },
+    { idx: 26, name: "sites-labels", shown: false },
+    { idx: 27, name: "extra-circles", shown: false },
+    { idx: 28, name: "extra-symbols", shown: false },
   ]);
 
   const turnOnLayer = (idx) => {
@@ -372,6 +384,17 @@ export const useMapStore = defineStore("mapStore", () => {
   };
 
   const showRouteInfo = ref(false);
+  // const routeInfoSiteSizeStep = ref(2);
+  // const routeInfoSegmentWidthStep = ref(2);
+  // const routeInfoShowSegmentSpeed = ref(false);
+  const routeInfoLad = ref(null);
+  const routeInfoSites = ref([]);
+  const routeInfoDefaultColor = "#3d5c5c";
+  const routeInfoBoardColor = "#0000e6"; // Blueish
+  const routeInfoAlightColor = "#006600"; // Greenish
+  const routeInfoFlowColor = "#730099"; // Purplish
+  const routeInfoOptions = ref(null);
+  const routeInfoDefaultStep = ref(2);
 
   const skeletonColor = ref("#90A4AE");
   const busColor = ref("#00b300");
@@ -731,6 +754,17 @@ export const useMapStore = defineStore("mapStore", () => {
     routesSelectMode,
     routesSelectedIds,
     showRouteInfo,
+    // routeInfoSiteSizeStep,
+    // routeInfoSegmentWidthStep,
+    // routeInfoShowSegmentSpeed,
+    routeInfoSites,
+    routeInfoLad,
+    routeInfoDefaultColor,
+    routeInfoBoardColor,
+    routeInfoAlightColor,
+    routeInfoFlowColor,
+    routeInfoOptions,
+    routeInfoDefaultStep,
     skeletonColor,
     busColor,
     trolleyColor,

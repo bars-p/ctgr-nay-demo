@@ -21,6 +21,7 @@ import { MapboxLayer } from "@deck.gl/mapbox";
 import { ArcLayer } from "@deck.gl/layers";
 
 import axios from "axios";
+import _ from "lodash";
 
 import union from "@turf/union";
 import booleanPointInPolygon from "@turf/boolean-point-in-polygon";
@@ -98,6 +99,7 @@ watch(
     }
     if (from == "routes") {
       mapStore.routesSelectMode = null;
+      mapStore.showRouteInfo = false;
       mapStore.turnOffLayer(layersIdxs.ladsSelected);
     }
 
@@ -338,6 +340,129 @@ watch(
     }
   }
 );
+watch(
+  () => mapStore.showRouteInfo,
+  () => {
+    console.log("Watch - Show Info", mapStore.showRouteInfo);
+    if (mapStore.showRouteInfo) {
+      mapStore.turnOnLayer(layersIdxs.ladsDetails);
+      mapStore.turnOffLayer(layersIdxs.ladsSegments);
+      mapStore.turnOnLayer(layersIdxs.sitesDetails);
+      mapStore.turnOnLayer(layersIdxs.sitesLabels);
+      mapStore.turnOnLayer(layersIdxs.extraCircles);
+      // mapStore.turnOnLayer(layersIdxs.extraSymbols);
+    } else {
+      mapStore.turnOffLayer(layersIdxs.ladsDetails);
+      mapStore.turnOffLayer(layersIdxs.ladsSegments);
+      mapStore.turnOffLayer(layersIdxs.sitesDetails);
+      mapStore.turnOffLayer(layersIdxs.sitesLabels);
+      mapStore.turnOffLayer(layersIdxs.extraCircles);
+      // mapStore.turnOffLayer(layersIdxs.extraSymbols);
+
+      mapStore.routeInfoOptions = null;
+      processRoutesInfoOptions();
+    }
+  }
+);
+watch(
+  () => mapStore.routeInfoSites,
+  () => {
+    console.log("Watch - Info Sites");
+    if (mapStore.showRouteInfo) {
+      // Build and display Info data
+      console.log("  Sites:", mapStore.routeInfoSites);
+      const sitesData = {
+        type: "FeatureCollection",
+        features: [],
+      };
+      mapStore.routeInfoSites.forEach((site) => {
+        const dataItem = _.cloneDeep(
+          sourceSitesCentroids.features.find(
+            (item) => item.properties.id == site.id
+          )
+        );
+        dataItem.properties.lad_board = site.board;
+        dataItem.properties.lad_alight = site.alight;
+        dataItem.properties.site_order = site.order;
+        dataItem.properties.name = `${site.order}. ${site.name}`;
+        dataItem.properties.flow = site.load_pl;
+        dataItem.properties.len = site.r_len;
+        dataItem.properties.min = site.min;
+        dataItem.properties.speed =
+          site.min != 0 ? (60 * site.r_len) / site.min : 0;
+
+        sitesData.features.push(dataItem);
+      });
+      console.log("Sites Data Built", sitesData);
+      map.getSource("lad-info-sites").setData(sitesData);
+
+      const segmentsData = {
+        type: "FeatureCollection",
+        features: sourceLadsSegments.features.filter(
+          (item) => item.properties.ladId == mapStore.routeInfoLad.id
+        ),
+      };
+
+      console.log("Segments Data Built", segmentsData);
+      // FIXME: Segments Display
+      // map.getSource("lad-info-segments").setData(segmentsData);
+      // mapStore.turnOnLayer(layersIdxs.ladsSegments);
+
+      map.setFilter(mapStore.layers[layersIdxs.ladsDetails].name, [
+        "in",
+        "id",
+        mapStore.routeInfoLad.id,
+      ]);
+
+      const startSignPlace = sourceLadsTraces.features.find(
+        (item) => item.properties.id == mapStore.routeInfoLad.id
+      ).geometry.coordinates[0][0];
+      const startData = {
+        type: "FeatureCollection",
+        features: [
+          {
+            type: "Feature",
+            properties: { id: 1, size: 13, color: "#000000", opacity: 0.8 },
+            geometry: {
+              type: "Point",
+              coordinates: startSignPlace,
+            },
+          },
+        ],
+      };
+      console.log("START", startData);
+      map
+        .getSource(mapStore.layers[layersIdxs.extraCircles].name)
+        .setData(startData);
+
+      // const startSymbol = {
+      //   type: "FeatureCollection",
+      //   features: [
+      //     {
+      //       type: "Feature",
+      //       properties: { id: 1, size: 20, color: "#000000", text: "⁜" },
+      //       geometry: {
+      //         type: "Point",
+      //         coordinates: startSignPlace,
+      //       },
+      //     },
+      //   ],
+      // };
+      // map
+      //   .getSource(mapStore.layers[layersIdxs.extraSymbols].name)
+      //   .setData(startSymbol);
+    }
+  }
+);
+watch(
+  () => mapStore.routeInfoOptions,
+  () => {
+    console.log("Watch - Route Info Options");
+    if (mapStore.routeInfoOptions) {
+      processRoutesInfoOptions();
+    }
+  }
+);
 
 //
 // Data processing
@@ -405,7 +530,7 @@ const loadData = async () => {
     if (item.properties.id == sitesStats[i].id) {
       item.properties = { ...sitesStats[i] };
     } else {
-      console.error("Failed merge sites stats");
+      console.error("Failed merge sites stats", item);
       return;
     }
   });
@@ -633,6 +758,36 @@ const buildLayers = () => {
       type: "geojson",
       data: sourceLadsTraces,
     });
+
+    map.addSource("lad-info-segments", {
+      type: "geojson",
+      data: {
+        type: "FeatureCollection",
+        features: [],
+      },
+    });
+    map.addSource("lad-info-sites", {
+      type: "geojson",
+      data: {
+        type: "FeatureCollection",
+        features: [],
+      },
+    });
+    map.addSource("extra-circles", {
+      type: "geojson",
+      data: {
+        type: "FeatureCollection",
+        features: [],
+      },
+    });
+    map.addSource("extra-symbols", {
+      type: "geojson",
+      data: {
+        type: "FeatureCollection",
+        features: [],
+      },
+    });
+
     map.addSource("saved-areas-source", selectedSource);
 
     map.addSource("measure-source", {
@@ -1011,6 +1166,112 @@ const buildLayers = () => {
       "road-label"
     );
 
+    //
+    // Route Info Layers
+
+    map.addLayer(
+      {
+        id: mapStore.layers[layersIdxs.ladsDetails].name,
+        type: "line",
+        source: "lads-source",
+        layout: {
+          "line-join": "round",
+          "line-cap": "round",
+          visibility: "none",
+        },
+        filter: ["in", "name", ""],
+        paint: {
+          "line-width": 12,
+          "line-color": mapStore.routeInfoDefaultColor,
+          "line-opacity": 0.6,
+        },
+      },
+      "road-label"
+    );
+    map.addLayer(
+      {
+        id: mapStore.layers[layersIdxs.ladsSegments].name,
+        type: "line",
+        source: "lad-info-segments",
+        layout: {
+          "line-join": "round",
+          "line-cap": "round",
+          visibility: "none",
+        },
+        paint: {
+          "line-width": 3,
+          "line-color": "#4d0099",
+          "line-opacity": 0.8,
+        },
+      },
+      "road-label"
+    );
+    map.addLayer(
+      {
+        id: mapStore.layers[layersIdxs.extraCircles].name,
+        type: "circle",
+        source: "extra-circles",
+        layout: {
+          visibility: "none",
+        },
+        paint: {
+          "circle-color": ["get", "color"],
+          "circle-radius": ["get", "size"],
+          "circle-opacity": ["get", "opacity"],
+        },
+      },
+      "road-label"
+    );
+    map.addLayer(
+      {
+        id: mapStore.layers[layersIdxs.sitesDetails].name,
+        type: "circle",
+        source: "lad-info-sites",
+        layout: {
+          visibility: "none",
+        },
+        paint: {
+          "circle-color": mapStore.routeInfoDefaultColor,
+          "circle-radius": 10,
+          "circle-opacity": 0.6,
+        },
+      },
+      "road-label"
+    );
+
+    map.addLayer({
+      id: mapStore.layers[layersIdxs.extraSymbols].name,
+      type: "symbol",
+      source: "extra-symbols",
+      layout: {
+        visibility: "none",
+        "text-field": ["get", "text"],
+        "text-justify": "auto",
+        "text-size": ["get", "size"],
+      },
+      paint: {
+        "text-color": ["get", "color"],
+      },
+    });
+    map.addLayer({
+      id: mapStore.layers[layersIdxs.sitesLabels].name,
+      type: "symbol",
+      source: "lad-info-sites",
+      layout: {
+        visibility: "none",
+        "text-field": ["get", "name"],
+        "text-variable-anchor": ["left", "right", "top"],
+        "text-radial-offset": 1,
+        "text-justify": "auto",
+        "text-size": 12,
+      },
+      paint: {
+        "text-color": mapStore.routeInfoDefaultColor,
+      },
+    });
+
+    // End Route Info Layers
+
     map.addLayer({
       id: "cells-extrusion",
       type: "fill-extrusion",
@@ -1356,10 +1617,13 @@ const buildLayers = () => {
     map.on("mousemove", "cells-fill", (e) => {
       if (props.mode == "social") {
         map.getCanvas().style.cursor = "pointer";
-        // console.log("Hovered:", e.features[0]);
         const cellData = e.features[0].properties;
-        const cellPop = `<br><strong>🏠:</strong> ${cellData.pop}`;
-        const cellEmp = `<br><strong>🏢:</strong> ${cellData.emp}`;
+        const cellPop = `<br><strong>🏠:</strong> ${
+          Math.round(1000 * cellData.pop) / 1000
+        }`;
+        const cellEmp = `<br><strong>🏢:</strong> ${
+          Math.round(1000 * cellData.emp) / 1000
+        }`;
 
         const description = `id: ${cellData.id}${cellPop}${cellEmp}`;
 
@@ -1908,7 +2172,7 @@ const showCurrentSitesGroup = () => {
   ]);
 
   // FIXME: Delete
-  console.log("🦚 Centroids Source", sourceSitesCentroids);
+  // console.log("🦚 Centroids Source", sourceSitesCentroids);
 };
 const showAllSites = () => {
   map.setFilter(mapStore.layers[layersIdxs.sitesFill].name, null);
@@ -2032,6 +2296,140 @@ const processRoutesByDistrict = (districtId) => {
     });
   }
   mapStore.routesSelectedIds = ladsIds;
+};
+
+const processRoutesInfoOptions = () => {
+  switch (mapStore.routeInfoOptions?.siteMode) {
+    case "board":
+      map.setPaintProperty(
+        mapStore.layers[layersIdxs.sitesDetails].name,
+        "circle-color",
+        mapStore.routeInfoBoardColor
+      );
+      map.setPaintProperty(
+        mapStore.layers[layersIdxs.sitesDetails].name,
+        "circle-radius",
+        [
+          "*",
+          ["sqrt", ["get", "lad_board"]],
+          +mapStore.routeInfoOptions.siteStep,
+        ]
+      );
+      break;
+    case "alight":
+      map.setPaintProperty(
+        mapStore.layers[layersIdxs.sitesDetails].name,
+        "circle-color",
+        mapStore.routeInfoAlightColor
+      );
+      map.setPaintProperty(
+        mapStore.layers[layersIdxs.sitesDetails].name,
+        "circle-radius",
+        [
+          "*",
+          ["sqrt", ["get", "lad_alight"]],
+          +mapStore.routeInfoOptions.siteStep,
+        ]
+      );
+      break;
+    case "board_total":
+      map.setPaintProperty(
+        mapStore.layers[layersIdxs.sitesDetails].name,
+        "circle-color",
+        mapStore.routeInfoBoardColor
+      );
+      map.setPaintProperty(
+        mapStore.layers[layersIdxs.sitesDetails].name,
+        "circle-radius",
+        ["*", ["sqrt", ["get", "board"]], +mapStore.routeInfoOptions.siteStep]
+      );
+      break;
+    case "alight_total":
+      map.setPaintProperty(
+        mapStore.layers[layersIdxs.sitesDetails].name,
+        "circle-color",
+        mapStore.routeInfoAlightColor
+      );
+      map.setPaintProperty(
+        mapStore.layers[layersIdxs.sitesDetails].name,
+        "circle-radius",
+        ["*", ["sqrt", ["get", "alight"]], +mapStore.routeInfoOptions.siteStep]
+      );
+      break;
+    case "trips":
+      map.setPaintProperty(
+        mapStore.layers[layersIdxs.sitesDetails].name,
+        "circle-color",
+        mapStore.routeInfoDefaultColor
+      );
+      map.setPaintProperty(
+        mapStore.layers[layersIdxs.sitesDetails].name,
+        "circle-radius",
+        ["*", ["sqrt", ["get", "trips"]], +mapStore.routeInfoOptions.siteStep]
+      );
+      break;
+    case "lads":
+      map.setPaintProperty(
+        mapStore.layers[layersIdxs.sitesDetails].name,
+        "circle-color",
+        mapStore.routeInfoDefaultColor
+      );
+      map.setPaintProperty(
+        mapStore.layers[layersIdxs.sitesDetails].name,
+        "circle-radius",
+        ["*", ["sqrt", ["get", "lads"]], +mapStore.routeInfoOptions.siteStep]
+      );
+      break;
+    case "capacity":
+      map.setPaintProperty(
+        mapStore.layers[layersIdxs.sitesDetails].name,
+        "circle-color",
+        mapStore.routeInfoDefaultColor
+      );
+      map.setPaintProperty(
+        mapStore.layers[layersIdxs.sitesDetails].name,
+        "circle-radius",
+        [
+          "*",
+          ["sqrt", ["get", "cap"]],
+          +mapStore.routeInfoOptions.siteStep / 10,
+        ]
+      );
+      break;
+    case "flow":
+      if (mapStore.routeInfoOptions.showSpeed) {
+        map.setPaintProperty(
+          mapStore.layers[layersIdxs.sitesDetails].name,
+          "circle-color",
+          ["step", ["get", "speed"], "#e60000", 10, "#FFD700", 20, "#008000"]
+        );
+      } else {
+        map.setPaintProperty(
+          mapStore.layers[layersIdxs.sitesDetails].name,
+          "circle-color",
+          mapStore.routeInfoFlowColor
+        );
+      }
+      map.setPaintProperty(
+        mapStore.layers[layersIdxs.sitesDetails].name,
+        "circle-radius",
+        ["*", ["sqrt", ["get", "flow"]], +mapStore.routeInfoOptions.siteStep]
+      );
+      break;
+
+    default:
+      map.setPaintProperty(
+        mapStore.layers[layersIdxs.sitesDetails].name,
+        "circle-color",
+        mapStore.routeInfoDefaultColor
+      );
+      map.setPaintProperty(
+        mapStore.layers[layersIdxs.sitesDetails].name,
+        "circle-radius",
+        +mapStore.routeInfoDefaultStep * 5
+      );
+      break;
+  }
 };
 
 //

@@ -512,7 +512,7 @@
     ]
   },
   {
-    "name": "Passenger's trip number",
+    "name": "Passengers per trip",
     "field": "pas_tr",
     "fieldGroup": "pas_tr_gr",
     "decimals": 0,
@@ -998,27 +998,27 @@
     "decimals": 2,
     "levels": [
       {
-        "name": "In first part",
+        "name": "Very low",
         "details": "(0% - 17%)"
       },
       {
-        "name": "In second part",
+        "name": "Low",
         "details": "(17% - 34%)"
       },
       {
-        "name": "In third part",
+        "name": "Average",
         "details": "(34% - 51%)"
       },
       {
-        "name": "In forth part",
+        "name": "High",
         "details": "(51% - 68%)"
       },
       {
-        "name": "In fifth part",
+        "name": "Very high",
         "details": "(68% - 85%)"
       },
       {
-        "name": "In sixth part",
+        "name": "Huge",
         "details": "(85%+)"
       }
     ]
@@ -1030,27 +1030,27 @@
     "decimals": 2,
     "levels": [
       {
-        "name": "In first part",
+        "name": "Very low",
         "details": "(0% - 17%)"
       },
       {
-        "name": "In second part",
+        "name": "Low",
         "details": "(17% - 34%)"
       },
       {
-        "name": "In third part",
+        "name": "Average",
         "details": "(34% - 51%)"
       },
       {
-        "name": "In forth part",
+        "name": "High",
         "details": "(51% - 68%)"
       },
       {
-        "name": "In fifth part",
+        "name": "Very high",
         "details": "(68% - 85%)"
       },
       {
-        "name": "In sixth part",
+        "name": "Huge",
         "details": "(85%+)"
       }
     ]
@@ -1062,27 +1062,27 @@
     "decimals": 2,
     "levels": [
       {
-        "name": "In first part",
+        "name": "Very low",
         "details": "(0% - 17%)"
       },
       {
-        "name": "In second part",
+        "name": "Low",
         "details": "(17% - 34%)"
       },
       {
-        "name": "In third part",
+        "name": "Average",
         "details": "(34% - 51%)"
       },
       {
-        "name": "In forth part",
+        "name": "High",
         "details": "(51% - 68%)"
       },
       {
-        "name": "In fifth part",
+        "name": "Very high",
         "details": "(68% - 85%)"
       },
       {
-        "name": "In sixth part",
+        "name": "Huge",
         "details": "(85%+)"
       }
     ]
