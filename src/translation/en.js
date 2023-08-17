@@ -57,11 +57,21 @@ export default {
     menuItemSites: "Sites",
 
     menuGroupAnalytics: "ANALYTICS",
-    menuItemDuplication: "Routes duplication",
-    menuItemDirectness: "Routes directness",
+    menuItemDuplication: "Duplication",
+    menuItemDirectness: "Directness",
     menuItemRidership: "Ridership",
     menuItemConnectivity: "Connectivity",
     menuItemAccess: "Accessability",
+
+    menuGroupReports: "AUTO-REPORTS",
+    menuItemReportArea: "Area",
+    menuItemReportSegment: "Segment",
+    menuItemReportRoute: "Route",
+
+    menuGroupTools: "TOOLS",
+    menuItemToolsDeadhead: "Deadheads",
+    menuItemToolsPuls: "Pulls",
+    menuItemToolsSites: "Sites",
 
     menuGroupEdit: "EDIT DATA",
     menuItemEditRoutes: "Routes",

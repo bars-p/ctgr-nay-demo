@@ -1,5 +1,5 @@
 <template>
-  <v-list :items="items"> </v-list>
+  <v-list :items="items" density="compact"> </v-list>
 </template>
 
 <script setup>
@@ -7,13 +7,16 @@ import { useI18n } from "vue-i18n";
 const { t } = useI18n();
 
 const items = [
+  // City block
+
   {
     type: "subheader",
     title: t("navigation.menuGroupCity"),
+    value: "city-group",
   },
   {
     title: t("navigation.menuItemSocial"),
-    value: 1,
+    value: "city-social",
     props: {
       nav: "nav",
       "prepend-icon": "mdi-home-city-outline",
@@ -22,23 +25,27 @@ const items = [
   },
   {
     title: t("navigation.menuItemDemand"),
-    value: 2,
+    value: "city-demand",
     props: {
       nav: "nav",
       "prepend-icon": "mdi-account-switch-outline",
       to: "/demand",
     },
   },
+
+  // Transport block
+
   {
     type: "divider",
   },
   {
     type: "subheader",
     title: t("navigation.menuGroupNetwork"),
+    value: "transit",
   },
   {
     title: t("navigation.menuItemRoutes"),
-    value: 3,
+    value: "transit-routes",
     props: {
       nav: "nav",
       "prepend-icon": "mdi-vector-polyline",
@@ -56,7 +63,7 @@ const items = [
   // },
   {
     title: t("navigation.menuItemSites"),
-    value: 4,
+    value: "transit-sites",
     props: {
       nav: "nav",
       "prepend-icon": "mdi-store-outline",
@@ -69,10 +76,11 @@ const items = [
   {
     type: "subheader",
     title: t("navigation.menuGroupAnalytics"),
+    value: "analytics",
   },
   {
     title: t("navigation.menuItemDuplication"),
-    value: 5,
+    value: "analytics-duplication",
     props: {
       nav: "nav",
       "prepend-icon": "mdi-poll",
@@ -81,7 +89,7 @@ const items = [
   },
   {
     title: t("navigation.menuItemDirectness"),
-    value: 6,
+    value: "analytics-directness",
     props: {
       nav: "nav",
       "prepend-icon": "mdi-transit-connection-variant",
@@ -90,7 +98,7 @@ const items = [
   },
   {
     title: t("navigation.menuItemRidership"),
-    value: 7,
+    value: "analytics-ridership",
     props: {
       nav: "nav",
       "prepend-icon": "mdi-account-group",
@@ -99,7 +107,7 @@ const items = [
   },
   {
     title: t("navigation.menuItemConnectivity"),
-    value: 8,
+    value: "analytics-connectivity",
     props: {
       nav: "nav",
       "prepend-icon": "mdi-arrow-decision",
@@ -108,23 +116,111 @@ const items = [
   },
   {
     title: t("navigation.menuItemAccess"),
-    value: 9,
+    value: "analytics-access",
     props: {
       nav: "nav",
       "prepend-icon": "mdi-land-plots-circle",
       to: "/access",
     },
   },
+
+  // Reports block
+  // FIXME:
+
+  {
+    type: "divider",
+  },
+  {
+    type: "subheader",
+    title: t("navigation.menuGroupReports"),
+    value: "reports",
+  },
+  {
+    title: t("navigation.menuItemReportArea"),
+    value: "reports-area",
+    props: {
+      nav: "nav",
+      "prepend-icon": "mdi-file-image-outline",
+      to: "/reports/area",
+      disabled: true,
+    },
+  },
+  {
+    title: t("navigation.menuItemReportSegment"),
+    value: "reports-segment",
+    props: {
+      nav: "nav",
+      "prepend-icon": "mdi-file-percent-outline",
+      to: "/reports/segment",
+      disabled: true,
+    },
+  },
+  {
+    title: t("navigation.menuItemReportRoute"),
+    value: "reports-route",
+    props: {
+      nav: "nav",
+      "prepend-icon": "mdi-file-swap-outline",
+      to: "/reports/route",
+      disabled: true,
+    },
+  },
+
+  // Tools block
+  // FIXME:
+
+  {
+    type: "divider",
+  },
+  {
+    type: "subheader",
+    title: t("navigation.menuGroupTools"),
+    value: "tools",
+  },
+  {
+    title: t("navigation.menuItemToolsDeadhead"),
+    value: "tools-deadhead",
+    props: {
+      nav: "nav",
+      "prepend-icon": "mdi-arrow-u-down-left",
+      to: "/tools/deadhead",
+      disabled: true,
+    },
+  },
+  {
+    title: t("navigation.menuItemToolsPuls"),
+    value: "tools-pulls",
+    props: {
+      nav: "nav",
+      "prepend-icon": "mdi-warehouse",
+      to: "/tools/pulls",
+      disabled: true,
+    },
+  },
+  {
+    title: t("navigation.menuItemToolsSites"),
+    value: "tools-sites",
+    props: {
+      nav: "nav",
+      "prepend-icon": "mdi-store-marker-outline",
+      to: "/tools/sites",
+      disabled: true,
+    },
+  },
+
+  // Edit block
+
   {
     type: "divider",
   },
   {
     type: "subheader",
     title: t("navigation.menuGroupEdit"),
+    value: "edit",
   },
   {
     title: t("navigation.menuItemEditRoutes"),
-    value: 10,
+    value: "edit-routes",
     props: {
       nav: "nav",
       "prepend-icon": "mdi-vector-polyline-edit",
@@ -143,7 +239,7 @@ const items = [
   // },
   {
     title: t("navigation.menuItemEditSites"),
-    value: 12,
+    value: "edit-sites",
     props: {
       nav: "nav",
       "prepend-icon": "mdi-store-edit-outline",
@@ -153,7 +249,7 @@ const items = [
   },
   {
     title: t("navigation.menuItemEditZones"),
-    value: 13,
+    value: "edit-zones",
     props: {
       nav: "nav",
       "prepend-icon": "mdi-view-dashboard-edit-outline",
@@ -163,7 +259,7 @@ const items = [
   },
   {
     title: t("navigation.menuItemEditCells"),
-    value: 14,
+    value: "edit-cells",
     props: {
       nav: "nav",
       "prepend-icon": "mdi-vector-point-edit",
