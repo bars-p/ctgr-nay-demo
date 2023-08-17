@@ -9,6 +9,7 @@
 - Vuetify 3
 - MapboxGL
 - DeckGL
+- turf.js
 
 ## Project setup
 
