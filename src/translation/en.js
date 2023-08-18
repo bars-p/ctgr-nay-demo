@@ -191,7 +191,7 @@ export default {
     sitesBoardingTotal: "Boarding all routes",
     sitesAlightingTotal: "Alighting all routes",
     sitesCapacity: "Transit capacity",
-    sitesFlowAfter: "Ridership volume",
+    sitesFlowAfter: "Load volume",
     sitesDistributionTitle: "Sites distribution",
     sitesSearchTitle: "Sites search",
     sitesGroup: "Sites group",
