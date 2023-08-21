@@ -357,7 +357,6 @@
       :lad="routeInfoSelected"
       :categories="routesCategories"
       v-if="mapStore.showRouteInfo"
-      class="route-info"
     ></route-info>
 
     <distribution-dialog
