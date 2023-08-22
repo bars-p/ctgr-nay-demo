@@ -145,6 +145,7 @@ export default {
     routesFrequency: "Frequency",
     routesRidership: "Ridership",
     routesSpeed: "Speed",
+    routesLoad: "Load",
     routesMode: "Transit mode",
     routesModeBus: "Bus",
     routesModeTrolley: "Trolleybus",

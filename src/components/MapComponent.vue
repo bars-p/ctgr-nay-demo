@@ -381,6 +381,7 @@ watch(
             (item) => item.properties.id == site.id
           )
         );
+        dataItem.properties.selected = site.selected;
         dataItem.properties.lad_board = site.board;
         dataItem.properties.lad_alight = site.alight;
         dataItem.properties.site_order = site.order;
@@ -452,7 +453,8 @@ watch(
       //   .getSource(mapStore.layers[layersIdxs.extraSymbols].name)
       //   .setData(startSymbol);
     }
-  }
+  },
+  { deep: true }
 );
 watch(
   () => mapStore.routeInfoOptions,
@@ -1234,6 +1236,9 @@ const buildLayers = () => {
           "circle-color": mapStore.routeInfoDefaultColor,
           "circle-radius": 10,
           "circle-opacity": 0.6,
+          // "circle-opacity": ["case", ["get", "selected"], 1, 0.6],
+          "circle-stroke-width": ["case", ["get", "selected"], 4, 0],
+          "circle-stroke-color": "#FFFFFF",
         },
       },
       "road-label"

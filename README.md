@@ -10,6 +10,7 @@
 - MapboxGL
 - DeckGL
 - turf.js
+- Chart.js
 
 ## Project setup
 

@@ -127,7 +127,7 @@
         </p> -->
       </v-container>
     </tools-component>
-    <route-chart class="chart-block"></route-chart>
+    <route-chart :sites="sites" class="chart-block"></route-chart>
   </div>
 </template>
 
@@ -271,10 +271,12 @@ const applyOptions = () => {
   max-height: calc(100vh - 496px);
 }
 .chart-block {
-  position: sticky;
+  position: absolute;
+  top: calc(100vh - 400px);
   margin-left: 360px;
   margin-right: 360px;
-  margin-top: -300px;
+  /* margin-top: -300px; */
   height: 320px;
+  width: calc(100vw - 940px);
 }
 </style>
