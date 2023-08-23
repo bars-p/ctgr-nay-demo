@@ -6,7 +6,7 @@ import { ref, computed } from "vue";
 export const useMapStore = defineStore("mapStore", () => {
   const userSettingsShown = ref(false);
 
-  const version = "0.0.5b";
+  const version = "0.0.6a";
 
   const mapStyles = [
     { value: 0, title: "Streets", uri: "mapbox://styles/mapbox/streets-v12" },

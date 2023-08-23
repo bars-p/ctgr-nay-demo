@@ -315,7 +315,7 @@
                 </template>
                 <template
                   #append
-                  v-if="isHovering || route.id == mapStore.routeInfoLad.id"
+                  v-if="isHovering || route.id == mapStore.routeInfoLad?.id"
                 >
                   <v-btn
                     density="comfortable"
