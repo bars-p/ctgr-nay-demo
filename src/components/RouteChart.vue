@@ -2,7 +2,13 @@
   <v-sheet rounded elevation="2">
     <v-container>
       <!-- <close-button flat @close="closeChart" class="float-right"></close-button> -->
-      <Scatter :data="data" :options="options" class="chart-style" />
+      <Scatter
+        :data="data"
+        :options="options"
+        class="chart-style"
+        ref="chartRef"
+        @click="onClick"
+      />
     </v-container>
   </v-sheet>
 </template>
@@ -10,7 +16,7 @@
 <script setup>
 // import CloseButton from "./elements/CloseButton.vue";
 
-import { computed } from "vue";
+import { computed, ref } from "vue";
 
 import { useI18n } from "vue-i18n";
 const { t } = useI18n();
@@ -29,7 +35,7 @@ import {
   PointElement,
   LineElement,
 } from "chart.js";
-import { Scatter } from "vue-chartjs";
+import { Scatter, getElementAtEvent } from "vue-chartjs";
 
 ChartJS.register(
   CategoryScale,
@@ -42,35 +48,57 @@ ChartJS.register(
   LineElement
 );
 
+const chartRef = ref(null);
+
+const onClick = (e) => {
+  console.log("Clicked", e);
+
+  const { chart } = chartRef.value;
+
+  console.log("Chart", chart);
+
+  if (!chart) {
+    console.warn("Chart not found");
+    return;
+  }
+
+  const element = getElementAtEvent(chart, e);
+
+  if (!element.length) {
+    return;
+  }
+
+  const { datasetIndex, index } = element[0];
+
+  console.log("Dataset", datasetIndex);
+  console.log("Item", index);
+
+  let siteItem = null;
+
+  switch (datasetIndex) {
+    case 3:
+      // Selected items
+      siteItem = mapStore.routeInfoSites.filter((site) => site.selected)[index];
+      siteItem.selected = false;
+      break;
+
+    case 4:
+      // Not-Selected items
+      siteItem = mapStore.routeInfoSites.filter((site) => !site.selected)[
+        index
+      ];
+      siteItem.selected = true;
+      break;
+
+    default:
+      // All other
+      mapStore.routeInfoSites[index].selected =
+        !mapStore.routeInfoSites[index].selected;
+      break;
+  }
+};
+
 const props = defineProps(["sites"]);
-
-// const closeChart = () => {
-//   console.log("Close chart");
-//   console.log("Sites Data", props.sites);
-// };
-
-// const data = {
-//   labels: ["January", "February", "March"],
-//   datasets: [
-//     {
-//       label: t("tools.sitesBoarding"),
-//       type: "bar",
-//       data: [40, 20, 12],
-//       backgroundColor: mapStore.routeInfoBoardColor,
-//     },
-//     {
-//       label: t("tools.sitesAlighting"),
-//       type: "bar",
-//       data: [10, 14, 11],
-//       backgroundColor: mapStore.routeInfoAlightColor,
-//     },
-//     {
-//       label: t("tools.routesLoad"),
-//       type: "line",
-//       data: [40, 20, 12],
-//     },
-//   ],
-// };
 
 const data = computed(() => {
   const dataObject = {
@@ -97,6 +125,31 @@ const data = computed(() => {
         data: props.sites.map((site) => ({ x: site.r_acc, y: site.alight })),
         backgroundColor: `${mapStore.routeInfoAlightColor}A0`,
       },
+      {
+        label: t("general.selected"),
+        type: "scatter",
+        pointRadius: 10,
+        pointHoverRadius: 10,
+        data: props.sites
+          .filter((site) => site.selected)
+          .map((site) => ({ x: site.r_acc, y: 0 })),
+        // borderColor: "#A9A9A9",
+        borderWidth: 2,
+        // backgroundColor: "#A9A9A9",
+        backgroundColor: "#FF0000",
+      },
+      {
+        label: t("general.notSelected"),
+        type: "scatter",
+        pointRadius: 10,
+        pointHoverRadius: 10,
+        data: props.sites
+          .filter((site) => !site.selected)
+          .map((site) => ({ x: site.r_acc, y: 0 })),
+        borderColor: "#A9A9A9",
+        borderWidth: 2,
+        backgroundColor: "#FFFFFF",
+      },
     ],
   };
 
@@ -105,6 +158,7 @@ const data = computed(() => {
 
 const options = {
   responsive: true,
+  animation: false,
   scales: {
     x: {
       type: "linear",
@@ -112,9 +166,6 @@ const options = {
         stepSize: 1,
       },
     },
-    // y: {
-    //   beginAtZero: true,
-    // },
   },
   plugins: {
     legend: {
@@ -122,13 +173,50 @@ const options = {
     },
     tooltip: {
       callbacks: {
-        title: function (tooltipItems) {
-          const idx = tooltipItems[0].dataIndex;
-          const km = +tooltipItems[0].label;
+        title: (tooltipItems) => {
+          // console.log("Tooltip", tooltipItems);
 
-          return `${idx + 1}. ${props.sites[idx].name} (${
-            Math.round(km * 10) / 10
-          } ${t("general.km")})`;
+          let siteItem = null;
+
+          const { datasetIndex } = tooltipItems[0];
+
+          const idx = tooltipItems[0].dataIndex;
+
+          switch (datasetIndex) {
+            case 3:
+              // Parsing Selected
+              siteItem = props.sites.filter((site) => site.selected)[idx];
+              break;
+            case 4:
+              // Parsing Not-Selected
+              siteItem = props.sites.filter((site) => !site.selected)[idx];
+              break;
+
+            default:
+              siteItem = props.sites[idx];
+              break;
+          }
+
+          const { order, name, r_acc } = siteItem;
+
+          const title = `${order}. ${name} (${Math.round(r_acc * 10) / 10} ${t(
+            "general.km"
+          )})`;
+
+          return title;
+        },
+        label: (tooltip) => {
+          // console.log("Label", tooltip);
+          const { datasetIndex } = tooltip;
+          switch (datasetIndex) {
+            case (3, 4):
+              // Selected and Not-Selected
+              return false;
+
+            default:
+              // Other
+              return `${tooltip.dataset.label}: ${tooltip.formattedValue}`;
+          }
         },
       },
     },

@@ -350,6 +350,8 @@ watch(
       mapStore.turnOnLayer(layersIdxs.sitesDetails);
       mapStore.turnOnLayer(layersIdxs.sitesLabels);
       mapStore.turnOnLayer(layersIdxs.extraCircles);
+
+      map.getCanvas().style.cursor = "";
       // mapStore.turnOnLayer(layersIdxs.extraSymbols);
     } else {
       mapStore.turnOffLayer(layersIdxs.ladsDetails);
@@ -358,6 +360,10 @@ watch(
       mapStore.turnOffLayer(layersIdxs.sitesLabels);
       mapStore.turnOffLayer(layersIdxs.extraCircles);
       // mapStore.turnOffLayer(layersIdxs.extraSymbols);
+
+      if (mapStore.routesSelectMode == "routes") {
+        map.getCanvas().style.cursor = "pointer";
+      }
 
       mapStore.routeInfoOptions = null;
       processRoutesInfoOptions();
@@ -1238,7 +1244,7 @@ const buildLayers = () => {
           "circle-opacity": 0.6,
           // "circle-opacity": ["case", ["get", "selected"], 1, 0.6],
           "circle-stroke-width": ["case", ["get", "selected"], 4, 0],
-          "circle-stroke-color": "#FFFFFF",
+          "circle-stroke-color": "#FF0000",
         },
       },
       "road-label"
@@ -1390,7 +1396,8 @@ const buildLayers = () => {
         !(
           props.mode == "social" ||
           (props.mode == "sites" && mapStore.sitesSelectionMode == "sites") ||
-          (props.mode == "routes" && mapStore.routesSelectMode == "routes")
+          (props.mode == "routes" && mapStore.routesSelectMode == "routes") ||
+          mapStore.showRouteInfo
         )
       )
         return;
@@ -1480,9 +1487,15 @@ const buildLayers = () => {
             break;
 
           case "routes":
-            features = map.queryRenderedFeatures(bbox, {
-              layers: [mapStore.layers[layersIdxs.ladsTraces].name],
-            });
+            if (!mapStore.showRouteInfo) {
+              features = map.queryRenderedFeatures(bbox, {
+                layers: [mapStore.layers[layersIdxs.ladsTraces].name],
+              });
+            } else {
+              features = map.queryRenderedFeatures(bbox, {
+                layers: [mapStore.layers[layersIdxs.sitesDetails].name],
+              });
+            }
             break;
 
           default:
@@ -1511,11 +1524,15 @@ const buildLayers = () => {
             processSitesSelected(
               [...deduplicated.values()].map((item) => item.properties.id)
             );
-          } else if (props.mode == "routes") {
+          } else if (props.mode == "routes" && !mapStore.showRouteInfo) {
             mapStore.routesSelectedIds = new Set([
               ...mapStore.routesSelectedIds,
               ...[...deduplicated.values()].map((item) => item.properties.id),
             ]);
+          } else if (mapStore.showRouteInfo) {
+            processRouteInfoSitesSelect(
+              [...deduplicated.values()].map((item) => item.properties.id)
+            );
           }
         }
       }
@@ -1848,6 +1865,29 @@ const buildLayers = () => {
     //
     // Routes processing
     //
+
+    // Select Sites for Route Info
+    map.on("mousemove", mapStore.layers[layersIdxs.sitesDetails].name, () => {
+      if (mapStore.showRouteInfo) {
+        map.getCanvas().style.cursor = "pointer";
+      }
+    });
+    map.on("mouseleave", mapStore.layers[layersIdxs.sitesDetails].name, () => {
+      if (mapStore.showRouteInfo) {
+        map.getCanvas().style.cursor = "";
+      }
+    });
+    map.on("click", mapStore.layers[layersIdxs.sitesDetails].name, (item) => {
+      if (mapStore.measureActive) {
+        return;
+      }
+
+      if (mapStore.showRouteInfo) {
+        const feature = Object.assign(item.features[0]);
+        processRouteInfoSitesSelect([feature.properties.id]);
+      }
+    });
+
     // map.on("mousemove", mapStore.layers[layersIdxs.ladsTraces].name, (e) => {
     //   if (props.mode == "routes" && mapStore.routesSelectMode == "routes") {
     //     map.getCanvas().style.cursor = "pointer";
@@ -1874,7 +1914,11 @@ const buildLayers = () => {
         return;
       }
 
-      if (props.mode == "routes" && mapStore.routesSelectMode == "routes") {
+      if (
+        props.mode == "routes" &&
+        mapStore.routesSelectMode == "routes" &&
+        !mapStore.showRouteInfo
+      ) {
         const bbox = [
           [e.point.x - 5, e.point.y - 5],
           [e.point.x + 5, e.point.y + 5],
@@ -2435,6 +2479,14 @@ const processRoutesInfoOptions = () => {
       );
       break;
   }
+};
+
+const processRouteInfoSitesSelect = (ids) => {
+  console.log("Sites process", ids);
+  ids.forEach((id) => {
+    const site = mapStore.routeInfoSites.find((site) => site.id == id);
+    site.selected = !site.selected;
+  });
 };
 
 //

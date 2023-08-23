@@ -38,6 +38,8 @@ export default {
     one: "One",
     many: "Many",
     level: "Level",
+    selected: "Selected",
+    notSelected: "Not selected",
   },
 
   // Navigation Items

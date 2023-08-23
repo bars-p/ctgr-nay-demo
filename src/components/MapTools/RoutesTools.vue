@@ -313,7 +313,10 @@
                   >
                   </v-btn>
                 </template>
-                <template #append v-if="isHovering">
+                <template
+                  #append
+                  v-if="isHovering || route.id == mapStore.routeInfoLad.id"
+                >
                   <v-btn
                     density="comfortable"
                     size="small"
@@ -322,21 +325,6 @@
                     @click.stop="showRouteInfo(route)"
                   >
                   </v-btn>
-                  <!-- <v-btn
-                  density="comfortable"
-                  size="small"
-                  flat
-                  icon="mdi-checkbox-blank"
-                >
-                  <v-icon :color="route.color"></v-icon>
-                  <v-menu activator="parent" :close-on-content-click="false">
-                    <v-color-picker
-                      v-model="route.color"
-                      show-swatches
-                      @update:model-value="ladColorUpdate"
-                    ></v-color-picker>
-                  </v-menu>
-                </v-btn> -->
                   <v-btn
                     density="comfortable"
                     size="small"
@@ -346,6 +334,19 @@
                   >
                   </v-btn>
                 </template>
+                <!-- <template
+                  #append
+                  v-else-if="route.id == mapStore.routeInfoLad.id"
+                >
+                  <v-btn
+                    density="comfortable"
+                    size="small"
+                    flat
+                    icon="mdi-information-outline"
+                    @click.stop="showRouteInfo(route)"
+                  >
+                  </v-btn>
+                </template> -->
               </v-list-item>
             </v-hover>
           </template>
