@@ -34,7 +34,13 @@ import {
   LinearScale,
   PointElement,
   LineElement,
+  LineController,
+  BarController,
+  ScatterController,
 } from "chart.js";
+
+// import Chart from 'chart.js/auto';
+
 import { Scatter, getElementAtEvent } from "vue-chartjs";
 
 ChartJS.register(
@@ -45,7 +51,10 @@ ChartJS.register(
   Tooltip,
   Legend,
   PointElement,
-  LineElement
+  LineElement,
+  LineController,
+  BarController,
+  ScatterController
 );
 
 const chartRef = ref(null);

@@ -2,7 +2,7 @@
   <div>
     <tools-component :title="'[' + props.lad?.id + '] ' + props.lad?.name">
       <template #actions>
-        <close-button @close="mapStore.showRouteInfo = false"></close-button>
+        <close-button @close="processClose"></close-button>
       </template>
       <template #tools>
         <v-select
@@ -258,6 +258,12 @@ const applyOptions = () => {
   };
   console.log("Apply Pressed", options);
   mapStore.routeInfoOptions = options;
+};
+
+const processClose = () => {
+  mapStore.routeInfoSites = [];
+  mapStore.routeInfoLad = null;
+  mapStore.showRouteInfo = false;
 };
 </script>
 
