@@ -218,7 +218,8 @@ const options = {
           // console.log("Label", tooltip);
           const { datasetIndex } = tooltip;
           switch (datasetIndex) {
-            case (3, 4):
+            case 3:
+            case 4:
               // Selected and Not-Selected
               return false;
 
