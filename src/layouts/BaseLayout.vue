@@ -122,12 +122,14 @@ const restoreMain = () => {
   mapStore.selectedSiteIds.clear();
   mapStore.currentSitesGroup = null;
   mapStore.savedSitesGroups = [];
-  // mapStore.useCurrentSiteGroup = false;
+  mapStore.useCurrentSiteGroup = false;
+  mapStore.sitesSelectionMode = null;
 
   mapStore.routesSelectedIds.clear();
   mapStore.currentRoutesGroup = null;
   mapStore.savedRoutesGroups = [];
-  // mapStore.useCurrentRoutesGroup = false;
+  mapStore.useCurrentRoutesGroup = false;
+  mapStore.routesSelectMode = null;
 
   mapStore.demandResetData();
   mapStore.connectivityResetData();
